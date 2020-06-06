@@ -7,6 +7,7 @@
 // @exclude      https://www.waze.com/user/editor*
 // @author       jm6087 (with lots of help from SkiDooGuy)
 // @grant        none
+// ==/UserScript//
 
 function RRC-Locker () {
 const SelFeat = W.selectionManager.getSelectedFeatures()[0]
@@ -16,3 +17,5 @@ const mAction = new MultiAction();
 let updates = {};
 mAction.setModel(W.model);
 
+  
+}
