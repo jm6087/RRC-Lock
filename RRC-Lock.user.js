@@ -9,7 +9,7 @@
 // @grant        none
 // ==/UserScript==
 
-function RRC-Locker () {
+function RRCLocker () {
 const SelFeat = W.selectionManager.getSelectedFeatures()[0]
 const attLock = SelFeat.model.attributes.lockRank
 
