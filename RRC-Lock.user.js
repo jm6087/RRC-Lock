@@ -11,7 +11,12 @@
 
 function RRC-Locker () {
 const SelFeat = W.selectionManager.getSelectedFeatures()[0]
-const attLock = model.attributes.lock
+const attLock = SelFeat.model.attributes.lockRank
+
+console.log(attLock)
+
+document.querySelector("#edit-panel > div > div > div > div.tab-content > form > div > div > div > div > div.form-control.lock-level-selector.waze-radio-container > label:nth-child(12)").click()
+
 
 const mAction = new MultiAction();
 let updates = {};
