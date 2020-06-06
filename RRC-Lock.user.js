@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC Locker
 // @namespace    https://github.com/jm6087
-// @version      2020.05.28.00
+// @version      2020.06.06.00
 // @description  Locks RRCs
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
 // @exclude      https://www.waze.com/user/editor*
