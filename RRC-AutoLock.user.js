@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2020.06.07.05
+// @version      2020.06.07.06
 // @description  AutoLocks RRCs to set level instead of rank of editor
 // @author       jm6087 (with assistance from Dude495 and TheCre8r)
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -18,7 +18,11 @@
     function setAutoLock() {
         let SelMan = W.selectionManager;
         let SelModel = SelMan.getSelectedFeatures()[0].model;
-        let lockRankplusOne = SelModel.attributes.lockRank;
+        if (SelModel.attributes.lockRank == null){
+            var lockRankplusOne = "AutoLock";
+        }else{
+            var lockRankplusOne = SelModel.attributes.lockRank + 1;
+        };
         let Lock4 = "#edit-panel > div > div > div > div.tab-content > form > div > div > div > div > div.form-control.lock-level-selector.waze-radio-container > label:nth-child(12)"
         if (SelMan.hasSelectedFeatures() && SelModel.type === 'railroadCrossing' && SelModel.attributes.lockRank != 3){
             document.querySelector(Lock4).click();
@@ -26,12 +30,12 @@
         }else{
             console.log (SCRIPT_NAME, "Version $", VERSION, "- RRC lock not changed, already at lock level", lockRankplusOne);
         }
-            }
+    }
     function bootstrap(tries = 1) {
         if (W && W.map && W.model && W.loginManager.user && $ && WazeWrap.Ready ) {
             WazeWrap.Events.register("selectionchanged", null, setAutoLock);
             WazeWrap.Interface.ShowScriptUpdate(SCRIPT_NAME, VERSION, UPDATE_NOTES);
-           console.log(SCRIPT_NAME, "loaded");
+            console.log(SCRIPT_NAME, "loaded");
         } else if (tries < 1000)
             setTimeout(function () {bootstrap(tries++);}, 200);
     }
