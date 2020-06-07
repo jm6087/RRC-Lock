@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         WME RRC Lock
+// @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
 // @version      2020.06.07.03
-// @description  Locks RRCs to set level instead of rank of editor
+// @description  AutoLocks RRCs to set level instead of rank of editor
 // @author       jm6087 (with assistance from Dude495 and TheCre8r)
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
 // @require      https://greasyfork.org/scripts/24851-wazewrap/code/WazeWrap.js
@@ -11,11 +11,11 @@
 
 (function() {
     'use strict';
-    var UPDATE_NOTES = `This should lock RRCs to L4 upon selection of the RRC <br><br>
+    var UPDATE_NOTES = `This should autolock RRCs to L4 upon selection of the RRC <br><br>
     This is my first script, hope it works and currently is very basic due to limited knoweledge.  Thanks for Dude495, TheCre8r, and SkiDooGuy for their assistance`
     var VERSION = GM_info.script.version;
     var SCRIPT_NAME = GM_info.script.name;
-    function setLock() {
+    function setAutoLock() {
         let SelMan = W.selectionManager;
         let SelModel = SelMan.getSelectedFeatures()[0].model;
         let lockRankplusOne = SelModel.attributes.lockRank + 1;
@@ -28,7 +28,7 @@
             }
     function bootstrap(tries = 1) {
         if (W && W.map && W.model && W.loginManager.user && $ && WazeWrap.Ready ) {
-            WazeWrap.Events.register("selectionchanged", null, setLock);
+            WazeWrap.Events.register("selectionchanged", null, setAutoLock);
             WazeWrap.Interface.ShowScriptUpdate(SCRIPT_NAME, VERSION, UPDATE_NOTES);
            console.log(SCRIPT_NAME, "loaded");
         } else if (tries < 1000)
