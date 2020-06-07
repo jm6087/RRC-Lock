@@ -18,13 +18,12 @@
     function setLock() {
         let SelMan = W.selectionManager;
         let SelModel = SelMan.getSelectedFeatures()[0].model;
-        // let lockRankplusOne = SelModel.attributes.lockRank + 1;
+        let lockRankplusOne = SelModel.attributes.lockRank + 1;
         if (SelMan.hasSelectedFeatures() && SelModel.type === 'railroadCrossing' && SelModel.attributes.lockRank != 3){
             document.querySelector("#edit-panel > div > div > div > div.tab-content > form > div > div > div > div > div.form-control.lock-level-selector.waze-radio-container > label:nth-child(12)").click();
-            console.log(SCRIPT_NAME, "version", VERSION, "- lock level changed from", SelModel.attributes.lockRank + 1);
-            //WazeWrap.Alerts.warning(SCRIPT_NAME, "You've Selected a Railroad Crossing!");
+            console.log(SCRIPT_NAME, "Version #", VERSION, "- Lock level changed from", lockRankplusOne);
         }else{
-            console.log (SCRIPT_NAME, "not adjusted, already at lock level", SelModel.attributes.lockRank + 1);
+            console.log (SCRIPT_NAME, "Version $", VERSION, "- RRC lock not changed, already at lock level", lockRankplusOne);
         }
             }
     function bootstrap(tries = 1) {
