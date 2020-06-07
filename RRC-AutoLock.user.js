@@ -15,25 +15,25 @@
     This is my first script, hope it works and currently is very basic due to limited knoweledge.  Thanks for Dude495, TheCre8r, and SkiDooGuy for their assistance`
     var VERSION = GM_info.script.version;
     var SCRIPT_NAME = GM_info.script.name;
-    function setAutoLock() {
+    function setRRCAutoLock() {
         let SelMan = W.selectionManager;
         let SelModel = SelMan.getSelectedFeatures()[0].model;
         if (SelModel.attributes.lockRank == null){
-            var lockRankplusOne = "AutoLock";
+            var RRCAutolockRankplusOne = "AutoLock";
         }else{
-            var lockRankplusOne = SelModel.attributes.lockRank + 1;
+            var RRCAutolockRankplusOne = SelModel.attributes.lockRank + 1;
         };
-        let Lock4 = "#edit-panel > div > div > div > div.tab-content > form > div > div > div > div > div.form-control.lock-level-selector.waze-radio-container > label:nth-child(12)"
+        let RRCAutoLock4 = "#edit-panel > div > div > div > div.tab-content > form > div > div > div > div > div.form-control.lock-level-selector.waze-radio-container > label:nth-child(12)"
         if (SelMan.hasSelectedFeatures() && SelModel.type === 'railroadCrossing' && SelModel.attributes.lockRank != 3){
-            document.querySelector(Lock4).click();
-            console.log(SCRIPT_NAME, "Version #", VERSION, "- Lock level changed from", lockRankplusOne);
+            document.querySelector(RRCAutoLock4).click();
+            console.log(SCRIPT_NAME, "Version #", VERSION, "- Lock level changed from", RRCAutolockRankplusOne);
         }else{
-            console.log (SCRIPT_NAME, "Version $", VERSION, "- RRC lock not changed, already at lock level", lockRankplusOne);
+            console.log (SCRIPT_NAME, "Version $", VERSION, "- RRC lock not changed, already at lock level", RRCAutolockRankplusOne);
         }
     }
     function bootstrap(tries = 1) {
         if (W && W.map && W.model && W.loginManager.user && $ && WazeWrap.Ready ) {
-            WazeWrap.Events.register("selectionchanged", null, setAutoLock);
+            WazeWrap.Events.register("selectionchanged", null, setRRCAutoLock);
             WazeWrap.Interface.ShowScriptUpdate(SCRIPT_NAME, VERSION, UPDATE_NOTES);
             console.log(SCRIPT_NAME, "loaded");
         } else if (tries < 1000)
