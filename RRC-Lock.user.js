@@ -1,45 +1,39 @@
 // ==UserScript==
-// @name         WME RRC Locker
+// @name         WME RRC Lock
 // @namespace    https://github.com/jm6087
-// @version      2020.06.06.00
-// @description  Locks RRCs
+// @version      2020.06.07.02
+// @description  Locks RRCs to set level instead of rank of editor
+// @author       jm6087 (with assistance from Dude495 and TheCre8r)
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
 // @require      https://greasyfork.org/scripts/24851-wazewrap/code/WazeWrap.js
-// @exclude      https://www.waze.com/user/editor*
-// @author       jm6087 (with lots of help from SkiDooGuy)
 // @grant        none
 // ==/UserScript==
 
-WazeWrap.Events.register("selectionchanged", null, 'RRCLocker');
-
-function RRCLocker () {
-const SelFeat = W.selectionManager.getSelectedFeatures()[0]
-const attLock = SelFeat.model.attributes.lockRank
-
-// I can get this to work inside of WME console
-// Will change the lock level to 4 if the selected feature is an RRC
-if (W.selectionManager.hasSelectedFeatures() && W.selectionManager.getSelectedFeatures()[0].model.type === 'railroadCrossing'){
-      document.querySelector("#edit-panel > div > div > div > div.tab-content > form > div > div > div > div > div.form-control.lock-level-selector.waze-radio-container > label:nth-child(12)").click()
-  }
-//
-//Need to figure out how to make above function run on selection
-    
-  
-function callbackFunc () {
-  if (W.selectionManager.hasSelectedFeatures() && SelFeat.model.type === 'railroadCrossing'){
-
-    Let RRCselected = attLock
-if (RRCselected <> 3){  
-document.querySelector("#edit-panel > div > div > div > div.tab-content > form > div > div > div > div > div.form-control.lock-level-selector.waze-radio-container > label:nth-child(12)").click()
-}
-
-function bootstrap(tries = 1) {
-	if (W && W.map &&
-		W.model && W.loginManager.user &&
-		$ ) {
-		init();
-	} else if (tries < 1000)
-		setTimeout(function () {bootstrap(tries++);}, 200);
-}
-}
-      bootstrap();
+(function() {
+    'use strict';
+    var UPDATE_NOTES = `This should lock RRCs to L4 upon selection of the RRC <br><br>
+    This is my first script, hope it works and currently is very basic due to limited knoweledge.  Thanks for Dude495, TheCre8r, and SkiDooGuy for their assistance`
+    var VERSION = GM_info.script.version;
+    var SCRIPT_NAME = GM_info.script.name;
+    function setLock() {
+        let SelMan = W.selectionManager;
+        let SelModel = SelMan.getSelectedFeatures()[0].model;
+        // let lockRankplusOne = SelModel.attributes.lockRank + 1;
+        if (SelMan.hasSelectedFeatures() && SelModel.type === 'railroadCrossing' && SelModel.attributes.lockRank != 3){
+            document.querySelector("#edit-panel > div > div > div > div.tab-content > form > div > div > div > div > div.form-control.lock-level-selector.waze-radio-container > label:nth-child(12)").click();
+            console.log(SCRIPT_NAME, "version", VERSION, "- lock level changed from", SelModel.attributes.lockRank + 1);
+            //WazeWrap.Alerts.warning(SCRIPT_NAME, "You've Selected a Railroad Crossing!");
+        }else{
+            console.log (SCRIPT_NAME, "not adjusted, already at lock level", SelModel.attributes.lockRank + 1);
+        }
+            }
+    function bootstrap(tries = 1) {
+        if (W && W.map && W.model && W.loginManager.user && $ && WazeWrap.Ready ) {
+            WazeWrap.Events.register("selectionchanged", null, setLock);
+            WazeWrap.Interface.ShowScriptUpdate(SCRIPT_NAME, VERSION, UPDATE_NOTES);
+           console.log(SCRIPT_NAME, "loaded");
+        } else if (tries < 1000)
+            setTimeout(function () {bootstrap(tries++);}, 200);
+    }
+    bootstrap();
+})();
