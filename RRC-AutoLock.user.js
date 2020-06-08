@@ -13,6 +13,7 @@
     'use strict';
     var UPDATE_NOTES = `This should autolock RRCs to L4 upon selection of the RRC <br><br>
     Added tab as proof of concept for myself<br>
+    Script currently conflicts with WME Tiles Update.  Not allowing unverified RRCs to autolock initially
     This is my first script, hope it works and currently is very basic due to limited knoweledge.  Thanks for Dude495, TheCre8r, and SkiDooGuy for their assistance`
     var VERSION = GM_info.script.version;
     var SCRIPT_NAME = GM_info.script.name;
