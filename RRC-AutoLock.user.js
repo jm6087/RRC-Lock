@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2020.06.08.02
+// @version      2020.06.08.03
 // @description  AutoLocks RRCs to set level instead of rank of editor
 // @author       jm6087 (with assistance from Dude495 and TheCre8r)
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -20,12 +20,15 @@
     function setRRCAutoLock() {
         let SelMan = W.selectionManager;
         let SelModel = SelMan.getSelectedFeatures()[0].model;
+        // Create an option variable using the following 2 let statements
+        let RRCAutoLockChildNumber = 12
+        let RRCAutoLockLabel = "label:nth-child(" + RRCAutoLockChildNumber+ ")"
         if (SelModel.attributes.lockRank == null){
             var RRCAutolockRankplusOne = "AutoLock";
         }else{
             var RRCAutolockRankplusOne = SelModel.attributes.lockRank + 1;
         };
-        let RRCAutoLock4 = "#edit-panel > div > div > div > div.tab-content > form > div > div > div > div > div.form-control.lock-level-selector.waze-radio-container > label:nth-child(12)"
+        let RRCAutoLock4 = "#edit-panel > div > div > div > div.tab-content > form > div > div > div > div > div.form-control.lock-level-selector.waze-radio-container >" + RRCAutoLockLabel
         if (SelMan.hasSelectedFeatures() && SelModel.type === 'railroadCrossing' && SelModel.attributes.lockRank != 3){
             document.querySelector(RRCAutoLock4).click();
             console.log(SCRIPT_NAME, "Version #", VERSION, "- Lock level changed from", RRCAutolockRankplusOne);
@@ -59,7 +62,7 @@
         $('#RRCAutoLockRank').text(W.loginManager.user.rank + 1);
         $('#RRCAutoLockTotalEdits').text(W.loginManager.user.totalEdits);
         $('#RRCAutoLockTotalPoints').text(W.loginManager.user.totalPoints);
-        console.log("RRC AutoLock - Tab Created");
+        console.log(SCRIPT_NAME, "- Tab Created");
     }
     function bootstrap(tries = 1) {
         if (W && W.map && W.model && W.loginManager.user && $ && WazeWrap.Ready ) {
