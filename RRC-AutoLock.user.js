@@ -38,8 +38,8 @@
         var $section = $("<div>");
         $section.html([
             '<div>',
-            '<h3>Hope to someday add option to choose your own lock level</h3>',
-            '<h4>Currently the script automatically locks RRC at L4 when the RRC is selected</h4>',
+            '<h3>Hope to someday add option to choose your own lock level</h3></br>',
+            '<h4>Currently the script automatically locks RRC at L4 when the RRC is selected</h4></br>',
             '<div>',
             '<h3>User Info</h3></br>',
             '<p><b>Username: <span id="RRCAutoLockUsername"></span></p></b>',
