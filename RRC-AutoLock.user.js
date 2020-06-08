@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2020.06.07.07
+// @version      2020.06.08.01
 // @description  AutoLocks RRCs to set level instead of rank of editor
 // @author       jm6087 (with assistance from Dude495 and TheCre8r)
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -38,7 +38,8 @@
         var $section = $("<div>");
         $section.html([
             '<div>',
-            '<h2>Hope to someday add option to choose your own lock level</h2>',
+            '<h3>Hope to someday add option to choose your own lock level</h3>',
+            '<h4>Currently the script automatically locks RRC at L4 when the RRC is selected</h4>',
             '<div>',
             '<h3>User Info</h3></br>',
             '<p><b>Username: <span id="RRCAutoLockUsername"></span></p></b>',
