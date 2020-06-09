@@ -33,7 +33,7 @@
             let RRCAutoLockChildNumber = 12
             let RRCAutoLockLabel = "label:nth-child(" + RRCAutoLockChildNumber+ ")"
             if (SelModel.attributes.lockRank == null){
-                RRCAutolockRankplusOne = ("Auto " + (SelModel.attributes.rank + 1));
+                RRCAutolockRankplusOne = ("Auto" + (SelModel.attributes.rank + 1));
             }else{
                 RRCAutolockRankplusOne = SelModel.attributes.lockRank + 1;
             };
