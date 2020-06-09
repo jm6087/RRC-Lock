@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2020.06.08.08
+// @version      2020.06.08.09
 // @description  AutoLocks RRCs to set level instead of rank of editor
 // @author       jm6087 (with assistance from Dude495, TheCre8r, and SkiDooGuy)
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -22,7 +22,7 @@
     This is my first script, hope it works and currently is very basic due to limited knoweledge.  Thanks for Dude495, TheCre8r, and SkiDooGuy for their assistance`
     var VERSION = GM_info.script.version;
     var SCRIPT_NAME = GM_info.script.name;
-    const USER_RANK = W.loginManager.user.rank + 1
+    const USER = {name: null, rank:null};
 
     function setRRCAutoLock() {
         let RRCAutolockRankplusOne;
@@ -39,7 +39,7 @@
             };
             let RRCAutoLock4 = "#edit-panel > div > div > div > div.tab-content > form > div > div > div > div > div.form-control.lock-level-selector.waze-radio-container >" + RRCAutoLockLabel
             if (SelMan.hasSelectedFeatures() && SelModel.type === 'railroadCrossing' && SelModel.attributes.lockRank != 3){
-                if (USER_RANK <= (SelModel.attributes.rank + 1)){
+                if (USER.rank <= (SelModel.attributes.rank + 1)){
                     document.querySelector(RRCAutoLock4).click();
                     WazeWrap.Alerts.info(SCRIPT_NAME, ' RRC Lock level changed from lock level ' + RRCAutolockRankplusOne);
                     console.log(SCRIPT_NAME, "Version #", VERSION, "- Lock level changed from", RRCAutolockRankplusOne);
@@ -95,8 +95,10 @@
     //    }
     function RRCAutoLockInitializeSettings()
     {
-        $('#RRCAutoLockUsername').text(W.loginManager.user.userName);
-        $('#RRCAutoLockRank').text(W.loginManager.user.rank + 1);
+        USER.rank = W.loginManager.user.rank + 1
+        USER.name = W.loginManager.user.userName
+        $('#RRCAutoLockUsername').text(USER.name);
+        $('#RRCAutoLockRank').text(USER.rank);
         $('#RRCAutoLockTotalEdits').text(W.loginManager.user.totalEdits);
         $('#RRCAutoLockTotalPoints').text(W.loginManager.user.totalPoints);
         console.log(SCRIPT_NAME, "- Tab Created");
