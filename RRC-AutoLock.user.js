@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2020.06.08.09
+// @version      2020.06.09.00
 // @description  AutoLocks RRCs to set level instead of rank of editor
 // @author       jm6087 (with assistance from Dude495, TheCre8r, and SkiDooGuy)
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -38,16 +38,21 @@
                 RRCAutolockRankplusOne = SelModel.attributes.lockRank + 1;
             };
             let RRCAutoLock4 = "#edit-panel > div > div > div > div.tab-content > form > div > div > div > div > div.form-control.lock-level-selector.waze-radio-container >" + RRCAutoLockLabel
-            if (SelMan.hasSelectedFeatures() && SelModel.type === 'railroadCrossing' && SelModel.attributes.lockRank != 3){
-                if (USER.rank <= (SelModel.attributes.rank + 1)){
+            if (SelMan.hasSelectedFeatures() && SelModel.type === 'railroadCrossing'){
+                if (USER.rank >= (SelModel.attributes.rank + 1) && SelModel.attributes.lockRank != 3){
                     document.querySelector(RRCAutoLock4).click();
-                    WazeWrap.Alerts.info(SCRIPT_NAME, ' RRC Lock level changed from lock level ' + RRCAutolockRankplusOne);
+                    WazeWrap.Alerts.success(SCRIPT_NAME, ' RRC Lock level changed from lock level ' + RRCAutolockRankplusOne);
                     console.log(SCRIPT_NAME, "Version #", VERSION, "- Lock level changed from", RRCAutolockRankplusOne);
                 }else{
-                    if (SelMan.hasSelectedFeatures() && SelModel.type === 'railroadCrossing' && SelModel.attributes.lockRank == 3){
-                        WazeWrap.Alerts.info(SCRIPT_NAME, ` RRC lock not changed, already at lock level ${RRCAutolockRankplusOne}`);
-                        console.log (SCRIPT_NAME, "Version #", VERSION, "- RRC lock not changed, already at lock level", RRCAutolockRankplusOne);
-                    }
+                    if (USER.rank >= (SelModel.attributes.rank + 1) && SelModel.attributes.lockRank == 3){
+                            WazeWrap.Alerts.info(SCRIPT_NAME, ` RRC lock not changed, already at lock level ${RRCAutolockRankplusOne}`);
+                            console.log (SCRIPT_NAME, "Version #", VERSION, "- RRC lock not changed, already at lock level", RRCAutolockRankplusOne);
+                    }else{
+                        if (USER.rank < (SelModel.attributes.rank + 1)){
+                            WazeWrap.Alerts.warning(SCRIPT_NAME, ` RRC is locked above your rank, you may need to request an unlock`);
+                            console.log (SCRIPT_NAME, "Version #", VERSION, "- RRC is locked above your rank, you may need to request an unlock");
+                        }
+}
                 }
             }
         }
