@@ -39,7 +39,7 @@
             };
             let RRCAutoLock4 = "#edit-panel > div > div > div > div.tab-content > form > div > div > div > div > div.form-control.lock-level-selector.waze-radio-container >" + RRCAutoLockLabel
             if (SelMan.hasSelectedFeatures() && SelModel.type === 'railroadCrossing' && SelModel.attributes.lockRank != 3){
-                if (USER_RANK <= RRCAutolockRankplusOne){
+                if (USER_RANK <= (SelModel.attributes.rank + 1)){
                     document.querySelector(RRCAutoLock4).click();
                     WazeWrap.Alerts.info(SCRIPT_NAME, ' RRC Lock level changed from lock level ' + RRCAutolockRankplusOne);
                     console.log(SCRIPT_NAME, "Version #", VERSION, "- Lock level changed from", RRCAutolockRankplusOne);
