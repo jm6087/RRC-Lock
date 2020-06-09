@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2020.06.09.01
+// @version      2020.06.09.02
 // @description  AutoLocks RRCs to set level instead of rank of editor
 // @author       jm6087 (with assistance from Dude495, TheCre8r, and SkiDooGuy)
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -12,12 +12,11 @@
 /* global W */
 /* global WazeWrap */
 /* global $ */
+/* global wazedevtoastr */
 
 (function() {
     'use strict';
     var UPDATE_NOTES = `This should autolock RRCs to L4 upon selection of the RRC <br><br>
-    Added tab as proof of concept for myself<br>
-    Added WazeWrap pop up when RRC selected<br>
     Script currently conflicts with WME Tiles Update.  Not allowing unverified RRCs to autolock initially
     This is my first script, hope it works and currently is very basic due to limited knoweledge.  Thanks for Dude495, TheCre8r, and SkiDooGuy for their assistance`
     var VERSION = GM_info.script.version;
@@ -27,6 +26,7 @@
     function setRRCAutoLock() {
         let RRCAutolockRankplusOne;
         let SelMan = W.selectionManager;
+        wazedevtoastr.options.timeOut = '2500';
         if (SelMan.getSelectedFeatures().length > 0){
             let SelModel = SelMan.getSelectedFeatures()[0].model;
             // Create an option variable using the following 2 let statements
@@ -49,6 +49,7 @@
                             console.log (SCRIPT_NAME, "Version #", VERSION, "- RRC lock not changed, already at lock level", RRCAutolockRankplusOne);
                     }else{
                         if (USER.rank < (SelModel.attributes.rank + 1)){
+                            wazedevtoastr.options.timeOut = '5000';
                             WazeWrap.Alerts.error(SCRIPT_NAME, ` RRC is locked above your rank, you will need assistance from at least a Rank ${RRCAutolockRankplusOne} editor`);
                             console.log (SCRIPT_NAME, "Version #", VERSION, "- RRC is locked above editor rank");
                         }
