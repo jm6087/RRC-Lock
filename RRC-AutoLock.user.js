@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2020.06.08.05
+// @version      2020.06.08.06
 // @description  AutoLocks RRCs to set level instead of rank of editor
 // @author       jm6087 (with assistance from Dude495 and TheCre8r)
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -9,7 +9,9 @@
 // @grant        none
 // ==/UserScript==
 
-
+/* global W */
+/* global WazeWrap */
+/* global $ */
 
 (function() {
     'use strict';
@@ -27,14 +29,14 @@
         let RRCAutoLockChildNumber = 12
         let RRCAutoLockLabel = "label:nth-child(" + RRCAutoLockChildNumber+ ")"
         if (SelModel.attributes.lockRank == null){
-            var RRCAutolockRankplusOne = "AutoLock";
+            var RRCAutolockRankplusOne = ("AutoLock " + (SelModel.attributes.rank + 1));
         }else{
             var RRCAutolockRankplusOne = SelModel.attributes.lockRank + 1;
         };
         let RRCAutoLock4 = "#edit-panel > div > div > div > div.tab-content > form > div > div > div > div > div.form-control.lock-level-selector.waze-radio-container >" + RRCAutoLockLabel
         if (SelMan.hasSelectedFeatures() && SelModel.type === 'railroadCrossing' && SelModel.attributes.lockRank != 3){
             document.querySelector(RRCAutoLock4).click();
-            WazeWrap.Alerts.info(SCRIPT_NAME, ` RRC Lock level changed from lock level ${RRCAutolockRankplusOne}`);
+            WazeWrap.Alerts.info(SCRIPT_NAME, ' RRC Lock level changed from lock level ' + RRCAutolockRankplusOne);
             console.log(SCRIPT_NAME, "Version #", VERSION, "- Lock level changed from", RRCAutolockRankplusOne);
         }else{
             WazeWrap.Alerts.info(SCRIPT_NAME, ` RRC lock not changed, already at lock level ${RRCAutolockRankplusOne}`);
