@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2020.06.09.00
+// @version      2020.06.09.01
 // @description  AutoLocks RRCs to set level instead of rank of editor
 // @author       jm6087 (with assistance from Dude495, TheCre8r, and SkiDooGuy)
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -49,8 +49,8 @@
                             console.log (SCRIPT_NAME, "Version #", VERSION, "- RRC lock not changed, already at lock level", RRCAutolockRankplusOne);
                     }else{
                         if (USER.rank < (SelModel.attributes.rank + 1)){
-                            WazeWrap.Alerts.warning(SCRIPT_NAME, ` RRC is locked above your rank, you may need to request an unlock`);
-                            console.log (SCRIPT_NAME, "Version #", VERSION, "- RRC is locked above your rank, you may need to request an unlock");
+                            WazeWrap.Alerts.error(SCRIPT_NAME, ` RRC is locked above your rank, you will need assistance from at least a Rank ${RRCAutolockRankplusOne} editor`);
+                            console.log (SCRIPT_NAME, "Version #", VERSION, "- RRC is locked above editor rank");
                         }
 }
                 }
@@ -63,7 +63,8 @@
         $section.html([
             '<div>',
             '<h4 style="margin-bottom:0px;"><b>'+ SCRIPT_NAME +'</b></h4>',
-            VERSION +'</br></br>',
+            VERSION +'</br>',
+            '<b>RRC AutoLock Enabled: <input type="checkbox" id="RRCAutoLockCheckBox"></b></br></br>',
             '<h3>Hope to someday add option to choose your own lock level</h3></br>',
             '<h4>Currently the script automatically locks RRC at L4 when the RRC is selected</h4></br>',
             '<div>',
@@ -84,10 +85,12 @@
             '</div>',
             '</div>'
         ].join(' '));
+       // onclick=myFunction();
 
         new WazeWrap.Interface.Tab('RRCAL', $section.html(), RRCAutoLockInitializeSettings);
     }
-    //    function myFunction() {
+        function myFunction() {
+            console.log("hello");
     //       var x = document.createElement("SELECT");
     //        x.setAttribute("id", "mySelect");
     //        document.body.appendChild(x);
@@ -97,7 +100,7 @@
     //        var t = document.createTextNode("Volvo");
     //        z.appendChild(t);
     //        document.getElementById("mySelect").appendChild(z);
-    //    }
+       }
     function RRCAutoLockInitializeSettings()
     {
         USER.rank = W.loginManager.user.rank + 1
