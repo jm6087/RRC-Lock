@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2020.06.09.02
+// @version      2020.06.10.00
 // @description  AutoLocks RRCs to set level instead of rank of editor
 // @author       jm6087 (with assistance from Dude495, TheCre8r, and SkiDooGuy)
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -17,6 +17,7 @@
 (function() {
     'use strict';
     var UPDATE_NOTES = `This should autolock RRCs to L4 upon selection of the RRC <br><br>
+    Fixed items that juliansean pointed out <br>
     Script currently conflicts with WME Tiles Update.  Not allowing unverified RRCs to autolock initially
     This is my first script, hope it works and currently is very basic due to limited knoweledge.  Thanks for Dude495, TheCre8r, and SkiDooGuy for their assistance`
     var VERSION = GM_info.script.version;
@@ -26,6 +27,7 @@
     function setRRCAutoLock() {
         let RRCAutolockRankplusOne;
         let SelMan = W.selectionManager;
+        let RRCAutoLockRankOverLock;
         wazedevtoastr.options.timeOut = '2500';
         if (SelMan.getSelectedFeatures().length > 0){
             let SelModel = SelMan.getSelectedFeatures()[0].model;
@@ -34,8 +36,10 @@
             let RRCAutoLockLabel = "label:nth-child(" + RRCAutoLockChildNumber+ ")"
             if (SelModel.attributes.lockRank == null){
                 RRCAutolockRankplusOne = ("Auto (" + (SelModel.attributes.rank + 1)+")");
+                RRCAutoLockRankOverLock = SelModel.attributes.rank + 1;
             }else{
                 RRCAutolockRankplusOne = SelModel.attributes.lockRank + 1;
+                RRCAutoLockRankOverLock = SelModel.attributes.rank + 1;
             };
             let RRCAutoLock4 = "#edit-panel > div > div > div > div.tab-content > form > div > div > div > div > div.form-control.lock-level-selector.waze-radio-container >" + RRCAutoLockLabel
             if (SelMan.hasSelectedFeatures() && SelModel.type === 'railroadCrossing'){
@@ -45,23 +49,29 @@
                     console.log(SCRIPT_NAME, "Version #", VERSION, "- Lock level changed from", RRCAutolockRankplusOne);
                 }else{
                     if (USER.rank >= (SelModel.attributes.rank + 1) && SelModel.attributes.lockRank == 3){
-                            WazeWrap.Alerts.info(SCRIPT_NAME, ` RRC lock not changed, already at lock level ${RRCAutolockRankplusOne}`);
-                            console.log (SCRIPT_NAME, "Version #", VERSION, "- RRC lock not changed, already at lock level", RRCAutolockRankplusOne);
+                        WazeWrap.Alerts.info(SCRIPT_NAME, ` RRC lock not changed, already at lock level ${RRCAutolockRankplusOne}`);
+                        console.log (SCRIPT_NAME, "Version #", VERSION, "- RRC lock not changed, already at lock level", RRCAutolockRankplusOne);
                     }else{
                         if (USER.rank < (SelModel.attributes.rank + 1)){
                             wazedevtoastr.options.timeOut = '5000';
-                            WazeWrap.Alerts.error(SCRIPT_NAME, ` RRC is locked above your rank, you will need assistance from at least a Rank ${RRCAutolockRankplusOne} editor`);
+                            if (RRCAutoLockRankOverLock > 5){
+                                WazeWrap.Alerts.error(SCRIPT_NAME, ` RRC is locked above your rank, you will need assistance from an Rank ${RRCAutoLockRankOverLock} editor`);
+                            }else{
+                            WazeWrap.Alerts.error(SCRIPT_NAME, ` RRC is locked above your rank, you will need assistance from at least a Rank ${RRCAutoLockRankOverLock} editor`);
                             console.log (SCRIPT_NAME, "Version #", VERSION, "- RRC is locked above editor rank");
                         }
-}
+                    }
                 }
             }
         }
     }
+    }
+
+
     function RRCAutoLockTab()
     {
-        var $section = $("<div>");
-        $section.html([
+        var $RRCsection = $("<div>");
+        $RRCsection.html([
             '<div>',
             '<h4 style="margin-bottom:0px;"><b>'+ SCRIPT_NAME +'</b></h4>',
             VERSION +'</br>',
@@ -86,22 +96,23 @@
             '</div>',
             '</div>'
         ].join(' '));
-       // onclick=myFunction();
+        // onclick=myFunction();
 
-        new WazeWrap.Interface.Tab('RRCAL', $section.html(), RRCAutoLockInitializeSettings);
+        new WazeWrap.Interface.Tab('RRCAL', $RRCsection.html(), RRCAutoLockInitializeSettings);
     }
-        function myFunction() {
-            console.log("hello");
-    //       var x = document.createElement("SELECT");
-    //        x.setAttribute("id", "mySelect");
-    //        document.body.appendChild(x);
-    //
-    //        var z = document.createElement("option");
-    //        z.setAttribute("value", "volvocar");
-    //        var t = document.createTextNode("Volvo");
-    //        z.appendChild(t);
-    //        document.getElementById("mySelect").appendChild(z);
-       }
+    function myFunction() {
+
+        console.log("hello");
+        //       var x = document.createElement("SELECT");
+        //        x.setAttribute("id", "mySelect");
+        //        document.body.appendChild(x);
+        //
+        //        var z = document.createElement("option");
+        //        z.setAttribute("value", "volvocar");
+        //        var t = document.createTextNode("Volvo");
+        //        z.appendChild(t);
+        //        document.getElementById("mySelect").appendChild(z);
+    }
     function RRCAutoLockInitializeSettings()
     {
         USER.rank = W.loginManager.user.rank + 1
@@ -111,6 +122,10 @@
         $('#RRCAutoLockTotalEdits').text(W.loginManager.user.totalEdits);
         $('#RRCAutoLockTotalPoints').text(W.loginManager.user.totalPoints);
         console.log(SCRIPT_NAME, "- Tab Created");
+        $('#RRCAutoLockCheckBox').change(function() {
+            myFunction()
+            console.log("Settings changed")
+        });
     }
     function bootstrap(tries = 1) {
         if (W && W.map && W.model && W.loginManager.user && $ && WazeWrap.Ready ) {
@@ -119,7 +134,7 @@
             WazeWrap.Interface.ShowScriptUpdate(SCRIPT_NAME, VERSION, UPDATE_NOTES);
             console.log(SCRIPT_NAME, "loaded");
         } else if (tries < 1000)
-            setTimeout(function () {bootstrap(tries++);}, 200);
+            setTimeout(function () {bootstrap(++tries);}, 200);
     }
     bootstrap();
 })();
