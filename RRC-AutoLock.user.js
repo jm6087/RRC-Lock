@@ -76,7 +76,7 @@
             '<h4 style="margin-bottom:0px;"><b>'+ SCRIPT_NAME +'</b></h4>',
             VERSION +'</br>',
             '<b><s>RRC AutoLock Enabled:</s> <input type="checkbox" id="RRCAutoLockCheckBox"></b></br></br>',
-            '<h3>Hope to someday add option to choose your own lock level</h3></br>',
+           // '<h3>Hope to someday add option to choose your own lock level</h3></br>',
             '<h4>Currently the script automatically locks RRC at L4 when the RRC is selected</h4></br>',
             '<div>',
             '<h3>User Info</h3></br>',
