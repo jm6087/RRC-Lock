@@ -55,7 +55,7 @@
                         if (USER.rank < (SelModel.attributes.rank + 1)){
                             wazedevtoastr.options.timeOut = '5000';
                             if (RRCAutoLockRankOverLock > 5){
-                                WazeWrap.Alerts.error(SCRIPT_NAME, ` RRC is locked above your rank, you will need assistance from an Rank ${RRCAutoLockRankOverLock} editor`);
+                                WazeWrap.Alerts.error(SCRIPT_NAME, ` RRC is locked above your rank, you will need assistance from a Rank ${RRCAutoLockRankOverLock} editor`);
                             }else{
                             WazeWrap.Alerts.error(SCRIPT_NAME, ` RRC is locked above your rank, you will need assistance from at least a Rank ${RRCAutoLockRankOverLock} editor`);
                             console.log (SCRIPT_NAME, "Version #", VERSION, "- RRC is locked above editor rank");
