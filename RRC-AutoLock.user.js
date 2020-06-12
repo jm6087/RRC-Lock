@@ -17,8 +17,8 @@
 (function() {
     'use strict';
     var UPDATE_NOTES = `This should autolock RRCs to L4 upon selection of the RRC <br><br>
-     I think I got the enable button to default to checked. Still working on persisting through refresh when disabled<br>
-    Script currently conflicts with WME Tiles Update.  Not allowing unverified RRCs to autolock initially
+     I think I got the enable button to default to checked. Still working on persisting through refresh when disabled<br><br>
+    Script currently conflicts with WME Tiles Update.  Not allowing unverified RRCs to autolock initially<br><br>
     This is my first script, hope it works and currently is very basic due to limited knoweledge.  Thanks for Dude495, TheCre8r, and SkiDooGuy for their assistance`
     
     // PREVIOUS NOTES
