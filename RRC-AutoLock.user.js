@@ -98,7 +98,7 @@
         ].join(' '));
         // onclick=myFunction();
 
-        new WazeWrap.Interface.Tab('RRCAL', $RRCsection.html(), RRCAutoLockInitializeSettings);
+        new WazeWrap.Interface.Tab('RRC-AL', $RRCsection.html(), RRCAutoLockInitializeSettings);
     }
     function myFunction() {
 
