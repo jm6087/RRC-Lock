@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2020.06.11.00
+// @version      2020.06.12.00
 // @description  AutoLocks RRCs to set level instead of rank of editor
 // @author       jm6087 (with assistance from Dude495, TheCre8r, and SkiDooGuy)
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -17,12 +17,20 @@
 (function() {
     'use strict';
     var UPDATE_NOTES = `This should autolock RRCs to L4 upon selection of the RRC <br><br>
-    Fixed items that juliansean pointed out <br>
+     I think I got the enable button to default to checked. Still working on persisting through refresh when disabled<br>
     Script currently conflicts with WME Tiles Update.  Not allowing unverified RRCs to autolock initially
     This is my first script, hope it works and currently is very basic due to limited knoweledge.  Thanks for Dude495, TheCre8r, and SkiDooGuy for their assistance`
+    
+    // PREVIOUS NOTES
+    // Fixed items that juliansean pointed out
+    
     var VERSION = GM_info.script.version;
     var SCRIPT_NAME = GM_info.script.name;
     const USER = {name: null, rank:null};
+    var RRCAutoLockEnabled;
+    var RRCAutoLockSettings;
+    const STORE_NAME = "RRCAutoLockSettings";
+    const RRCAutoLockSettingName = "RRCAutoLockEnabled";
 
     function setRRCAutoLock() {
         let RRCAutolockRankplusOne;
@@ -32,8 +40,10 @@
         if (SelMan.getSelectedFeatures().length > 0){
             let SelModel = SelMan.getSelectedFeatures()[0].model;
             // Create an option variable using the following 2 let statements
+
             let RRCAutoLockChildNumber = 12
             let RRCAutoLockLabel = "label:nth-child(" + RRCAutoLockChildNumber+ ")"
+
             if (SelModel.attributes.lockRank == null){
                 RRCAutolockRankplusOne = ("Auto (" + (SelModel.attributes.rank + 1)+")");
                 RRCAutoLockRankOverLock = SelModel.attributes.rank + 1;
@@ -57,14 +67,14 @@
                             if (RRCAutoLockRankOverLock > 5){
                                 WazeWrap.Alerts.error(SCRIPT_NAME, ` RRC is locked above your rank, you will need assistance from a Rank ${RRCAutoLockRankOverLock} editor`);
                             }else{
-                            WazeWrap.Alerts.error(SCRIPT_NAME, ` RRC is locked above your rank, you will need assistance from at least a Rank ${RRCAutoLockRankOverLock} editor`);
-                            console.log (SCRIPT_NAME, "Version #", VERSION, "- RRC is locked above editor rank");
+                                WazeWrap.Alerts.error(SCRIPT_NAME, ` RRC is locked above your rank, you will need assistance from at least a Rank ${RRCAutoLockRankOverLock} editor`);
+                                console.log (SCRIPT_NAME, "Version #", VERSION, "- RRC is locked above editor rank");
+                            }
                         }
                     }
                 }
             }
         }
-    }
     }
 
 
@@ -76,7 +86,7 @@
             '<h4 style="margin-bottom:0px;"><b>'+ SCRIPT_NAME +'</b></h4>',
             VERSION +'</br>',
             '<b><s>RRC AutoLock Enabled:</s> <input type="checkbox" id="RRCAutoLockCheckBox"></b></br></br>',
-           // '<h3>Hope to someday add option to choose your own lock level</h3></br>',
+            // '<h3>Hope to someday add option to choose your own lock level</h3></br>',
             '<h4>Currently the script automatically locks RRC at L4 when the RRC is selected</h4></br>',
             '<div>',
             '<h3>User Info</h3></br>',
@@ -96,25 +106,52 @@
             '</div>',
             '</div>'
         ].join(' '));
-        // onclick=myFunction();
 
         new WazeWrap.Interface.Tab('RRC-AL', $RRCsection.html(), RRCAutoLockInitializeSettings);
+        //        if (RRCAutoLockSettings[RRCAutoLockEnabled] == true){
+        //            console.log(SCRIPT_NAME, "local storage is true");
+        check();
+        //       }else{
+        //            uncheck();
+        //        }
+        function check() {
+            console.log(SCRIPT_NAME, "enabled checked");
+            document.getElementById("RRCAutoLockCheckBox").checked = true;
+            RRCAutoLockEnabled = true;
+        }
     }
-    function myFunction() {
+    function uncheck() {
+        console.log(SCRIPT_NAME, "enabled unchecked");
+        document.getElementById("RRCAutoLockCheckBox").checked = false;
+    }
 
-        console.log("hello");
-        //       var x = document.createElement("SELECT");
-        //        x.setAttribute("id", "mySelect");
-        //        document.body.appendChild(x);
-        //
-        //        var z = document.createElement("option");
-        //        z.setAttribute("value", "volvocar");
-        //        var t = document.createTextNode("Volvo");
-        //        z.appendChild(t);
-        //        document.getElementById("mySelect").appendChild(z);
+    /*-- START SETTINGS --*/
+    function loadSettings() {
+        let loadedSettings = $.parseJSON(localStorage.getItem(STORE_NAME));
+        let defaultSettings = {
+            RRCAutoLockEnabled: true
+        };
+
+        RRCAutoLockSettings = loadedSettings ? loadedSettings : defaultSettings;
+        for (let prop in defaultSettings) {
+            if (!RRCAutoLockSettings.hasOwnProperty(prop)) {
+                RRCAutoLockSettings[prop] = defaultSettings[prop];
+            }
+        }
+        console.log("Settings Loaded");
     }
+    function saveSettings() {
+        if (localStorage) {
+            RRCAutoLockSettings.lastVersion = VERSION;
+            localStorage.setItem(STORE_NAME, JSON.stringify(RRCAutoLockSettings));
+            console.log('Settings Saved '+ JSON.stringify(RRCAutoLockSettings));
+        }
+    }
+
+
     function RRCAutoLockInitializeSettings()
     {
+        loadSettings()
         USER.rank = W.loginManager.user.rank + 1
         USER.name = W.loginManager.user.userName
         $('#RRCAutoLockUsername').text(USER.name);
@@ -123,8 +160,9 @@
         $('#RRCAutoLockTotalPoints').text(W.loginManager.user.totalPoints);
         console.log(SCRIPT_NAME, "- Tab Created");
         $('#RRCAutoLockCheckBox').change(function() {
-            myFunction()
+            RRCAutoLockSettings[RRCAutoLockSettingName] = this.checked
             console.log("Settings changed")
+            saveSettings()
         });
     }
     function bootstrap(tries = 1) {
