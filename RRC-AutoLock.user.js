@@ -154,7 +154,6 @@
         $('#RRCAutoLockTotalEdits').text(W.loginManager.user.totalEdits);
         $('#RRCAutoLockTotalPoints').text(W.loginManager.user.totalPoints);
         $('#RRCAutoLockCheckBox')[0].checked = RRCAutoLockSettings.RRCAutoLockEnabled;
-        $('#RRCAutoLockWWcheckbox')[0].checked = RRCAutoLockSettings.RRCAutoLockWWenabled;
         console.log(SCRIPT_NAME, "- Tab Created");
         $('#RRCAutoLockCheckBox')[0].onchange = function() {
             console.log(SCRIPT_NAME, "Settings changed")
