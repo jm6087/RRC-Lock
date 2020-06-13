@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2020.06.13.03
+// @version      2020.06.13.04
 // @description  AutoLocks RRCs to set level instead of rank of editor
 // @author       jm6087 (with assistance from Dude495, TheCre8r, and SkiDooGuy)
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -17,12 +17,11 @@
 (function() {
     'use strict';
     var UPDATE_NOTES = `This should autolock RRCs to L4 upon selection of the RRC <br><br>
-    The enable script now works and persists thanks to dude495<br><br>
+    The enable script and WazeWrap Popup options now work and persists thanks to dude495<br><br>
     Script currently conflicts with WME Tiles Update.  Not allowing unverified RRCs to autolock initially<br><br>
     This is my first script, hope it works and currently is very basic due to limited knoweledge.  Thanks for Dude495, TheCre8r, and SkiDooGuy for their assistance`
 
     // PREVIOUS NOTES
-    //
     // I think I got the enable button to default to checked. Still working on persisting through refresh when disabled
     // Fixed items that juliansean pointed out
     
@@ -32,8 +31,8 @@
     const USER = {name: null, rank:null};
     var RRCAutoLockEnabled;
     var RRCAutoLockSettings;
+    var RRCAutLockWazeWrapEnabled;
     const STORE_NAME = "RRCAutoLockSettings";
-    const RRCAutoLockSettingName = "RRCAutoLockEnabled";
 
     function setRRCAutoLock() {
         let RRCAutolockRankplusOne;
@@ -62,11 +61,18 @@
                 if (SelMan.hasSelectedFeatures() && SelModel.type === 'railroadCrossing'){
                     if (USER.rank >= (SelModel.attributes.rank + 1) && SelModel.attributes.lockRank != 3){
                         document.querySelector(RRCAutoLock4).click();
-                        WazeWrap.Alerts.success(SCRIPT_NAME, ' RRC Lock level changed from lock level ' + RRCAutolockRankplusOne);
+                        //checks to see if Enabled is checked (not working completely)
+                        if (RRCAutoLockSettings.RRCAutoLockWazeWrapEnabled == true){
+                            console.log(SCRIPT_NAME, "WazeWrap  is enabled");
+                            WazeWrap.Alerts.success(SCRIPT_NAME, ' RRC Lock level changed from lock level ' + RRCAutolockRankplusOne);
+                        }
                         console.log(SCRIPT_NAME, "Version #", VERSION, "- Lock level changed from", RRCAutolockRankplusOne);
                     }else{
                         if (USER.rank >= (SelModel.attributes.rank + 1) && SelModel.attributes.lockRank == 3){
-                            WazeWrap.Alerts.info(SCRIPT_NAME, ` RRC lock not changed, already at lock level ${RRCAutolockRankplusOne}`);
+                            if (RRCAutoLockSettings.RRCAutoLockWazeWrapEnabled == true){
+                                console.log(SCRIPT_NAME, "WazeWrap  is enabled");
+                                WazeWrap.Alerts.info(SCRIPT_NAME, ` RRC lock not changed, already at lock level ${RRCAutolockRankplusOne}`);
+                            }
                             console.log (SCRIPT_NAME, "Version #", VERSION, "- RRC lock not changed, already at lock level", RRCAutolockRankplusOne);
                         }else{
                             if (USER.rank < (SelModel.attributes.rank + 1)){
@@ -94,7 +100,8 @@
             '<div>',
             '<h4 style="margin-bottom:0px;"><b>'+ SCRIPT_NAME +'</b></h4>',
             VERSION +'</br>',
-            '<b>RRC AutoLock Enabled: <input type="checkbox" id="RRCAutoLockCheckBox"></b></br></br>',
+            '<b>RRC AutoLock Enabled: <input type="checkbox" id="RRCAutoLockCheckbox"></b></br></br>',
+            '<b>WazeWrap Popups Enabled: <input type="checkbox" id="RRCAutoLockWazeWrapCheckbox"></b></br></br>',
             // '<h3>Hope to someday add option to choose your own lock level</h3></br>',
             '<h4>Currently the script automatically locks RRC at L4 when the RRC is selected</h4></br>',
             '<div>',
@@ -124,6 +131,7 @@
     function loadSettings() {
         let loadedSettings = $.parseJSON(localStorage.getItem(STORE_NAME));
         let defaultSettings = {
+            RRCAutoLockWazeWrapEnabled: true,
             RRCAutoLockEnabled: true
         };
 
@@ -138,7 +146,8 @@
     function saveSettings() {
         if (localStorage) {
             RRCAutoLockSettings.lastVersion = VERSION;
-            RRCAutoLockSettings.RRCAutoLockEnabled = $('#RRCAutoLockCheckBox')[0].checked
+            RRCAutoLockSettings.RRCAutoLockEnabled = $('#RRCAutoLockCheckbox')[0].checked;
+            RRCAutoLockSettings.RRCAutoLockWazeWrapEnabled = $('#RRCAutoLockWazeWrapCheckbox')[0].checked;
             localStorage.setItem(STORE_NAME, JSON.stringify(RRCAutoLockSettings));
             console.log(SCRIPT_NAME, 'Settings Saved '+ JSON.stringify(RRCAutoLockSettings));
         }
@@ -154,10 +163,15 @@
         $('#RRCAutoLockRank').text(USER.rank);
         $('#RRCAutoLockTotalEdits').text(W.loginManager.user.totalEdits);
         $('#RRCAutoLockTotalPoints').text(W.loginManager.user.totalPoints);
-        $('#RRCAutoLockCheckBox')[0].checked = RRCAutoLockSettings.RRCAutoLockEnabled;
+        $('#RRCAutoLockCheckbox')[0].checked = RRCAutoLockSettings.RRCAutoLockEnabled;
+        $('#RRCAutoLockWazeWrapCheckbox')[0].checked = RRCAutoLockSettings.RRCAutoLockWazeWrapEnabled;
         console.log(SCRIPT_NAME, "- Tab Created");
-        $('#RRCAutoLockCheckBox')[0].onchange = function() {
-            console.log(SCRIPT_NAME, "Settings changed")
+        $('#RRCAutoLockCheckbox')[0].onchange = function() {
+            console.log(SCRIPT_NAME, "RRCAutoLockCheckbox Settings changed")
+            saveSettings()
+        };
+        $('#RRCAutoLockWazeWrapCheckbox')[0].onchange = function() {
+            console.log(SCRIPT_NAME, "RRCAutoLockWazeWrapCheckbox Settings changed")
             saveSettings()
         };
     }
