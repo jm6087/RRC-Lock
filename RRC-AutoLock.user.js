@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2020.06.13.06
+// @version      2020.06.13.07
 // @description  AutoLocks RRCs to set level instead of rank of editor
 // @author       jm6087 (with assistance from Dude495, TheCre8r, and SkiDooGuy)
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -30,10 +30,10 @@
     var VERSION = GM_info.script.version;
     var SCRIPT_NAME = GM_info.script.name;
     const USER = {name: null, rank:null};
-    const LAST_EDITED_BY = {id: null, username: null};
     var RRCAutoLockEnabled;
     var RRCAutoLockSettings;
-    var RRCAutLockWazeWrapEnabled;
+    var RRCAutoLockWazeWrapSuccessEnabled;
+    var RRCAutoLockWazeWrapInfoEnabled;
     const STORE_NAME = "RRCAutoLockSettings";
 
     function setRRCAutoLock() {
@@ -43,7 +43,6 @@
         wazedevtoastr.options.timeOut = '2500';
         if (SelMan.getSelectedFeatures().length > 0){
             let SelModel = SelMan.getSelectedFeatures()[0].model;
-            // Create an option variable using the following 2 let statements
 
             //checks to see if Enabled is checked (not working completely)
             if (RRCAutoLockSettings.RRCAutoLockEnabled == true){
@@ -64,21 +63,21 @@
                     // Finds ID number of the last editor
                     let lastEditBy = SelModel.attributes.updatedBy
                     if (lastEditBy === null) {
-                        lastEditBy = SelModel.attributes.createdBy
-                    }
+                    lastEditBy = SelModel.attributes.createdBy
+                }
                     // Finds the UserName based off the ID of last editor
                     let LastEditorUserName = W.model.users.objects[lastEditBy].userName
                     if (USER.rank >= (SelModel.attributes.rank + 1) && SelModel.attributes.lockRank != 3){
                         document.querySelector(RRCAutoLock4).click();
                         //checks to see if Enabled is checked
-                        if (RRCAutoLockSettings.RRCAutoLockWazeWrapEnabled == true){
+                        if (RRCAutoLockSettings.RRCAutoLockWazeWrapSuccessEnabled == true){
                             console.log(SCRIPT_NAME, "WazeWrap  is enabled");
                             WazeWrap.Alerts.success(SCRIPT_NAME, ' RRC Lock level changed from lock level ' + RRCAutolockRankplusOne + ': Last edited by ' + LastEditorUserName);
                         }
                         console.log(SCRIPT_NAME, "Version #", VERSION, "- Lock level changed from", RRCAutolockRankplusOne);
                     }else{
                         if (USER.rank >= (SelModel.attributes.rank + 1) && SelModel.attributes.lockRank == 3){
-                            if (RRCAutoLockSettings.RRCAutoLockWazeWrapEnabled == true){
+                            if (RRCAutoLockSettings.RRCAutoLockWazeWrapInfoEnabled == true){
                                 console.log(SCRIPT_NAME, "WazeWrap  is enabled");
                                 WazeWrap.Alerts.info(SCRIPT_NAME, 'RRC lock not changed, already at lock level ' + RRCAutolockRankplusOne + ': Last edited by ' + LastEditorUserName);
                             }
@@ -110,13 +109,13 @@
             '<h4 style="margin-bottom:0px;"><b>'+ SCRIPT_NAME +'</b></h4>',
             VERSION +'</br>',
             '<b>RRC AutoLock Enabled: <input type="checkbox" id="RRCAutoLockCheckbox"></b></br></br>',
-            '<b>WazeWrap Popups Enabled: <input type="checkbox" id="RRCAutoLockWazeWrapCheckbox"></b></br></br>',
-            // '<h3>Hope to someday add option to choose your own lock level</h3></br>',
+            '<b>WazeWrap Success Popups Enabled: <input type="checkbox" id="RRCAutoLockWazeWrapSuccessCheckbox"></b></br>',
+            '<b>WazeWrap Info Popups Enabled: <input type="checkbox" id="RRCAutoLockWazeWrapInfoCheckbox"></b></br></br>',
             '<h4>Currently the script automatically locks RRC at L4 when the RRC is selected</h4></br>',
             '</div>'
         ].join(' '));
 
-        new WazeWrap.Interface.Tab('RRC-AL', $RRCsection.html(), RRCAutoLockInitializeSettings);
+        new WazeWrap.Interface.Tab('RRC-AL-β', $RRCsection.html(), RRCAutoLockInitializeSettings);
 
     }
 
@@ -124,7 +123,8 @@
     function loadSettings() {
         let loadedSettings = $.parseJSON(localStorage.getItem(STORE_NAME));
         let defaultSettings = {
-            RRCAutoLockWazeWrapEnabled: true,
+            RRCAutoLockWazeWrapSuccessEnabled: true,
+            RRCAutoLockWazeWrapInfoEnabled: true,
             RRCAutoLockEnabled: true
         };
 
@@ -140,11 +140,13 @@
         if (localStorage) {
             RRCAutoLockSettings.lastVersion = VERSION;
             RRCAutoLockSettings.RRCAutoLockEnabled = $('#RRCAutoLockCheckbox')[0].checked;
-            RRCAutoLockSettings.RRCAutoLockWazeWrapEnabled = $('#RRCAutoLockWazeWrapCheckbox')[0].checked;
+            RRCAutoLockSettings.RRCAutoLockWazeWrapSuccessEnabled = $('#RRCAutoLockWazeWrapSuccessCheckbox')[0].checked;
+            RRCAutoLockSettings.RRCAutoLockWazeWrapInfoEnabled = $('#RRCAutoLockWazeWrapInfoCheckbox')[0].checked;
             localStorage.setItem(STORE_NAME, JSON.stringify(RRCAutoLockSettings));
             console.log(SCRIPT_NAME, 'Settings Saved '+ JSON.stringify(RRCAutoLockSettings));
         }
     }
+
     function RRCAutoLockInitializeSettings()
     {
         loadSettings()
@@ -155,14 +157,19 @@
         $('#RRCAutoLockTotalEdits').text(W.loginManager.user.totalEdits);
         $('#RRCAutoLockTotalPoints').text(W.loginManager.user.totalPoints);
         $('#RRCAutoLockCheckbox')[0].checked = RRCAutoLockSettings.RRCAutoLockEnabled;
-        $('#RRCAutoLockWazeWrapCheckbox')[0].checked = RRCAutoLockSettings.RRCAutoLockWazeWrapEnabled;
+        $('#RRCAutoLockWazeWrapSuccessCheckbox')[0].checked = RRCAutoLockSettings.RRCAutoLockWazeWrapSuccessEnabled;
+        $('#RRCAutoLockWazeWrapInfoCheckbox')[0].checked = RRCAutoLockSettings.RRCAutoLockWazeWrapInfoEnabled;
         console.log(SCRIPT_NAME, "- Tab Created");
         $('#RRCAutoLockCheckbox')[0].onchange = function() {
             console.log(SCRIPT_NAME, "RRCAutoLockCheckbox Settings changed")
             saveSettings()
         };
-        $('#RRCAutoLockWazeWrapCheckbox')[0].onchange = function() {
-            console.log(SCRIPT_NAME, "RRCAutoLockWazeWrapCheckbox Settings changed")
+        $('#RRCAutoLockWazeWrapSuccessCheckbox')[0].onchange = function() {
+            console.log(SCRIPT_NAME, "RRCAutoLockWazeWrapSuccessCheckbox Settings changed")
+            saveSettings()
+        };
+        $('#RRCAutoLockWazeWrapInfoCheckbox')[0].onchange = function() {
+            console.log(SCRIPT_NAME, "RRCAutoLockWazeWrapInfoCheckbox Settings changed")
             saveSettings()
         };
     }
@@ -177,3 +184,4 @@
     }
     bootstrap();
 })();
+
