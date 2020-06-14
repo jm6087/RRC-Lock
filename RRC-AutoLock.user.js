@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2020.06.14.01
+// @version      2020.06.14.02
 // @description  AutoLocks RRCs to set level instead of rank of editor
 // @author       jm6087 (with assistance from Dude495, TheCre8r, and SkiDooGuy)
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -46,9 +46,10 @@
             let SelModel = SelMan.getSelectedFeatures()[0].model;
 
             //checks to see if Enabled is checked (not working completely)
-            if (RRCAutoLockSettings.RRCAutoLockEnabled == true){
+            if (RRCAutoLockSettings.RRCAutoLockEnabled == false)
+                return console.log(SCRIPT_NAME, "Script  is disabled");
+            
                 console.log(SCRIPT_NAME, "Script  is enabled");
-
                 let RRCAutoLockChildNumber = 12
                 let RRCAutoLockLabel = "label:nth-child(" + RRCAutoLockChildNumber+ ")"
                 if (SelModel.attributes.lockRank == null){
@@ -95,13 +96,11 @@
                                 }else{
                                     WazeWrap.Alerts.error(SCRIPT_NAME, ` RRC is locked above your rank, you will need assistance from at least a Rank ${RRCAutoLockRankOverLock} editor`);
                                     console.log (SCRIPT_NAME, "Version #", VERSION, "- RRC is locked above editor rank");
-                                }
                             }
                         }
                     }
                 }
-            }else{
-                console.log(SCRIPT_NAME, "Script is disabled")}
+            }
         }
     }
 
@@ -120,7 +119,7 @@
             '</div>'
         ].join(' '));
 
-        new WazeWrap.Interface.Tab('RRC-AL-β', $RRCsection.html(), RRCAutoLockInitializeSettings);
+        new WazeWrap.Interface.Tab('RRC-AL', $RRCsection.html(), RRCAutoLockInitializeSettings);
 
     }
 
