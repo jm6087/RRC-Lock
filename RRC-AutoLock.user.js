@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2020.06.13.05
+// @version      2020.06.13.06
 // @description  AutoLocks RRCs to set level instead of rank of editor
 // @author       jm6087 (with assistance from Dude495, TheCre8r, and SkiDooGuy)
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -17,11 +17,12 @@
 (function() {
     'use strict';
     var UPDATE_NOTES = `This should autolock RRCs to L4 upon selection of the RRC <br><br>
-    The enable script now works and persists thanks to dude495<br><br>
+    BUG fix<br><br>
     Script currently conflicts with WME Tiles Update.  Not allowing unverified RRCs to autolock initially<br><br>
     This is my first script, hope it works and currently is very basic due to limited knoweledge.  Thanks for Dude495, TheCre8r, and SkiDooGuy for their assistance`
 
     // PREVIOUS NOTES
+    // The enable script now works and persists thanks to dude495
     // I think I got the enable button to default to checked. Still working on persisting through refresh when disabled
     // Fixed items that juliansean pointed out
     
@@ -62,6 +63,9 @@
                 if (SelMan.hasSelectedFeatures() && SelModel.type === 'railroadCrossing'){
                     // Finds ID number of the last editor
                     let lastEditBy = SelModel.attributes.updatedBy
+                    if (lastEditBy === null) {
+                        lastEditBy = SelModel.attributes.createdBy
+                    }
                     // Finds the UserName based off the ID of last editor
                     let LastEditorUserName = W.model.users.objects[lastEditBy].userName
                     if (USER.rank >= (SelModel.attributes.rank + 1) && SelModel.attributes.lockRank != 3){
