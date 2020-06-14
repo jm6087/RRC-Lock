@@ -113,9 +113,9 @@
             '<div>',
             '<h4 style="margin-bottom:0px;"><b>'+ SCRIPT_NAME +'</b></h4>',
             VERSION +'</br>',
-            '<b>RRC AutoLock Enabled: <input type="checkbox" id="RRCAutoLockCheckbox"></b></br></br>',
-            '<b>WazeWrap Success Popups Enabled: <input type="checkbox" id="RRCAutoLockWazeWrapSuccessCheckbox"></b></br>',
-            '<b>WazeWrap Info Popups Enabled: <input type="checkbox" id="RRCAutoLockWazeWrapInfoCheckbox"></b></br></br>',
+            '<b><input type="checkbox" id="RRCAutoLockCheckbox"> RRC AutoLock Enabled</b></br></br>',
+            '<b><input type="checkbox" id="RRCAutoLockWazeWrapSuccessCheckbox"> WazeWrap Success Popups Enabled</b></br>',
+            '<b><input type="checkbox" id="RRCAutoLockWazeWrapInfoCheckbox"> WazeWrap Info Popups Enabled</b></br></br>',
             '<h4>Currently the script automatically locks RRC at L4 when the RRC is selected</h4></br>',
             '</div>'
         ].join(' '));
