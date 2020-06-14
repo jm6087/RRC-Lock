@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2020.06.13.07
+// @version      2020.06.14.00
 // @description  AutoLocks RRCs to set level instead of rank of editor
 // @author       jm6087 (with assistance from Dude495, TheCre8r, and SkiDooGuy)
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -34,6 +34,7 @@
     var RRCAutoLockSettings;
     var RRCAutoLockWazeWrapSuccessEnabled;
     var RRCAutoLockWazeWrapInfoEnabled;
+    var LastEditorUserName;
     const STORE_NAME = "RRCAutoLockSettings";
 
     function setRRCAutoLock() {
@@ -65,8 +66,12 @@
                     if (lastEditBy === null) {
                     lastEditBy = SelModel.attributes.createdBy
                 }
+                    if (lastEditBy == undefined) {
+                        LastEditorUserName = USER.name;
+                    }else{
                     // Finds the UserName based off the ID of last editor
-                    let LastEditorUserName = W.model.users.objects[lastEditBy].userName
+                       LastEditorUserName = W.model.users.objects[lastEditBy].userName;
+                    }
                     if (USER.rank >= (SelModel.attributes.rank + 1) && SelModel.attributes.lockRank != 3){
                         document.querySelector(RRCAutoLock4).click();
                         //checks to see if Enabled is checked
