@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2020.06.14.04
+// @version      2020.06.14.06
 // @description  AutoLocks RRCs to set level instead of rank of editor
 // @author       jm6087 (with assistance from Dude495, TheCre8r, and SkiDooGuy)
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -46,7 +46,6 @@
     var RRCAutoLockChildNumber;
     var RRCAutoLockLevelOption;
     var RRClock;
-    var EClock
 
     function setRRCAutoLock() {
         let RRCAutolockRankplusOne;
@@ -61,10 +60,10 @@
                 CameraType = 'camera';
                 CameraTypeWW = 'Enforcement Camera';
                 RRCAutoLockChildNumber = $('#ECAutoLockLevelOption')[0].value;
-                if ($('#ECAutoLockLevelOption')[0].value == "10")EClock = "3";
-                if ($('#ECAutoLockLevelOption')[0].value == "12")EClock = "4";
-                if ($('#ECAutoLockLevelOption')[0].value == "14")EClock = "5";
-                if ($('#ECAutoLockLevelOption')[0].value == "16")EClock = "6";
+                if ($('#ECAutoLockLevelOption')[0].value == "10")RRClock = "3";
+                if ($('#ECAutoLockLevelOption')[0].value == "12")RRClock = "4";
+                if ($('#ECAutoLockLevelOption')[0].value == "14")RRClock = "5";
+                if ($('#ECAutoLockLevelOption')[0].value == "16")RRClock = "6";
             }else{
                 if (SelModel.type === 'railroadCrossing'){
                     CameraType = 'railroadCrossing';
@@ -105,7 +104,7 @@
                     // Finds the UserName based off the ID of last editor
                     LastEditorUserName = W.model.users.objects[lastEditBy].userName;
                 }
-                if (USER.rank >= (SelModel.attributes.rank + 1) && SelModel.attributes.lockRank != RRClock){
+                if (USER.rank >= (SelModel.attributes.rank + 1) && SelModel.attributes.lockRank != RRClock - 1){
                     document.querySelector(RRCAutoLock4).click();
                     //checks to see if Enabled is checked
                     if (RRCAutoLockSettings.RRCAutoLockWazeWrapSuccessEnabled == true){
@@ -114,7 +113,7 @@
                     }
                     console.log(SCRIPT_NAME, "Version #", VERSION, " - ", CameraTypeWW ," Lock level changed from", RRCAutolockRankplusOne);
                 }else{
-                    if (USER.rank >= (SelModel.attributes.rank + 1) && SelModel.attributes.lockRank == RRClock){
+                    if (USER.rank >= (SelModel.attributes.rank + 1) && SelModel.attributes.lockRank == RRClock - 1){
                         if (RRCAutoLockSettings.RRCAutoLockWazeWrapInfoEnabled == true){
                             console.log(SCRIPT_NAME, "WazeWrap  is enabled");
                             WazeWrap.Alerts.info(SCRIPT_NAME, CameraTypeWW + ' lock not changed, already at lock level ' + RRCAutolockRankplusOne + ': Last edited by ' + LastEditorUserName);
@@ -145,14 +144,14 @@
             '<h4 style="margin-bottom:0px;"><b>'+ SCRIPT_NAME +'</b></h4>',
             VERSION +'</br>',
             '<b><id="RRCAutoLockLevelValue">RRC lock level <select id="RRCAutoLockLevelOption"></b>',
-            '<option value="10">3</option>',
+//            '<option value="10">3</option>',
             '<option value="12">4</option>',
             '<option value="14">5</option>',
             '<option value="16">6</option>',
             '</select></br>',
             '<b><input type="checkbox" id="RRCAutoLockCheckbox"> RRC Lock Enabled</b></br></br>',
             '<b><id="ECAutoLockLevelValue">Enforcement camera lock level <select id="ECAutoLockLevelOption"></b>',
-            '<option value="10">3</option>',
+//            '<option value="10">3</option>',
             '<option value="12">4</option>',
             '<option value="14">5</option>',
             '<option value="16">6</option>',
