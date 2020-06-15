@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2020.06.15.01
+// @version      2020.06.15.02
 // @description  AutoLocks RRCs to set level instead of rank of editor
 // @author       jm6087 (with assistance from Dude495, TheCre8r, and SkiDooGuy)
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -81,9 +81,9 @@
                 }
             }
             //checks to see if Enabled is checked
-            if (RRCAutoLockSettings.RRCAutoLockEnabled == false && CameraType == 'railroadCrossing');
+            if (RRCAutoLockSettings.RRCAutoLockEnabled == false && CameraType == 'railroadCrossing')
                 return console.log(SCRIPT_NAME, CameraTypeWW + " is disabled");
-            if (RRCAutoLockSettings.ECAutoLockEnabled == false && CameraType == 'camera');
+            if (RRCAutoLockSettings.ECAutoLockEnabled == false && CameraType == 'camera')
                 return console.log(SCRIPT_NAME, CameraTypeWW + " is disabled");
 
             console.log(SCRIPT_NAME, "Script  is enabled");
