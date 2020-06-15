@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2020.06.14.06
+// @version      2020.06.15.00
 // @description  AutoLocks RRCs to set level instead of rank of editor
 // @author       jm6087 (with assistance from Dude495, TheCre8r, and SkiDooGuy)
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -16,14 +16,15 @@
 
 (function() {
     'use strict';
-    var UPDATE_NOTES = `Locks RRCs to L4 upon selection of the RRC<br><br>
-    Now locks enforcement camera to lock at L5<br><br>
-    Add option for changing lock level<br>
+    var UPDATE_NOTES = `Locks (adjustable) RRCs to L4 and Cameras to L5 upon selection.<br><br>
+    Changed a little text in panel at recomendation of Dude495<br><br>
+    <br>
     This is my first script, hope it works and currently is very basic due to limited knoweledge.<br>
     Thanks for Dude495, TheCre8r, and SkiDooGuy for their assistance`
 
 
     // PREVIOUS NOTES
+    // Added option for changing lock level
     // BUG fix
     // Script currently conflicts with WME Tiles Update.  Not allowing unverified RRCs to autolock initially<br><br>
     // The enable script now works and persists thanks to dude495
@@ -157,8 +158,8 @@
             '<option value="16">6</option>',
             '</select></br>',
             '<b><input type="checkbox" id="ECAutoLockCheckbox"> Enforcement Camera Lock Enabled</b></br></br>',
-            '<b><input type="checkbox" id="RRCAutoLockWazeWrapSuccessCheckbox"> WazeWrap Success Popups Enabled</b></br>',
-            '<b><input type="checkbox" id="RRCAutoLockWazeWrapInfoCheckbox"> WazeWrap Info Popups Enabled</b></br></br>',
+            '<b><input type="checkbox" id="RRCAutoLockWazeWrapSuccessCheckbox"> Alerts: Success</b></br>',
+            '<b><input type="checkbox" id="RRCAutoLockWazeWrapInfoCheckbox"> Alerts: Info</b></br></br>',
             '<b>Disable WME Tiles Update script if working unverified RRCs</b></br>',
             '<div>',
         ].join(' '));
