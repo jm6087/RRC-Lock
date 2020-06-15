@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2020.06.15.00
+// @version      2020.06.15.01
 // @description  AutoLocks RRCs to set level instead of rank of editor
 // @author       jm6087 (with assistance from Dude495, TheCre8r, and SkiDooGuy)
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -61,6 +61,8 @@
                 CameraType = 'camera';
                 CameraTypeWW = 'Enforcement Camera';
                 RRCAutoLockChildNumber = $('#ECAutoLockLevelOption')[0].value;
+                if ($('#ECAutoLockLevelOption')[0].value == "6")RRClock = "1";
+                if ($('#ECAutoLockLevelOption')[0].value == "8")RRClock = "2";
                 if ($('#ECAutoLockLevelOption')[0].value == "10")RRClock = "3";
                 if ($('#ECAutoLockLevelOption')[0].value == "12")RRClock = "4";
                 if ($('#ECAutoLockLevelOption')[0].value == "14")RRClock = "5";
@@ -70,16 +72,18 @@
                     CameraType = 'railroadCrossing';
                     CameraTypeWW = 'Railroad Crossing';
                     RRCAutoLockChildNumber = $('#RRCAutoLockLevelOption')[0].value;
+                    if ($('#RRCAutoLockLevelOption')[0].value == "6")RRClock = "1";
+                    if ($('#RRCAutoLockLevelOption')[0].value == "8")RRClock = "2";
                     if ($('#RRCAutoLockLevelOption')[0].value == "10")RRClock = "3";
                     if ($('#RRCAutoLockLevelOption')[0].value == "12")RRClock = "4";
                     if ($('#RRCAutoLockLevelOption')[0].value == "14")RRClock = "5";
                     if ($('#RRCAutoLockLevelOption')[0].value == "16")RRClock = "6";
                 }
             }
-            //checks to see if Enabled is checked (not working completely)
-            if (RRCAutoLockSettings.RRCAutoLockEnabled == false && CameraType == 'railroadCrossing')
+            //checks to see if Enabled is checked
+            if (RRCAutoLockSettings.RRCAutoLockEnabled == false && CameraType == 'railroadCrossing');
                 return console.log(SCRIPT_NAME, CameraTypeWW + " is disabled");
-            if (RRCAutoLockSettings.ECAutoLockEnabled == false && CameraType == 'camera')
+            if (RRCAutoLockSettings.ECAutoLockEnabled == false && CameraType == 'camera');
                 return console.log(SCRIPT_NAME, CameraTypeWW + " is disabled");
 
             console.log(SCRIPT_NAME, "Script  is enabled");
@@ -92,12 +96,12 @@
                 RRCAutoLockRankOverLock = SelModel.attributes.rank + 1;
             };
 
-            let RRCAutoLock4 = "#edit-panel > div > div > div > div.tab-content > form > div > div > div > div > div.form-control.lock-level-selector.waze-radio-container >" + RRCAutoLockLabel
+            let RRCAutoLock4 = "#edit-panel > div > div > div > div.tab-content > form > div > div > div > div > div.form-control.lock-level-selector.waze-radio-container >" + RRCAutoLockLabel;
             if (SelMan.hasSelectedFeatures() && SelModel.type === CameraType){
                 // Finds ID number of the last editor
-                let lastEditBy = SelModel.attributes.updatedBy
+                let lastEditBy = SelModel.attributes.updatedBy;
                 if (lastEditBy === null) {
-                    lastEditBy = SelModel.attributes.createdBy
+                    lastEditBy = SelModel.attributes.createdBy;
                 }
                 if (lastEditBy == undefined) {
                     LastEditorUserName = USER.name;
@@ -144,23 +148,27 @@
             '<div>',
             '<h4 style="margin-bottom:0px;"><b>'+ SCRIPT_NAME +'</b></h4>',
             VERSION +'</br>',
-            '<b><id="RRCAutoLockLevelValue">RRC lock level <select id="RRCAutoLockLevelOption"></b>',
-//            '<option value="10">3</option>',
-            '<option value="12">4</option>',
-            '<option value="14">5</option>',
-            '<option value="16">6</option>',
-            '</select></br>',
             '<b><input type="checkbox" id="RRCAutoLockCheckbox"> RRC Lock Enabled</b></br></br>',
-            '<b><id="ECAutoLockLevelValue">Enforcement camera lock level <select id="ECAutoLockLevelOption"></b>',
-//            '<option value="10">3</option>',
+            '<b><id="RRCAutoLockLevelValue">RRC lock level <select id="RRCAutoLockLevelOption"></b>',
+            //          '<option value="6">1</option>',
+            //          '<option value="8">2</option>',
+            //          '<option value="10">3</option>',
             '<option value="12">4</option>',
             '<option value="14">5</option>',
             '<option value="16">6</option>',
             '</select></br>',
             '<b><input type="checkbox" id="ECAutoLockCheckbox"> Enforcement Camera Lock Enabled</b></br></br>',
+            '<b><id="ECAutoLockLevelValue">Enforcement camera lock level <select id="ECAutoLockLevelOption"></b>',
+            //          '<option value="6">1</option>',
+            //          '<option value="8">2</option>',
+            //          '<option value="10">3</option>',
+            '<option value="12">4</option>',
+            '<option value="14">5</option>',
+            '<option value="16">6</option>',
+            '</select></br>',
             '<b><input type="checkbox" id="RRCAutoLockWazeWrapSuccessCheckbox"> Alerts: Success</b></br>',
             '<b><input type="checkbox" id="RRCAutoLockWazeWrapInfoCheckbox"> Alerts: Info</b></br></br>',
-            '<b>Disable WME Tiles Update script if working unverified RRCs</b></br>',
+            '<b><div id="WMETUWarning"></div></b></br>',
             '<div>',
         ].join(' '));
 
@@ -195,17 +203,18 @@
             RRCAutoLockSettings.ECAutoLockEnabled = $('#ECAutoLockCheckbox')[0].checked;
             RRCAutoLockSettings.RRCAutoLockWazeWrapSuccessEnabled = $('#RRCAutoLockWazeWrapSuccessCheckbox')[0].checked;
             RRCAutoLockSettings.RRCAutoLockWazeWrapInfoEnabled = $('#RRCAutoLockWazeWrapInfoCheckbox')[0].checked;
-            RRCAutoLockSettings.RRCAutoLockLevelOption = $('#RRCAutoLockLevelOption')[0].value
-            RRCAutoLockSettings.ECAutoLockLevelOption = $('#ECAutoLockLevelOption')[0].value
+            RRCAutoLockSettings.RRCAutoLockLevelOption = $('#RRCAutoLockLevelOption')[0].value;
+            RRCAutoLockSettings.ECAutoLockLevelOption = $('#ECAutoLockLevelOption')[0].value;
+            $('#RRCAutoLockLevelOption')[0].disabled = !RRCAutoLockSettings.RRCAutoLockEnabled;
+            $('#ECAutoLockLevelOption')[0].disabled = !RRCAutoLockSettings.ECAutoLockEnabled;
             localStorage.setItem(STORE_NAME, JSON.stringify(RRCAutoLockSettings));
             console.log(SCRIPT_NAME, 'Settings Saved '+ JSON.stringify(RRCAutoLockSettings));
         }
     }
 
 
-    function RRCAutoLockInitializeSettings()
-    {
-        loadSettings()
+    function RRCAutoLockInitializeSettings(){
+        loadSettings();
         USER.rank = W.loginManager.user.rank + 1;
         USER.name = W.loginManager.user.userName;
         $('#RRCAutoLockUsername').text(USER.name);
@@ -218,37 +227,44 @@
         $('#RRCAutoLockWazeWrapInfoCheckbox')[0].checked = RRCAutoLockSettings.RRCAutoLockWazeWrapInfoEnabled;
         $('#RRCAutoLockLevelOption')[0].value = RRCAutoLockSettings.RRCAutoLockLevelOption;
         $('#ECAutoLockLevelOption')[0].value = RRCAutoLockSettings.ECAutoLockLevelOption;
+        $('#RRCAutoLockLevelOption')[0].disabled = !RRCAutoLockSettings.RRCAutoLockEnabled;
+        $('#ECAutoLockLevelOption')[0].disabled = !RRCAutoLockSettings.ECAutoLockEnabled;
         console.log(SCRIPT_NAME, "- Tab Created");
         $('#RRCAutoLockCheckbox')[0].onchange = function() {
-            console.log(SCRIPT_NAME, "RRCAutoLockCheckbox Settings changed")
-            saveSettings()
+            console.log(SCRIPT_NAME, "RRCAutoLockCheckbox Settings changed");
+            saveSettings();
         };
         $('#ECAutoLockCheckbox')[0].onchange = function() {
-            console.log(SCRIPT_NAME, "ECAutoLockCheckbox Settings changed")
-            saveSettings()
+            console.log(SCRIPT_NAME, "ECAutoLockCheckbox Settings changed");
+            saveSettings();
         };
         $('#RRCAutoLockWazeWrapSuccessCheckbox')[0].onchange = function() {
-            console.log(SCRIPT_NAME, "RRCAutoLockWazeWrapSuccessCheckbox Settings changed")
-            saveSettings()
+            console.log(SCRIPT_NAME, "RRCAutoLockWazeWrapSuccessCheckbox Settings changed");
+            saveSettings();
         };
         $('#RRCAutoLockWazeWrapInfoCheckbox')[0].onchange = function() {
-            console.log(SCRIPT_NAME, "RRCAutoLockWazeWrapInfoCheckbox Settings changed")
-            saveSettings()
+            console.log(SCRIPT_NAME, "RRCAutoLockWazeWrapInfoCheckbox Settings changed");
+            saveSettings();
         };
         $('#RRCAutoLockLevelOption')[0].onchange = function() {
-            let x = $('#RRCAutoLockLevelOption')[0].value
-            console.log(SCRIPT_NAME, "RRCAutoLockLevelValue Settings changed")
-            saveSettings()
+            let x = $('#RRCAutoLockLevelOption')[0].value;
+            console.log(SCRIPT_NAME, "RRCAutoLockLevelValue Settings changed");
+            saveSettings();
         };
         $('#ECAutoLockLevelOption')[0].onchange = function() {
-            let x = $('#ECAutoLockLevelOption')[0].value
-            console.log(SCRIPT_NAME, "ECAutoLockLevelValue Settings changed")
-            saveSettings()
+            let x = $('#ECAutoLockLevelOption')[0].value;
+            console.log(SCRIPT_NAME, "ECAutoLockLevelValue Settings changed");
+            saveSettings();
         };
+        if ($('#Info_server')[0]) { $('#WMETUWarning')[0].innerHTML = 'WME Tile Update Script Detected;<br>WMETU is known to cause problems with this script.<br>Disable WMETU if you experience any issues.';
+                                   wazedevtoastr.options.timeOut = '8000';
+                                   WazeWrap.Alerts.warning(SCRIPT_NAME, ["WME Tile Update Script Detected;","WMETU is known to cause problems with this script.","Disable WMETU if you experience any issues."].join('\n'));
+                                  } else {
+                                      $('#WMETUWarning')[0].textContent = ''};
     }
     function bootstrap(tries = 1) {
         if (W && W.map && W.model && W.loginManager.user && $ && WazeWrap.Ready ) {
-            RRCAutoLockTab()
+            RRCAutoLockTab();
             WazeWrap.Events.register("selectionchanged", null, setRRCAutoLock);
             WazeWrap.Interface.ShowScriptUpdate(SCRIPT_NAME, VERSION, UPDATE_NOTES);
             console.log(SCRIPT_NAME, "loaded");
