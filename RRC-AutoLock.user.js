@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2020.06.15.03
+// @version      2020.06.16.00
 // @description  Locks RRCs and Cameras to set level instead of autolock to rank of editor
 // @author       jm6087 (with assistance from Dude495, TheCre8r, and SkiDooGuy)
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -115,23 +115,23 @@
                     //checks to see if Enabled is checked
                     if (RRCAutoLockSettings.RRCAutoLockWazeWrapSuccessEnabled == true){
                         console.log(SCRIPT_NAME, "WazeWrap  is enabled");
-                        WazeWrap.Alerts.success(SCRIPT_NAME, CameraTypeWW + ' lock level changed from lock level ' + RRCAutolockRankplusOne + ': Last edited by ' + LastEditorUserName);
+                        WazeWrap.Alerts.success(SCRIPT_NAME, [CameraTypeWW + ' lock level changed from lock level ' + RRCAutolockRankplusOne, 'Last edited by ' + LastEditorUserName].join('\n'));
                     }
                     console.log(SCRIPT_NAME, "Version #", VERSION, " - ", CameraTypeWW ," Lock level changed from", RRCAutolockRankplusOne);
                 }else{
                     if (USER.rank >= (SelModel.attributes.rank + 1) && SelModel.attributes.lockRank == RRClock - 1){
                         if (RRCAutoLockSettings.RRCAutoLockWazeWrapInfoEnabled == true){
                             console.log(SCRIPT_NAME, "WazeWrap  is enabled");
-                            WazeWrap.Alerts.info(SCRIPT_NAME, CameraTypeWW + ' lock not changed, already at lock level ' + RRCAutolockRankplusOne + ': Last edited by ' + LastEditorUserName);
+                            WazeWrap.Alerts.info(SCRIPT_NAME, [CameraTypeWW + ' lock not changed, already at lock level ' + RRCAutolockRankplusOne, 'Last edited by ' + LastEditorUserName].join('\n'));
                         }
                         console.log (SCRIPT_NAME, "Version #", VERSION, " - ", CameraTypeWW, " lock not changed, already at lock level", RRCAutolockRankplusOne);
                     }else{
                         if (USER.rank < (SelModel.attributes.rank + 1)){
                             wazedevtoastr.options.timeOut = '5000';
                             if (RRCAutoLockRankOverLock > 5){
-                                WazeWrap.Alerts.error(SCRIPT_NAME, CameraTypeWW + ' is locked above your rank, you will need assistance from an Rank ' + RRCAutoLockRankOverLock + ' editor: Last edited by ' + LastEditorUserName);
+                                WazeWrap.Alerts.error(SCRIPT_NAME, [CameraTypeWW + ' is locked above your rank', 'You will need assistance from an Rank ' + RRCAutoLockRankOverLock + ' editor', 'Last edited by ' + LastEditorUserName].join('\n'));
                             }else{
-                                WazeWrap.Alerts.error(SCRIPT_NAME, CameraTypeWW + ' is locked above your rank, you will need assistance from at least a Rank ' + RRCAutoLockRankOverLock + ' editor: Last edited by ' + LastEditorUserName);
+                                WazeWrap.Alerts.error(SCRIPT_NAME, [CameraTypeWW + ' is locked above your rank', 'You will need assistance from at least a Rank ' + RRCAutoLockRankOverLock + ' editor', 'Last edited by ' + LastEditorUserName].join('\n'));
                                 console.log (SCRIPT_NAME, "Version #", VERSION, " - ", CameraTypeWW, " is locked above editor rank");
                             }
                         }
