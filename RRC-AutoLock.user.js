@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2020.06.16.02
+// @version      2020.06.16.03
 // @description  Locks RRCs and Cameras to set level instead of autolock to rank of editor
 // @author       jm6087 (with assistance from Dude495, TheCre8r, and SkiDooGuy)
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -173,6 +173,8 @@
             '<b><input type="checkbox" id="RRCAutoLockWazeWrapInfoCheckbox"> Alerts: Info</b></br></br>',
             '<b><div id="WMETUWarning"></div></b></br>',
             '<b><h4><div id="USERedits"><div></h4></b></br>',
+            '<b><h4>Your WME window was last refreshed at:</h4></b></br>',
+            '<b><h4><div id="CurrentDate"></div></h4></b></br>',            
             '<div>',
         ].join(' '));
 
@@ -275,6 +277,7 @@
                                       $('#WMETUWarning')[0].textContent = ''};
         if (BETA_TESTERS.includes(USER.name)) { $('#USERedits')[0].textContent = 'Current Edit Count for '+ USER.name + ' - ' + W.loginManager.user.totalEdits;
                                               };
+        $('#CurrentDate')[0].textContent = Date();
     }
     function bootstrap(tries = 1) {
         if (W && W.map && W.model && W.loginManager.user && $ && WazeWrap.Ready ) {
