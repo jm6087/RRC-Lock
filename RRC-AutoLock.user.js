@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2020.06.15.02
+// @version      2020.06.15.03
 // @description  Locks RRCs and Cameras to set level instead of autolock to rank of editor
 // @author       jm6087 (with assistance from Dude495, TheCre8r, and SkiDooGuy)
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -17,13 +17,14 @@
 (function() {
     'use strict';
     var UPDATE_NOTES = `Locks (adjustable) RRCs to L4 and Cameras to L5 upon selection.<br><br>
-    Changed a little text in panel at recomendation of Dude495<br><br>
+    6/15/2020 - Released to SCR Leadership<br><br>
     <br>
     This is my first script, hope it works and currently is very basic due to limited knoweledge.<br>
     Thanks for Dude495, TheCre8r, and SkiDooGuy for their assistance`
 
 
     // PREVIOUS NOTES
+    // Changed a little text in panel at recomendation of Dude495
     // Added option for changing lock level
     // BUG fix
     // Script currently conflicts with WME Tiles Update.  Not allowing unverified RRCs to autolock initially<br><br>
