@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2020.06.16.03
+// @version      2020.06.17.00
 // @description  Locks RRCs and Cameras to set level instead of autolock to rank of editor
 // @author       jm6087 (with assistance from Dude495, TheCre8r, and SkiDooGuy)
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -17,13 +17,14 @@
 (function() {
     'use strict';
     var UPDATE_NOTES = `Locks (adjustable) RRCs to L4 and Cameras to L5 upon selection.<br><br>
-    Added WazeWrap storage. (Thanks Daniel)<br><br>
+    Code clean up<br><br>
     <br>
     This is my first script, hope it works and currently is very basic due to limited knoweledge.<br>
     Thanks for Dude495, TheCre8r, and SkiDooGuy for their assistance and encouragement`
 
 
     // PREVIOUS NOTES
+    // 2020.06.17.00 - Code clean up
     // 2020.06.16.01 - Added WazeWrap storage. (Thanks Daniel)
     // 2020.06.16.00 - Minor changes
     // Changed a little text in panel at recomendation of Dude495
@@ -51,55 +52,51 @@
     var RRCAutoLockChildNumber;
     var RRCAutoLockLevelOption;
     var RRClock;
+    var RRCobjects;
+    var camLevelOption;
 
     function setRRCAutoLock() {
         let RRCAutolockRankplusOne;
         let SelMan = W.selectionManager;
         let RRCAutoLockRankOverLock;
-        wazedevtoastr.options.timeOut = '2500';
-        if (SelMan.getSelectedFeatures().length > 0){
+        wazedevtoastr.options.timeOut = '2500'; // Used to adjust the timing of the WW banner messages
+        if (SelMan.getSelectedFeatures().length > 0){ // Determines if there is an item selected
             let SelModel = SelMan.getSelectedFeatures()[0].model;
-            // Need to see if this can be cleaned up
 
-            if (SelModel.type === 'camera'){
+            if (SelModel.type === 'camera'){ // Determines camera type is Enforcement Camera
                 CameraType = 'camera';
                 CameraTypeWW = 'Enforcement Camera';
+                camLevelOption = $('#ECAutoLockLevelOption')[0];
                 RRCAutoLockChildNumber = $('#ECAutoLockLevelOption')[0].value;
-                if ($('#ECAutoLockLevelOption')[0].value == "6")RRClock = "1";
-                if ($('#ECAutoLockLevelOption')[0].value == "8")RRClock = "2";
-                if ($('#ECAutoLockLevelOption')[0].value == "10")RRClock = "3";
-                if ($('#ECAutoLockLevelOption')[0].value == "12")RRClock = "4";
-                if ($('#ECAutoLockLevelOption')[0].value == "14")RRClock = "5";
-                if ($('#ECAutoLockLevelOption')[0].value == "16")RRClock = "6";
             }else{
                 if (SelModel.type === 'railroadCrossing'){
                     CameraType = 'railroadCrossing';
                     CameraTypeWW = 'Railroad Crossing';
+                    camLevelOption = $('#RRCAutoLockLevelOption')[0];
                     RRCAutoLockChildNumber = $('#RRCAutoLockLevelOption')[0].value;
-                    if ($('#RRCAutoLockLevelOption')[0].value == "6")RRClock = "1";
-                    if ($('#RRCAutoLockLevelOption')[0].value == "8")RRClock = "2";
-                    if ($('#RRCAutoLockLevelOption')[0].value == "10")RRClock = "3";
-                    if ($('#RRCAutoLockLevelOption')[0].value == "12")RRClock = "4";
-                    if ($('#RRCAutoLockLevelOption')[0].value == "14")RRClock = "5";
-                    if ($('#RRCAutoLockLevelOption')[0].value == "16")RRClock = "6";
                 }
             }
+            if (camLevelOption.value == "6")RRClock = "1";
+            if (camLevelOption.value == "8")RRClock = "2";
+            if (camLevelOption.value == "10")RRClock = "3";
+            if (camLevelOption.value == "12")RRClock = "4";
+            if (camLevelOption.value == "14")RRClock = "5";
+            if (camLevelOption.value == "16")RRClock = "6";
+
             //checks to see if Enabled is checked
-            if (RRCAutoLockSettings.RRCAutoLockEnabled == false && CameraType == 'railroadCrossing')
+            if (RRCAutoLockSettings.RRCAutoLockEnabled == false && CameraType == 'railroadCrossing') // Warning message is valid and MUST be there
                 return console.log(SCRIPT_NAME, CameraTypeWW + " is disabled");
-            if (RRCAutoLockSettings.ECAutoLockEnabled == false && CameraType == 'camera')
+            if (RRCAutoLockSettings.ECAutoLockEnabled == false && CameraType == 'camera') // Warning message is valid and MUST be there
                 return console.log(SCRIPT_NAME, CameraTypeWW + " is disabled");
-
             console.log(SCRIPT_NAME, "Script  is enabled");
-            let RRCAutoLockLabel = "label:nth-child(" + RRCAutoLockChildNumber+ ")";
-            if (SelModel.attributes.lockRank == null){
-                RRCAutolockRankplusOne = ("Auto (" + (SelModel.attributes.rank + 1)+")");
-                RRCAutoLockRankOverLock = SelModel.attributes.rank + 1;
-            }else{
-                RRCAutolockRankplusOne = SelModel.attributes.lockRank + 1;
-                RRCAutoLockRankOverLock = SelModel.attributes.rank + 1;
-            };
 
+            let RRCAutoLockLabel = "label:nth-child(" + RRCAutoLockChildNumber+ ")";
+            RRCAutoLockRankOverLock = SelModel.attributes.rank + 1; // Checks rank of selected RRC or EC
+            if (SelModel.attributes.lockRank == null){ // Checks to see if selected RRC or EC is unverified
+                RRCAutolockRankplusOne = ("Auto (" + (SelModel.attributes.rank + 1)+")"); // If unverified, sets the text for WW with Auto(lock number)
+            }else{
+                RRCAutolockRankplusOne = SelModel.attributes.lockRank + 1; // If already verified, sets text for WW to lock number only
+            };
             let RRCAutoLock4 = "#edit-panel > div > div > div > div.tab-content > form > div > div > div > div > div.form-control.lock-level-selector.waze-radio-container >" + RRCAutoLockLabel;
             if (SelMan.hasSelectedFeatures() && SelModel.type === CameraType){
                 // Finds ID number of the last editor
@@ -143,7 +140,17 @@
             }
         }
     }
-
+    
+// Working on scanning screen for cameras so I can possibly add a button to the tab that will allow a lock all option for R5+ editors.
+    function RRCscreenMove(){
+        let RRCobjects = W.model.railroadCrossings.getObjectArray();
+        console.log(SCRIPT_NAME, "There are ", RRCobjects.length, " on the screen");
+        for(let i = 0; i < RRCobjects.length; i++){
+            var att;
+            att = RRCobjects[i].attributes.id;
+            console.log(SCRIPT_NAME, "proof of concept: RRC ID = ", att);
+        }
+    }
     function RRCAutoLockTab()
     {
         var $RRCsection = $("<div>");
@@ -174,12 +181,11 @@
             '<b><div id="WMETUWarning"></div></b></br>',
             '<b><h4><div id="USERedits"><div></h4></b></br>',
             '<b><h4>Your WME window was last refreshed at:</h4></b></br>',
-            '<b><h4><div id="CurrentDate"></div></h4></b></br>',            
+            '<b><h4><div id="CurrentDate"></div></h4></b></br>',
             '<div>',
         ].join(' '));
 
         new WazeWrap.Interface.Tab(TAB_NAME, $RRCsection.html(), RRCAutoLockInitializeSettings);
-
     }
 
     function disabledOptions() {
@@ -188,8 +194,8 @@
     }
     /*-- START SETTINGS --*/
     async function loadSettings() {
-        let loadedSettings = $.parseJSON(localStorage.getItem(STORE_NAME));
-        let defaultSettings = {
+        let loadedSettings = $.parseJSON(localStorage.getItem(STORE_NAME)); // Loads settings from local storage, allows settings to persist with refresh
+        let defaultSettings = { // sets default values for tab options
             RRCAutoLockLevelOption: "12",
             ECAutoLockLevelOption: "14",
             RRCAutoLockWazeWrapSuccessEnabled: true,
@@ -197,15 +203,14 @@
             RRCAutoLockEnabled: true,
             ECAutoLockEnabled: true
         };
-
         RRCAutoLockSettings = loadedSettings ? loadedSettings : defaultSettings;
         for (let prop in defaultSettings) {
             if (!RRCAutoLockSettings.hasOwnProperty(prop)) {
                 RRCAutoLockSettings[prop] = defaultSettings[prop];
             }
         }
-        const serverSettings = await WazeWrap.Remote.RetrieveSettings(STORE_NAME);
-        if (serverSettings && (serverSettings.lastSaved > RRCAutoLockSettings.lastSaved)) {
+        const serverSettings = await WazeWrap.Remote.RetrieveSettings(STORE_NAME); //Settings stored to WazeWrap
+        if (serverSettings && (serverSettings.lastSaved > RRCAutoLockSettings.lastSaved)) { // checks to see if WazeWrap stored settings are newer than what is stored in local storage
             $.extend(true, RRCAutoLockSettings, serverSettings);
         }
         console.log(SCRIPT_NAME, "Settings Loaded");
@@ -221,12 +226,11 @@
             RRCAutoLockSettings.ECAutoLockLevelOption = $('#ECAutoLockLevelOption')[0].value;
             RRCAutoLockSettings.lastSaved = Date.now();
             disabledOptions();
-            localStorage.setItem(STORE_NAME, JSON.stringify(RRCAutoLockSettings));
-            WazeWrap.Remote.SaveSettings(STORE_NAME, JSON.stringify(RRCAutoLockSettings));
+            localStorage.setItem(STORE_NAME, JSON.stringify(RRCAutoLockSettings)); // saves settings to local storage for persisting when refreshed
+            WazeWrap.Remote.SaveSettings(STORE_NAME, JSON.stringify(RRCAutoLockSettings)); // saves settings to WazeWrap
             console.log(SCRIPT_NAME, 'Settings Saved '+ JSON.stringify(RRCAutoLockSettings));
         }
     }
-
 
     function RRCAutoLockInitializeSettings(){
         loadSettings();
@@ -279,10 +283,12 @@
                                               };
         $('#CurrentDate')[0].textContent = Date();
     }
+
     function bootstrap(tries = 1) {
         if (W && W.map && W.model && W.loginManager.user && $ && WazeWrap.Ready ) {
             RRCAutoLockTab();
             WazeWrap.Events.register("selectionchanged", null, setRRCAutoLock);
+//            WazeWrap.Events.register("moveend", null, RRCscreenMove);
             WazeWrap.Interface.ShowScriptUpdate(SCRIPT_NAME, VERSION, UPDATE_NOTES);
             console.log(SCRIPT_NAME, "loaded");
         } else if (tries < 1000)
