@@ -140,17 +140,7 @@
             }
         }
     }
-    
-// Working on scanning screen for cameras so I can possibly add a button to the tab that will allow a lock all option for R5+ editors.
-    function RRCscreenMove(){
-        let RRCobjects = W.model.railroadCrossings.getObjectArray();
-        console.log(SCRIPT_NAME, "There are ", RRCobjects.length, " on the screen");
-        for(let i = 0; i < RRCobjects.length; i++){
-            var att;
-            att = RRCobjects[i].attributes.id;
-            console.log(SCRIPT_NAME, "proof of concept: RRC ID = ", att);
-        }
-    }
+
     function RRCAutoLockTab()
     {
         var $RRCsection = $("<div>");
@@ -288,7 +278,6 @@
         if (W && W.map && W.model && W.loginManager.user && $ && WazeWrap.Ready ) {
             RRCAutoLockTab();
             WazeWrap.Events.register("selectionchanged", null, setRRCAutoLock);
-//            WazeWrap.Events.register("moveend", null, RRCscreenMove);
             WazeWrap.Interface.ShowScriptUpdate(SCRIPT_NAME, VERSION, UPDATE_NOTES);
             console.log(SCRIPT_NAME, "loaded");
         } else if (tries < 1000)
