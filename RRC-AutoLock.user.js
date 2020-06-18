@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2020.06.18.00
+// @version      2020.06.18.01
 // @description  Locks RRCs and Cameras to set level instead of autolock to rank of editor
 // @author       jm6087 (with assistance from Dude495, TheCre8r, and SkiDooGuy)
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -46,8 +46,7 @@
     const STORE_NAME = "RRCAutoLockSettings";
     var CameraType;
     var CameraTypeWW;
-    var RRCAutoLockChildNumber;
-
+    
     function setRRCAutoLock() {
         let RRCAutolockRankplusOne;
         let SelMan = W.selectionManager;
@@ -61,22 +60,14 @@
             if (SelModel.type === 'camera'){ // Determines camera type is Enforcement Camera
                 CameraType = 'camera';
                 CameraTypeWW = 'Enforcement Camera';
-                RRCAutoLockChildNumber = $('#ECAutoLockLevelOption')[0].value;
+                modelRank = ($('#ECAutoLockLevelOption')[0].value - 1);
             }else{
                 if (SelModel.type === 'railroadCrossing'){
                     CameraType = 'railroadCrossing';
                     CameraTypeWW = 'Railroad Crossing';
-                    RRCAutoLockChildNumber = $('#RRCAutoLockLevelOption')[0].value;
+                    modelRank = ($('#RRCAutoLockLevelOption')[0].value - 1);
                 }
             }
-            // Convert RRCAutoLockChildNumber to Waze model rank #. If you save this setting as actual rank (4, 5 or 6), you could do:
-            // modelRank = ($('#RRCAutoLockLevelOption')[0].value - 1);
-            if (RRCAutoLockChildNumber == "6") modelRank = "0"; // -- DBSOONER   0 = L1, etc
-            if (RRCAutoLockChildNumber == "8") modelRank = "1"; // -- DBSOONER
-            if (RRCAutoLockChildNumber == "10") modelRank = "2"; // -- DBSOONER
-            if (RRCAutoLockChildNumber == "12") modelRank = "3"; // -- DBSOONER
-            if (RRCAutoLockChildNumber == "14") modelRank = "4"; // -- DBSOONER
-            if (RRCAutoLockChildNumber == "16") modelRank = "5"; // -- DBSOONER
 
             //checks to see if Enabled is checked
             if (RRCAutoLockSettings.RRCAutoLockEnabled == false && CameraType == 'railroadCrossing') // Warning message is valid and MUST be there
@@ -144,21 +135,21 @@
             VERSION +'</br>',
             '<b><input type="checkbox" id="RRCAutoLockCheckbox"> RRC lock enabled</b></br>',
             '<b><id="RRCAutoLockLevelValue">RRC lock level: <select id="RRCAutoLockLevelOption"></b></br>',
-            //          '<option value="6">1</option>',
-            //          '<option value="8">2</option>',
-            //          '<option value="10">3</option>',
-            '<option value="12">4</option>',
-            '<option value="14">5</option>',
-            '<option value="16">6</option>',
+            //          '<option value="1">1</option>',
+            //          '<option value="2">2</option>',
+            //          '<option value="3">3</option>',
+            '<option value="4">4</option>',
+            '<option value="5">5</option>',
+            '<option value="6">6</option>',
             '</select></br></br>',
             '<b><input type="checkbox" id="ECAutoLockCheckbox"> Enforcement camera lock enabled</b></br>',
             '<b><id="ECAutoLockLevelValue">Enforcement camera lock level: <select id="ECAutoLockLevelOption"></b></br>',
-            //          '<option value="6">1</option>',
-            //          '<option value="8">2</option>',
-            //          '<option value="10">3</option>',
-            '<option value="12">4</option>',
-            '<option value="14">5</option>',
-            '<option value="16">6</option>',
+            //          '<option value="1">1</option>',
+            //          '<option value="2">2</option>',
+            //          '<option value="3">3</option>',
+            '<option value="4">4</option>',
+            '<option value="5">5</option>',
+            '<option value="6">6</option>',
             '</select></br></br>',
             '<b><input type="checkbox" id="RRCAutoLockWazeWrapSuccessCheckbox"> Alerts: Success</b></br>',
             '<b><input type="checkbox" id="RRCAutoLockWazeWrapInfoCheckbox"> Alerts: Info</b></br></br>',
@@ -179,9 +170,10 @@
     /*-- START SETTINGS --*/
     async function loadSettings() {
         let loadedSettings = $.parseJSON(localStorage.getItem(STORE_NAME)); // Loads settings from local storage, allows settings to persist with refresh
+        if (loadedSettings.lastSaved <= "1592493428377") localStorage.removeItem("RRCAutoLockSettings"); // Clears local storage and resets to defaults if older version is found
         const defaultSettings = { // sets default values for tab options
-            RRCAutoLockLevelOption: "12",
-            ECAutoLockLevelOption: "14",
+            RRCAutoLockLevelOption: "4",
+            ECAutoLockLevelOption: "5",
             RRCAutoLockWazeWrapSuccessEnabled: true,
             RRCAutoLockWazeWrapInfoEnabled: true,
             RRCAutoLockEnabled: true,
