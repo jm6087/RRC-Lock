@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2020.06.18.01
+// @version      2020.06.18.02
 // @description  Locks RRCs and Cameras to set level instead of autolock to rank of editor
 // @author       jm6087 (with assistance from Dude495, TheCre8r, and SkiDooGuy)
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -17,13 +17,14 @@
 (function() {
     'use strict';
     var UPDATE_NOTES = `Locks (adjustable) RRCs to L4 and Cameras to L5 upon selection.<br><br>
-    More code clean up<br><br>
+    2020.06.18.02 - Added check to see if RRC/camera are within editable areas<br><br>
     <br>
     This is my first script, hope it works and currently is very basic due to limited knoweledge.<br>
     Thanks for Dude495, TheCre8r, and SkiDooGuy for their assistance and encouragement`
 
 
     // PREVIOUS NOTES
+    // 2020.06.18.02 - Added check to see if RRC/camera are within editable areas
     // 2020.06.18.00 - More code clean up
     // 2020.06.17.00 - Code clean up
     // 2020.06.16.01 - Added WazeWrap storage. (Thanks Daniel)
@@ -68,7 +69,10 @@
                     modelRank = ($('#RRCAutoLockLevelOption')[0].value - 1);
                 }
             }
-
+            if (USER.rank >= SelModel.attributes.rank + 1 && SelModel.arePropertiesEditable() == false){ // Checking to see if the the editor is high enough rank and if the so, then checking to see if the camera is editable.  If not, then must not be in EA.
+                wazedevtoastr.options.timeOut = '6000'
+                WazeWrap.Alerts.error(SCRIPT_NAME, [CameraTypeWW + ' does not appear to be in your edit area.', 'Please check your Editable Areas layer to ensure you have edit rights'].join('\n'));
+            }else{
             //checks to see if Enabled is checked
             if (RRCAutoLockSettings.RRCAutoLockEnabled == false && CameraType == 'railroadCrossing') // Warning message is valid and MUST be there
                 return console.log(SCRIPT_NAME, CameraTypeWW + " is disabled");
@@ -118,6 +122,7 @@
                             }else{
                                 WazeWrap.Alerts.error(SCRIPT_NAME, [CameraTypeWW + ' is locked above your rank', 'You will need assistance from at least a Rank ' + RRCAutoLockRankOverLock + ' editor', 'Last edited by ' + LastEditorUserName].join('\n'));
                                 console.log (SCRIPT_NAME, "Version #", VERSION, " - ", CameraTypeWW, " is locked above editor rank");
+                                }
                             }
                         }
                     }
@@ -125,7 +130,7 @@
             }
         }
     }
-
+    
     function RRCAutoLockTab()
     {
         var $RRCsection = $("<div>");
