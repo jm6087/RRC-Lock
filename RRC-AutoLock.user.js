@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2020.06.19.01
+// @version      2020.06.19.02
 // @description  Locks RRCs and Cameras to set level instead of autolock to rank of editor
 // @author       jm6087 (with assistance from Dude495, TheCre8r, and SkiDooGuy)
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -214,7 +214,6 @@
     /*-- START SETTINGS --*/
     async function loadSettings() {
         let loadedSettings = $.parseJSON(localStorage.getItem(STORE_NAME)); // Loads settings from local storage, allows settings to persist with refresh
-        if (loadedSettings.lastSaved <= "1592493428377") localStorage.removeItem("RRCAutoLockSettings"); // Clears local storage and resets to defaults if older version is found
         const defaultSettings = { // sets default values for tab options
             RRCAutoLockLevelOption: "4",
             ECAutoLockLevelOption: "5",
@@ -235,7 +234,7 @@
             $.extend(true, RRCAutoLockSettings, serverSettings);
             localStorage.setItem(STORE_NAME, JSON.stringify(RRCAutoLockSettings)); // saves settings to local storage for persisting when refreshed
         }
-        if (RRCAutoLockSettings.lastSaved <= "1592493428377") {
+        if (RRCAutoLockSettings.lastSaved <= "1592493428377") { // Clears local storage and resets to defaults if older version is found
             localStorage.removeItem("RRCAutoLockSettings"); // Clears local storage and resets to defaults if older version is found
             localStorage.setItem(STORE_NAME, JSON.stringify(RRCAutoLockSettings)); // saves settings to local storage for persisting when refreshed
         }
