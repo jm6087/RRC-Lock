@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2020.06.18.03
+// @version      2020.06.19.00
 // @description  Locks RRCs and Cameras to set level instead of autolock to rank of editor
 // @author       jm6087 (with assistance from Dude495, TheCre8r, and SkiDooGuy)
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -47,7 +47,8 @@
     const STORE_NAME = "RRCAutoLockSettings";
     var CameraType;
     var CameraTypeWW;
-    
+    const mapCenter = {lon: null, lat: null};
+
     function setRRCAutoLock() {
         let RRCAutolockRankplusOne;
         let SelMan = W.selectionManager;
@@ -134,7 +135,7 @@
             }
         }
     }
-    
+
     function RRCAutoLockTab()
     {
         var $RRCsection = $("<div>");
@@ -161,21 +162,55 @@
             '<option value="6">6</option>',
             '</select></br></br>',
             '<b><input type="checkbox" id="RRCAutoLockWazeWrapSuccessCheckbox"> Alerts: Success</b></br>',
-            '<b><input type="checkbox" id="RRCAutoLockWazeWrapInfoCheckbox"> Alerts: Info</b></br></br>',
+            '<b><input type="checkbox" id="RRCAutoLockWazeWrapInfoCheckbox"> Alerts: Info</b></br>',
             '<b><div id="WMETUWarning"></div></b></br>',
-            '<b><h4><div id="USERedits"><div></h4></b></br>',
-            '<b><h4>Your WME window was last refreshed at:</h4></b></br>',
-            '<b><h4><div id="CurrentDate"></div></h4></b></br>',
+            '<b><h4>Your WME window was last refreshed at:</h4></b>',
+            '<b><h4><div id="CurrentDate"></div></h4></b></br></br>',
+            // BETA USERS FEATURE BELOW
+            ////////////////////////////////////////////////////////////////////////////////////////////////
+            '<div class="form-group">', // BETA USERS FEATURE
+            '<b><h5><div id="BETAonly"><div></h5></b></br>', // BETA USERS FEATURE
+            '<b><h5><div id="USERedits"><div></h5></b></br>', // BETA USERS FEATURE
+            '<div>', // BETA USERS FEATURE
+            '<input style="visibility:hidden" type="button" id="Permalink-Button-Name" title="PL" value="Clean PL" class="btn btn-danger RRC-Button">', // BETA USERS FEATURE
+            '</div>', // BETA USERS FEATURE
+            '</div>', // BETA USERS FEATURE
+            '<b><h5><div id="CleanPLresults"></div></h5></b></br>', // BETA USERS FEATURE
+            ///////////////////////////////////////////////////////////////////////////////////////////////
+            // BETA USERS FEATURE ABOVE
             '<div>',
         ].join(' '));
 
         new WazeWrap.Interface.Tab(TAB_NAME, $RRCsection.html(), RRCAutoLockInitializeSettings);
+        $("#Permalink-Button-Name").click(CleanPermaLink); // BETA USERS FEATURE
     }
 
+    // BETA USERS FEATURE BELOW
+    /////////////////////////////////////////////////////////////////////////////////////////
+    function CleanPermaLink(){
+        var newCleanPL;
+        let PLselFeat = W.selectionManager.getSelectedFeatures();
+        let LatLonCenter = W.map.getCenter();
+        let center4326 = WazeWrap.Geometry.ConvertTo4326(LatLonCenter.lon, LatLonCenter.lat);
+        let PLurl = "https://www.waze.com/en-US/editor/?evn=usa$usa&lon=";
+        if (PLselFeat.length > 0){
+            let selectedID = PLselFeat[0].model.attributes.id;
+            let selectedType = PLselFeat[0].model.type + "s";
+            newCleanPL = PLurl + center4326.lon + "&lat=" + center4326.lat + "&zoom=6&"+ selectedType + "=" + selectedID;
+        }else{
+            newCleanPL = PLurl + center4326.lon + "&lat=" + center4326.lat + "&zoom=6";
+        }
+        $('#CleanPLresults')[0].textContent = newCleanPL;
+        console.log(SCRIPT_NAME, "Lon ", center4326.lon, " Lat ", center4326.lat, " ", newCleanPL);
+    }
+    ////////////////////////////////////
+    // BETA USERS FEATURE ABOVE
+    
     function disabledOptions() {
         $('#RRCAutoLockLevelOption')[0].disabled = !RRCAutoLockSettings.RRCAutoLockEnabled;
         $('#ECAutoLockLevelOption')[0].disabled = !RRCAutoLockSettings.ECAutoLockEnabled;
     }
+    
     /*-- START SETTINGS --*/
     async function loadSettings() {
         let loadedSettings = $.parseJSON(localStorage.getItem(STORE_NAME)); // Loads settings from local storage, allows settings to persist with refresh
@@ -265,6 +300,8 @@
                                   } else {
                                       $('#WMETUWarning')[0].textContent = ''};
         if (BETA_TESTERS.includes(USER.name)) { $('#USERedits')[0].textContent = 'Current Edit Count for '+ USER.name + ' - ' + W.loginManager.user.totalEdits;
+                                               $('#BETAonly')[0].textContent = 'The features below only show for editors listed as Beta testers';
+                                               document.getElementById('Permalink-Button-Name').style.visibility = "visible";
                                               };
         $('#CurrentDate')[0].textContent = Date();
     }
