@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2020.06.19.02
+// @version      2020.06.19.03
 // @description  Locks RRCs and Cameras to set level instead of autolock to rank of editor
 // @author       jm6087 (with assistance from Dude495, TheCre8r, and SkiDooGuy)
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -36,9 +36,10 @@
     // The enable script now works and persists thanks to dude495
     // I think I got the enable button to default to checked. Still working on persisting through refresh when disabled
     // Fixed items that juliansean pointed out
-    
+
     var TAB_NAME = 'RRC-AL'
-    var BETA_TESTERS = ['jm6087','the_cre8r','dude495', 'skidooguy','dspille','juliansean','dfw-gis'];
+    const BetaSS = 'https://sheets.googleapis.com/v4/spreadsheets/1wPb4tqTsES7EgAyxVqRRsRiWBDurld5NzN7IdC4pnSo/values/Beta/?key='+atob('QUl6YVN5QXUxcl84ZDBNdkJUdEFwQ2VZdndDUXR6M2I0cmhWZFNn');
+    var BETA_TESTERS = [];
     var VERSION = GM_info.script.version;
     var SCRIPT_NAME = GM_info.script.name;
     const USER = {name: null, rank:null};
@@ -205,12 +206,12 @@
     }
     ////////////////////////////////////
     // BETA USERS FEATURE ABOVE
-    
+
     function disabledOptions() {
         $('#RRCAutoLockLevelOption')[0].disabled = !RRCAutoLockSettings.RRCAutoLockEnabled;
         $('#ECAutoLockLevelOption')[0].disabled = !RRCAutoLockSettings.ECAutoLockEnabled;
     }
-    
+
     /*-- START SETTINGS --*/
     async function loadSettings() {
         let loadedSettings = $.parseJSON(localStorage.getItem(STORE_NAME)); // Loads settings from local storage, allows settings to persist with refresh
@@ -272,6 +273,7 @@
         $('#RRCAutoLockLevelOption')[0].value = RRCAutoLockSettings.RRCAutoLockLevelOption;
         $('#ECAutoLockLevelOption')[0].value = RRCAutoLockSettings.ECAutoLockLevelOption;
         disabledOptions()
+        setBetaFeatures(USER.name);
         console.log(SCRIPT_NAME, "- Tab Created");
         $('#RRCAutoLockCheckbox')[0].onchange = function() {
             console.log(SCRIPT_NAME, "RRCAutoLockCheckbox Settings changed");
@@ -304,16 +306,38 @@
                                    WazeWrap.Alerts.warning(SCRIPT_NAME, ["WME Tile Update Script Detected;","WMETU is known to cause problems with this script.","Disable WMETU if you experience any issues."].join('\n'));
                                   } else {
                                       $('#WMETUWarning')[0].textContent = ''};
-        if (BETA_TESTERS.includes(USER.name)) { $('#USERedits')[0].textContent = 'Current Edit Count for '+ USER.name + ' - ' + W.loginManager.user.totalEdits;
-                                               $('#BETAonly')[0].textContent = 'The features below only show for editors listed as Beta testers';
-                                               document.getElementById('Permalink-Button-Name').style.visibility = "visible";
-                                              };
         $('#CurrentDate')[0].textContent = Date();
     }
-
+    async function loadBetaUsers() {
+        await $.getJSON(BetaSS, function(ldata){
+            BETA_TESTERS = ldata;
+            console.log('RRC-AL Beta Users Loaded....');
+        });
+    }
+    function getFromSheetList(editorName){
+        let mapped = BETA_TESTERS.values.slice(0).reverse().map(obj =>{
+            return {username: obj[0].trim()
+                   }
+        });
+        for(let i=0; i<mapped.length; i++){
+            if(mapped[i].username.toLowerCase() === editorName.toLowerCase()) {
+                return mapped[i];
+            }
+        }
+        return null;
+    }
+    function setBetaFeatures(user) {
+        let entry = getFromSheetList(user)
+        if (entry != null) {
+            $('#USERedits')[0].textContent = 'Current Edit Count for '+ USER.name + ' - ' + W.loginManager.user.totalEdits;
+            $('#BETAonly')[0].textContent = 'The features below only show for editors listed as Beta testers';
+            document.getElementById('Permalink-Button-Name').style.visibility = "visible";
+        };
+    }
     function bootstrap(tries = 1) {
         if (W && W.map && W.model && W.loginManager.user && $ && WazeWrap.Ready ) {
             RRCAutoLockTab();
+            loadBetaUsers();
             WazeWrap.Events.register("selectionchanged", null, setRRCAutoLock);
             WazeWrap.Interface.ShowScriptUpdate(SCRIPT_NAME, VERSION, UPDATE_NOTES);
             console.log(SCRIPT_NAME, "loaded");
