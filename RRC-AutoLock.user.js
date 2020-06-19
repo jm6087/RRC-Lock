@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2020.06.19.00
+// @version      2020.06.19.01
 // @description  Locks RRCs and Cameras to set level instead of autolock to rank of editor
 // @author       jm6087 (with assistance from Dude495, TheCre8r, and SkiDooGuy)
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -221,7 +221,8 @@
             RRCAutoLockWazeWrapSuccessEnabled: true,
             RRCAutoLockWazeWrapInfoEnabled: true,
             RRCAutoLockEnabled: true,
-            ECAutoLockEnabled: true
+            ECAutoLockEnabled: true,
+            lastSaved: "1592493428377"
         };
         RRCAutoLockSettings = loadedSettings ? loadedSettings : defaultSettings;
         for (let prop in defaultSettings) {
@@ -232,6 +233,11 @@
         const serverSettings = await WazeWrap.Remote.RetrieveSettings(STORE_NAME); //Settings stored to WazeWrap
         if (serverSettings && (serverSettings.lastSaved > RRCAutoLockSettings.lastSaved)) { // checks to see if WazeWrap stored settings are newer than what is stored in local storage
             $.extend(true, RRCAutoLockSettings, serverSettings);
+            localStorage.setItem(STORE_NAME, JSON.stringify(RRCAutoLockSettings)); // saves settings to local storage for persisting when refreshed
+        }
+        if (RRCAutoLockSettings.lastSaved <= "1592493428377") {
+            localStorage.removeItem("RRCAutoLockSettings"); // Clears local storage and resets to defaults if older version is found
+            localStorage.setItem(STORE_NAME, JSON.stringify(RRCAutoLockSettings)); // saves settings to local storage for persisting when refreshed
         }
         console.log(SCRIPT_NAME, "Settings Loaded");
     }
@@ -252,8 +258,8 @@
         }
     }
 
-    function RRCAutoLockInitializeSettings(){
-        loadSettings();
+    async function RRCAutoLockInitializeSettings(){
+        await loadSettings();
         USER.rank = W.loginManager.user.rank + 1;
         USER.name = W.loginManager.user.userName;
         $('#RRCAutoLockUsername').text(USER.name);
