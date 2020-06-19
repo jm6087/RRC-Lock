@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2020.06.18.02
+// @version      2020.06.18.03
 // @description  Locks RRCs and Cameras to set level instead of autolock to rank of editor
 // @author       jm6087 (with assistance from Dude495, TheCre8r, and SkiDooGuy)
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -56,6 +56,7 @@
         wazedevtoastr.options.timeOut = '2500'; // Used to adjust the timing of the WW banner messages
         if (SelMan.getSelectedFeatures().length > 0){ // Determines if there is an item selected
             let SelModel = SelMan.getSelectedFeatures()[0].model;
+
             if ((SelModel.type !== 'camera') && (SelModel.type !== 'railroadCrossing')) return; // Suggested by DBSOONER - exits script if the object selected is not what I want
 
             if (SelModel.type === 'camera'){ // Determines camera type is Enforcement Camera
@@ -73,55 +74,58 @@
                 wazedevtoastr.options.timeOut = '6000'
                 WazeWrap.Alerts.error(SCRIPT_NAME, [CameraTypeWW + ' does not appear to be in your edit area.', 'Please check your Editable Areas layer to ensure you have edit rights'].join('\n'));
             }else{
-            //checks to see if Enabled is checked
-            if (RRCAutoLockSettings.RRCAutoLockEnabled == false && CameraType == 'railroadCrossing') // Warning message is valid and MUST be there
-                return console.log(SCRIPT_NAME, CameraTypeWW + " is disabled");
-            if (RRCAutoLockSettings.ECAutoLockEnabled == false && CameraType == 'camera') // Warning message is valid and MUST be there
-                return console.log(SCRIPT_NAME, CameraTypeWW + " is disabled");
-            console.log(SCRIPT_NAME, "Script  is enabled");
+                //checks to see if Enabled is checked
+                if (RRCAutoLockSettings.RRCAutoLockEnabled == false && CameraType == 'railroadCrossing') // Warning message is valid and MUST be there
+                    return console.log(SCRIPT_NAME, CameraTypeWW + " is disabled");
+                if (RRCAutoLockSettings.ECAutoLockEnabled == false && CameraType == 'camera') // Warning message is valid and MUST be there
+                    return console.log(SCRIPT_NAME, CameraTypeWW + " is disabled");
+                console.log(SCRIPT_NAME, "Script  is enabled");
 
-            RRCAutoLockRankOverLock = SelModel.attributes.rank + 1; // Checks rank of selected RRC or EC
-            if (SelModel.attributes.lockRank == null){ // Checks to see if selected RRC or EC is unverified
-                RRCAutolockRankplusOne = ("Auto (" + (SelModel.attributes.rank + 1)+")"); // If unverified, sets the text for WW with Auto(lock number)
-            }else{
-                RRCAutolockRankplusOne = SelModel.attributes.lockRank + 1; // If already verified, sets text for WW to lock number only
-            };
-            let RRCAutoLock = $(`input[id^="lockRank-${modelRank}"]`);
-            if (SelMan.hasSelectedFeatures() && SelModel.type === CameraType){
-                // Finds ID number of the last editor
-                let lastEditBy = SelModel.attributes.updatedBy;
-                if (lastEditBy === null) {
-                    lastEditBy = SelModel.attributes.createdBy;
-                }
-                if (lastEditBy == undefined) {
-                    LastEditorUserName = USER.name;
+                RRCAutoLockRankOverLock = SelModel.attributes.rank + 1; // Checks rank of selected RRC or EC
+                if (SelModel.attributes.lockRank == null){ // Checks to see if selected RRC or EC is unverified
+                    RRCAutolockRankplusOne = ("Auto (" + (SelModel.attributes.rank + 1)+")"); // If unverified, sets the text for WW with Auto(lock number)
                 }else{
-                    // Finds the UserName based off the ID of last editor
-                    LastEditorUserName = W.model.users.objects[lastEditBy].userName;
-                }
-                if ((USER.rank >= (SelModel.attributes.rank + 1)) && (SelModel.attributes.lockRank != modelRank) && (RRCAutoLock.length > 0)){
-                    RRCAutoLock[0].click();
-                    //checks to see if Enabled is checked
-                    if (RRCAutoLockSettings.RRCAutoLockWazeWrapSuccessEnabled == true){
-                        console.log(SCRIPT_NAME, "WazeWrap  is enabled");
-                        WazeWrap.Alerts.success(SCRIPT_NAME, [CameraTypeWW + ' lock level changed from lock level ' + RRCAutolockRankplusOne, 'Last edited by ' + LastEditorUserName].join('\n'));
+                    RRCAutolockRankplusOne = SelModel.attributes.lockRank + 1; // If already verified, sets text for WW to lock number only
+                };
+                let RRCAutoLock = $(`input[id^="lockRank-${modelRank}"]`); // Sets variable for which lockrank to click 
+                if (SelMan.hasSelectedFeatures() && SelModel.type === CameraType){
+                    // Finds ID number of the last editor
+                    let lastEditBy = SelModel.attributes.updatedBy;
+                    if (lastEditBy === null) {
+                        lastEditBy = SelModel.attributes.createdBy;
                     }
-                    console.log(SCRIPT_NAME, "Version #", VERSION, " - ", CameraTypeWW ," Lock level changed from", RRCAutolockRankplusOne);
-                }else{
-                    if (USER.rank >= (SelModel.attributes.rank + 1) && SelModel.attributes.lockRank == modelRank){
-                        if (RRCAutoLockSettings.RRCAutoLockWazeWrapInfoEnabled == true){
-                            console.log(SCRIPT_NAME, "WazeWrap  is enabled");
-                            WazeWrap.Alerts.info(SCRIPT_NAME, [CameraTypeWW + ' lock not changed, already at lock level ' + RRCAutolockRankplusOne, 'Last edited by ' + LastEditorUserName].join('\n'));
-                        }
-                        console.log (SCRIPT_NAME, "Version #", VERSION, " - ", CameraTypeWW, " lock not changed, already at lock level", RRCAutolockRankplusOne);
+                    if (lastEditBy == undefined) {
+                        LastEditorUserName = USER.name;
                     }else{
-                        if (USER.rank < (SelModel.attributes.rank + 1)){
-                            wazedevtoastr.options.timeOut = '5000';
-                            if (RRCAutoLockRankOverLock > 5){
-                                WazeWrap.Alerts.error(SCRIPT_NAME, [CameraTypeWW + ' is locked above your rank', 'You will need assistance from an Rank ' + RRCAutoLockRankOverLock + ' editor', 'Last edited by ' + LastEditorUserName].join('\n'));
-                            }else{
-                                WazeWrap.Alerts.error(SCRIPT_NAME, [CameraTypeWW + ' is locked above your rank', 'You will need assistance from at least a Rank ' + RRCAutoLockRankOverLock + ' editor', 'Last edited by ' + LastEditorUserName].join('\n'));
-                                console.log (SCRIPT_NAME, "Version #", VERSION, " - ", CameraTypeWW, " is locked above editor rank");
+                        // Finds the UserName based off the ID of last editor
+                        LastEditorUserName = W.model.users.objects[lastEditBy].userName;
+                    }
+                    // Checks to see if User Rank is higher/equal to object lock AND if object is not equal to dropdown lock level in panel
+                    if ((USER.rank >= (SelModel.attributes.rank + 1)) && (SelModel.attributes.lockRank != modelRank)){
+                        RRCAutoLock[0].click();
+                        // Checks to see if WazeWrap banner Enabled is checked
+                        if (RRCAutoLockSettings.RRCAutoLockWazeWrapSuccessEnabled == true){
+                            console.log(SCRIPT_NAME, "WazeWrap  is enabled");
+                            WazeWrap.Alerts.success(SCRIPT_NAME, [CameraTypeWW + ' lock level changed from lock level ' + RRCAutolockRankplusOne, 'Last edited by ' + LastEditorUserName].join('\n'));
+                        }
+                        console.log(SCRIPT_NAME, "Version #", VERSION, " - ", CameraTypeWW ," Lock level changed from", RRCAutolockRankplusOne);
+                    }else{
+                        // Checks to see if User rank is greater or equal to object lock level AND if object is already equal to dropdown lock level in panel
+                        if (USER.rank >= (SelModel.attributes.rank + 1) && SelModel.attributes.lockRank == modelRank){
+                            if (RRCAutoLockSettings.RRCAutoLockWazeWrapInfoEnabled == true){ // Check to see if WW banner enabled
+                                console.log(SCRIPT_NAME, "WazeWrap  is enabled");
+                                WazeWrap.Alerts.info(SCRIPT_NAME, [CameraTypeWW + ' lock not changed, already at lock level ' + RRCAutolockRankplusOne, 'Last edited by ' + LastEditorUserName].join('\n'));
+                            }
+                            console.log (SCRIPT_NAME, "Version #", VERSION, " - ", CameraTypeWW, " lock not changed, already at lock level", RRCAutolockRankplusOne);
+                        }else{
+                            // Checks to see if object is locked above User rank
+                            if (USER.rank < (SelModel.attributes.rank + 1)){
+                                wazedevtoastr.options.timeOut = '5000';
+                                if (RRCAutoLockRankOverLock > 5){
+                                    WazeWrap.Alerts.error(SCRIPT_NAME, [CameraTypeWW + ' is locked above your rank', 'You will need assistance from an Rank ' + RRCAutoLockRankOverLock + ' editor', 'Last edited by ' + LastEditorUserName].join('\n'));
+                                }else{
+                                    WazeWrap.Alerts.error(SCRIPT_NAME, [CameraTypeWW + ' is locked above your rank', 'You will need assistance from at least a Rank ' + RRCAutoLockRankOverLock + ' editor', 'Last edited by ' + LastEditorUserName].join('\n'));
+                                    console.log (SCRIPT_NAME, "Version #", VERSION, " - ", CameraTypeWW, " is locked above editor rank");
                                 }
                             }
                         }
