@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2020.06.20.02
+// @version      2020.06.20.03
 // @description  Locks RRCs and Cameras to set level instead of autolock to rank of editor
 // @author       jm6087 (with assistance from Dude495, TheCre8r, and SkiDooGuy)
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -175,12 +175,9 @@
             '<b><h5><div id="BETAonly"><div></h5></b></br>', // BETA USERS FEATURE
             '<b><h5><div id="USERedits"><div></h5></b></br>', // BETA USERS FEATURE
             '<div>', // BETA USERS FEATURE
-            '<input style="visibility:hidden" type="button" id="Permalink-Button-Name" title="PL" value="Clean PL" class="btn btn-danger RRC-Button">', // BETA USERS FEATURE
+            '<input style="visibility:hidden" type="button" id="Permalink-Button-Name" title="PL" value="Copy Clean PL to your clipboard" class="btn btn-danger RRC-Button">', // BETA USER FEATURE
             '</div>', // BETA USERS FEATURE
             '</div>', // BETA USERS FEATURE
-            '<b><h5><div id="CleanPLresults"></div></h5></b></br>', // BETA USERS FEATURE
-            ///////////////////////////////////////////////////////////////////////////////////////////////
-            // BETA USERS FEATURE ABOVE
             '<div>',
         ].join(' '));
 
@@ -203,12 +200,13 @@
         }else{
             newCleanPL = PLurl + center4326.lon + "&lat=" + center4326.lat + "&zoom=6";
         }
-        $('#CleanPLresults')[0].textContent = newCleanPL;
         // NEXT 4 LINES COPIES CLEAN PL TO CLIPBOARD
         var copied = $('<textarea id="PLcopy" rows="1" cols="1">').val(newCleanPL/*.replace(/\_*\n/g, '\n')*/).appendTo('body').select(); // Creates temp text box with the PL
         document.execCommand('copy'); // Copies the PL to clipboard
         var rembox = document.getElementById('PLcopy');
         document.body.removeChild(rembox); // Deletes temp text box
+        wazedevtoastr.options.timeOut = '2000';
+        WazeWrap.Alerts.info(SCRIPT_NAME, 'PL saved to your clipboard');        
         console.log(SCRIPT_NAME, "Lon ", center4326.lon, " Lat ", center4326.lat, " ", newCleanPL);
     }
     ////////////////////////////////////
