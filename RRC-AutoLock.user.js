@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2020.06.20.03
+// @version      2020.06.20.04
 // @description  Locks RRCs and Cameras to set level instead of autolock to rank of editor
 // @author       jm6087 (with assistance from Dude495, TheCre8r, and SkiDooGuy)
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -51,6 +51,7 @@
     var CameraType;
     var CameraTypeWW;
     const mapCenter = {lon: null, lat: null};
+    const Lang = "en-US";
 
     function setRRCAutoLock() {
         let RRCAutolockRankplusOne;
@@ -176,6 +177,7 @@
             '<b><h5><div id="USERedits"><div></h5></b></br>', // BETA USERS FEATURE
             '<div>', // BETA USERS FEATURE
             '<input style="visibility:hidden" type="button" id="Permalink-Button-Name" title="PL" value="Copy Clean PL to your clipboard" class="btn btn-danger RRC-Button">', // BETA USER FEATURE
+            '<input style="visibility:hidden" type="button" id="Permalink-Button-Input" title="PL" value="Clean PL from another editor" class="btn btn-danger RRC-Button">', // BETA USER FEATURE
             '</div>', // BETA USERS FEATURE
             '</div>', // BETA USERS FEATURE
             '<div>',
@@ -183,6 +185,7 @@
 
         new WazeWrap.Interface.Tab(TAB_NAME, $RRCsection.html(), RRCAutoLockInitializeSettings);
         $("#Permalink-Button-Name").click(CleanPermaLink); // BETA USERS FEATURE
+        $("#Permalink-Button-Input").click(inputPermaLink); // BETA USER FEATURE        
     }
 
     // BETA USERS FEATURE BELOW
@@ -192,7 +195,7 @@
         let PLselFeat = W.selectionManager.getSelectedFeatures();
         let LatLonCenter = W.map.getCenter();
         let center4326 = WazeWrap.Geometry.ConvertTo4326(LatLonCenter.lon, LatLonCenter.lat);
-        let PLurl = "https://www.waze.com/en-US/editor/?evn=usa$usa&lon=";
+        let PLurl = "https://www.waze.com/" + Lang + "/editor/?evn=usa$usa&lon=";
         if (PLselFeat.length > 0){
             let selectedID = PLselFeat[0].model.attributes.id;
             let selectedType = PLselFeat[0].model.type + "s";
@@ -205,9 +208,41 @@
         document.execCommand('copy'); // Copies the PL to clipboard
         var rembox = document.getElementById('PLcopy');
         document.body.removeChild(rembox); // Deletes temp text box
-        wazedevtoastr.options.timeOut = '2000';
-        WazeWrap.Alerts.info(SCRIPT_NAME, 'PL saved to your clipboard');        
-        console.log(SCRIPT_NAME, "Lon ", center4326.lon, " Lat ", center4326.lat, " ", newCleanPL);
+        wazedevtoastr.options.timeOut = '1500';
+        WazeWrap.Alerts.info(SCRIPT_NAME, 'PL saved to your clipboard');
+        console.log(SCRIPT_NAME, newCleanPL + ' copied to your clipboard');
+    }
+    function inputPermaLink(){
+        // Add WazeWrap Prompt box to grab PL and then clean it up
+        WazeWrap.Alerts.prompt(SCRIPT_NAME, "Paste your PL", "", OKinputPermaLink, cancelInputPermaLink); // Prompts to enter a PL
+    }
+    function OKinputPermaLink(){
+        let inputData = $(".toast-prompt-input")[0].value;
+        var regexs = {
+            'wazeurl': new RegExp('(?:http(?:s):\/\/)?(?:www\.|beta\.)?waze\.com\/(?:.*?\/)?(editor|livemap)[-a-zA-Z0-9@:%_\+,.~#?&\/\/=]*', "ig")
+        };
+        if (inputData.match(regexs.wazeurl)){
+            let PLurl = "https://www.waze.com/" + Lang + "/editor/?evn=usa$usa&lon=";
+            var inputSegsVen;
+            let params = inputData.match(/lon=(-?\d*.\d*)&lat=(-?\d*.\d*)/);
+            let inputLon = params[1];
+            let inputLat = params[2];
+            let inputSegs = inputData.match(/&segments=(.*)(?:&|$)/);
+            let inputVenue = inputData.match(/&venues=(.*)(?:&|$)/);
+            let inputRRC = inputData.match(/&railroadCrossings=(.*)(?:&|$)/)
+            if ((inputSegs == null) || (inputVenue == null)) (inputSegsVen = "");
+            if (inputSegs != null) (inputSegsVen = "&segments=" + inputSegs[1]);
+            if (inputVenue != null) (inputSegsVen = "&venues=" + inputVenue[1]);
+            if (inputRRC != null) (inputSegsVen = "&railroadCrossings=" + inputRRC[1]);
+            let newCleanPL = PLurl + inputLon + "&lat=" + inputLat + "&zoom=6" + inputSegsVen;
+            console.log (SCRIPT_NAME, 'Inputed PL now clean ' + newCleanPL);
+        }else{
+            wazedevtoastr.options.timeout = '100';
+            WazeWrap.Alerts.info(SCRIPT_NAME, "That did not appear to be a valid permalink");
+        }
+    }
+    function cancelInputPermaLink(){
+        console.log (SCRIPT_NAME, "cancel button");
     }
     ////////////////////////////////////
     // BETA USERS FEATURE ABOVE
@@ -332,12 +367,13 @@
         return null;
     }
     function setBetaFeatures(user) {
-        let entry = getFromSheetList(user)
+        let entry = getFromSheetList(user);
         if (entry != null) {
             $('#USERedits')[0].textContent = 'Current Edit Count for '+ USER.name + ' - ' + W.loginManager.user.totalEdits;
             $('#BETAonly')[0].textContent = 'The features below only show for editors listed as Beta testers';
             document.getElementById('Permalink-Button-Name').style.visibility = "visible";
-            console.log(SCRIPT_NAME, "Beta user features added")
+            document.getElementById('Permalink-Button-Input').style.visibility = "visible";
+            console.log(SCRIPT_NAME, "Beta user features added");
         }else{
             console.log(SCRIPT_NAME, "You are not a Beta user");
         }
