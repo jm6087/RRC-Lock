@@ -332,6 +332,7 @@
             $('#USERedits')[0].textContent = 'Current Edit Count for '+ USER.name + ' - ' + W.loginManager.user.totalEdits;
             $('#BETAonly')[0].textContent = 'The features below only show for editors listed as Beta testers';
             document.getElementById('Permalink-Button-Name').style.visibility = "visible";
+            console.log(SCRIPT_NAME, "Beta features loaded for user")
         };
     }
     async function bootstrap(tries = 1) {
