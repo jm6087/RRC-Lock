@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2020.06.20.00
+// @version      2020.06.20.01
 // @description  Locks RRCs and Cameras to set level instead of autolock to rank of editor
 // @author       jm6087 (with assistance from Dude495, TheCre8r, and SkiDooGuy)
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -332,8 +332,10 @@
             $('#USERedits')[0].textContent = 'Current Edit Count for '+ USER.name + ' - ' + W.loginManager.user.totalEdits;
             $('#BETAonly')[0].textContent = 'The features below only show for editors listed as Beta testers';
             document.getElementById('Permalink-Button-Name').style.visibility = "visible";
-            console.log(SCRIPT_NAME, "Beta features loaded for user")
-        };
+            console.log(SCRIPT_NAME, "Beta user features added")
+        }else{
+            console.log(SCRIPT_NAME, "You are not a Beta user");
+        }
     }
     async function bootstrap(tries = 1) {
         if (W && W.map && W.model && W.loginManager.user && $ && WazeWrap.Ready ) {
