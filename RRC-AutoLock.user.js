@@ -1,11 +1,12 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2020.06.20.01
+// @version      2020.06.20.02
 // @description  Locks RRCs and Cameras to set level instead of autolock to rank of editor
 // @author       jm6087 (with assistance from Dude495, TheCre8r, and SkiDooGuy)
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
 // @require      https://greasyfork.org/scripts/24851-wazewrap/code/WazeWrap.js
+// @require      https://greasyfork.org/scripts/27254-clipboard-js/code/clipboardjs.js
 // @grant        none
 // ==/UserScript==
 
@@ -17,13 +18,14 @@
 (function() {
     'use strict';
     var UPDATE_NOTES = `Locks (adjustable) RRCs to L4 and Cameras to L5 upon selection.<br><br>
-    2020.06.18.02 - Added check to see if RRC/camera are within editable areas<br><br>
+    Just about ready for release I think<br><br>
     <br>
     This is my first script, hope it works and currently is very basic due to limited knoweledge.<br>
     Thanks for Dude495, TheCre8r, and SkiDooGuy for their assistance and encouragement`
 
 
     // PREVIOUS NOTES
+    // 2020.06     Ready for release
     // 2020.06.18.02 - Added check to see if RRC/camera are within editable areas
     // 2020.06.18.00 - More code clean up
     // 2020.06.17.00 - Code clean up
@@ -202,6 +204,11 @@
             newCleanPL = PLurl + center4326.lon + "&lat=" + center4326.lat + "&zoom=6";
         }
         $('#CleanPLresults')[0].textContent = newCleanPL;
+        // NEXT 4 LINES COPIES CLEAN PL TO CLIPBOARD
+        var copied = $('<textarea id="PLcopy" rows="1" cols="1">').val(newCleanPL/*.replace(/\_*\n/g, '\n')*/).appendTo('body').select(); // Creates temp text box with the PL
+        document.execCommand('copy'); // Copies the PL to clipboard
+        var rembox = document.getElementById('PLcopy');
+        document.body.removeChild(rembox); // Deletes temp text box
         console.log(SCRIPT_NAME, "Lon ", center4326.lon, " Lat ", center4326.lat, " ", newCleanPL);
     }
     ////////////////////////////////////
