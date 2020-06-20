@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2020.06.20.04
+// @version      2020.06.20.05
 // @description  Locks RRCs and Cameras to set level instead of autolock to rank of editor
 // @author       jm6087 (with assistance from Dude495, TheCre8r, and SkiDooGuy)
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -52,6 +52,7 @@
     var CameraTypeWW;
     const mapCenter = {lon: null, lat: null};
     const Lang = "en-US";
+    var newCleanPL;
 
     function setRRCAutoLock() {
         let RRCAutolockRankplusOne;
@@ -188,30 +189,22 @@
         $("#Permalink-Button-Input").click(inputPermaLink); // BETA USER FEATURE        
     }
 
-    // BETA USERS FEATURE BELOW
-    /////////////////////////////////////////////////////////////////////////////////////////
     function CleanPermaLink(){
-        var newCleanPL;
         let PLselFeat = W.selectionManager.getSelectedFeatures();
         let LatLonCenter = W.map.getCenter();
         let center4326 = WazeWrap.Geometry.ConvertTo4326(LatLonCenter.lon, LatLonCenter.lat);
         let PLurl = "https://www.waze.com/" + Lang + "/editor/?evn=usa$usa&lon=";
         if (PLselFeat.length > 0){
-            let selectedID = PLselFeat[0].model.attributes.id;
             let selectedType = PLselFeat[0].model.type + "s";
+            let selectedID = $('#segment-edit-general > ul > li:contains("ID:")')[0].textContent.match(/\d.*/)[0];
+            console.log(SCRIPT_NAME, selectedID)
             newCleanPL = PLurl + center4326.lon + "&lat=" + center4326.lat + "&zoom=6&"+ selectedType + "=" + selectedID;
         }else{
             newCleanPL = PLurl + center4326.lon + "&lat=" + center4326.lat + "&zoom=6";
         }
-        // NEXT 4 LINES COPIES CLEAN PL TO CLIPBOARD
-        var copied = $('<textarea id="PLcopy" rows="1" cols="1">').val(newCleanPL/*.replace(/\_*\n/g, '\n')*/).appendTo('body').select(); // Creates temp text box with the PL
-        document.execCommand('copy'); // Copies the PL to clipboard
-        var rembox = document.getElementById('PLcopy');
-        document.body.removeChild(rembox); // Deletes temp text box
-        wazedevtoastr.options.timeOut = '1500';
-        WazeWrap.Alerts.info(SCRIPT_NAME, 'PL saved to your clipboard');
-        console.log(SCRIPT_NAME, newCleanPL + ' copied to your clipboard');
+        copyToClipboard();
     }
+
     function inputPermaLink(){
         // Add WazeWrap Prompt box to grab PL and then clean it up
         WazeWrap.Alerts.prompt(SCRIPT_NAME, "Paste your PL", "", OKinputPermaLink, cancelInputPermaLink); // Prompts to enter a PL
@@ -234,7 +227,8 @@
             if (inputSegs != null) (inputSegsVen = "&segments=" + inputSegs[1]);
             if (inputVenue != null) (inputSegsVen = "&venues=" + inputVenue[1]);
             if (inputRRC != null) (inputSegsVen = "&railroadCrossings=" + inputRRC[1]);
-            let newCleanPL = PLurl + inputLon + "&lat=" + inputLat + "&zoom=6" + inputSegsVen;
+            newCleanPL = PLurl + inputLon + "&lat=" + inputLat + "&zoom=6" + inputSegsVen;
+            copyToClipboard();
             console.log (SCRIPT_NAME, 'Inputed PL now clean ' + newCleanPL);
         }else{
             wazedevtoastr.options.timeout = '100';
@@ -243,6 +237,17 @@
     }
     function cancelInputPermaLink(){
         console.log (SCRIPT_NAME, "cancel button");
+    }
+
+        function copyToClipboard(){
+        // NEXT 4 LINES COPIES CLEAN PL TO CLIPBOARD
+        var copied = $('<textarea id="PLcopy" rows="1" cols="1">').val(newCleanPL/*.replace(/\_*\n/g, '\n')*/).appendTo('body').select(); // Creates temp text box with the PL
+        document.execCommand('copy'); // Copies the PL to clipboard
+        var rembox = document.getElementById('PLcopy');
+        document.body.removeChild(rembox); // Deletes temp text box
+        wazedevtoastr.options.timeOut = '1500';
+        WazeWrap.Alerts.info(SCRIPT_NAME, 'PL saved to your clipboard');
+        console.log(SCRIPT_NAME, newCleanPL + ' copied to your clipboard');
     }
     ////////////////////////////////////
     // BETA USERS FEATURE ABOVE
