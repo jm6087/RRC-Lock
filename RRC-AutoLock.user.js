@@ -339,7 +339,7 @@
     }
     async function bootstrap(tries = 1) {
         if (W && W.map && W.model && W.loginManager.user && $ && WazeWrap.Ready ) {
-            loadBetaUsers();
+            await loadBetaUsers();
             RRCAutoLockTab();
             WazeWrap.Events.register("selectionchanged", null, setRRCAutoLock);
             WazeWrap.Interface.ShowScriptUpdate(SCRIPT_NAME, VERSION, UPDATE_NOTES);
