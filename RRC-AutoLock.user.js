@@ -7,6 +7,7 @@
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
 // @require      https://greasyfork.org/scripts/24851-wazewrap/code/WazeWrap.js
 // @require      https://greasyfork.org/scripts/27254-clipboard-js/code/clipboardjs.js
+// @icon         https://i.imgur.com/fsn12tm.png?1
 // @grant        none
 // ==/UserScript==
 
