@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2020.06.21.03
+// @version      2020.06.21.04
 // @description  Locks RRCs and Cameras to set level instead of autolock to rank of editor
 // @author       jm6087
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -14,6 +14,7 @@
 /* global WazeWrap */
 /* global $ */
 /* global wazedevtoastr */
+/* I18n */
 
 (function() {
     'use strict';
@@ -26,7 +27,7 @@
 
     // PREVIOUS NOTES
     // with assistance and encouragment from Dude495, TheCre8r, and SkiDooGuy
-    
+
     // 2020.06.21.01 - Released to editors
     // 2020.06.18.02 - Added check to see if RRC/camera are within editable areas
     // 2020.06.18.00 - More code clean up
@@ -57,7 +58,8 @@
     var newCleanPL;
     var OpenBrack;
     var ClosedBrack;
-    
+    var RRCAutoLock;
+
     function setRRCAutoLock() {
         let RRCAutolockRankplusOne;
         let SelMan = W.selectionManager;
@@ -195,7 +197,7 @@
 
         new WazeWrap.Interface.Tab(TAB_NAME, $RRCsection.html(), RRCAutoLockInitializeSettings);
         $("#Permalink-Button-Name").click(CleanPermaLink); // BETA USERS FEATURE
-        $("#Permalink-Button-Input").click(inputPermaLink); // BETA USER FEATURE        
+        $("#Permalink-Button-Input").click(inputPermaLink); // BETA USER FEATURE
     }
 
     function CleanPermaLink(){
@@ -374,7 +376,7 @@
         $('#DiscordPermalinkCheckbox')[0].onchange = function() {
             console.log(SCRIPT_NAME, "Discord PL option changed");
             saveSettings();
-        };        
+        };
         if ($('#Info_server')[0]) { $('#WMETUWarning')[0].innerHTML = 'WME Tile Update Script Detected;<br>WMETU is known to cause problems with this script.<br>Disable WMETU if you experience any issues.';
                                    wazedevtoastr.options.timeOut = '8000';
                                    WazeWrap.Alerts.warning(SCRIPT_NAME, ["WME Tile Update Script Detected;","WMETU is known to cause problems with this script.","Disable WMETU if you experience any issues."].join('\n'));
