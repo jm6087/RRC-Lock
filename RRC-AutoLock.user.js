@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2020.06.21.00
+// @version      2020.06.21.01
 // @description  Locks RRCs and Cameras to set level instead of autolock to rank of editor
 // @author       jm6087 (with assistance from Dude495, TheCre8r, and SkiDooGuy)
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -335,7 +335,7 @@
         $('#RRCAutoLockWazeWrapInfoCheckbox')[0].checked = RRCAutoLockSettings.RRCAutoLockWazeWrapInfoEnabled;
         $('#RRCAutoLockLevelOption')[0].value = RRCAutoLockSettings.RRCAutoLockLevelOption;
         $('#ECAutoLockLevelOption')[0].value = RRCAutoLockSettings.ECAutoLockLevelOption;
-        $('#DiscordPermalinkCheckbox')[0].value = RRCAutoLockSettings.DiscordPermalink;
+        $('#DiscordPermalinkCheckbox')[0].check = RRCAutoLockSettings.DiscordPermalink;
         disabledOptions()
         setBetaFeatures(USER.name);
         console.log(SCRIPT_NAME, "- Tab Created");
