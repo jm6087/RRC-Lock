@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2020.06.20.06
+// @version      2020.06.21.00
 // @description  Locks RRCs and Cameras to set level instead of autolock to rank of editor
 // @author       jm6087 (with assistance from Dude495, TheCre8r, and SkiDooGuy)
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -53,7 +53,9 @@
     const mapCenter = {lon: null, lat: null};
     const Lang = "en-US";
     var newCleanPL;
-
+    var OpenBrack;
+    var ClosedBrack;
+    
     function setRRCAutoLock() {
         let RRCAutolockRankplusOne;
         let SelMan = W.selectionManager;
@@ -177,6 +179,7 @@
             '<b><h5><div id="BETAonly"><div></h5></b></br>', // BETA USERS FEATURE
             '<b><h5><div id="USERedits"><div></h5></b></br>', // BETA USERS FEATURE
             '<div>', // BETA USERS FEATURE
+            '<b><input type="checkbox" id="DiscordPermalinkCheckbox"> Discord </b></br>',
             '<input style="visibility:hidden" type="button" id="Permalink-Button-Name" title="PL" value="Copy Clean PL to your clipboard" class="btn btn-danger RRC-Button">', // BETA USER FEATURE
             '<input style="visibility:hidden" type="button" id="Permalink-Button-Input" title="PL" value="Clean PL from another editor" class="btn btn-danger RRC-Button">', // BETA USER FEATURE
             '</div>', // BETA USERS FEATURE
@@ -194,12 +197,19 @@
         let LatLonCenter = W.map.getCenter();
         let center4326 = WazeWrap.Geometry.ConvertTo4326(LatLonCenter.lon, LatLonCenter.lat);
         let PLurl = 'https://www.waze.com/' + I18n.currentLocale() + '/editor?env=' + W.app.getAppRegionCode() + "&lon=";
+        if (RRCAutoLockSettings.DiscordPermalink == true){
+            OpenBrack = "<";
+            ClosedBrack = ">";
+        }else{
+            OpenBrack = "";
+            ClosedBrack = "";
+        }
         if (PLselFeat.length > 0){
             let selectedType = PLselFeat[0].model.type;
             let selectedID = $('#'+selectedType+'-edit-general > ul > li:contains("ID:")')[0].textContent.match(/\d.*/)[0];
-            newCleanPL = PLurl + center4326.lon + "&lat=" + center4326.lat + "&zoom=6&" + selectedType + "s=" + selectedID;
+            newCleanPL = OpenBrack + PLurl + center4326.lon + "&lat=" + center4326.lat + "&zoom=6&" + selectedType + "s=" + selectedID + ClosedBrack;
         }else{
-            newCleanPL = PLurl + center4326.lon + "&lat=" + center4326.lat + "&zoom=6";
+            newCleanPL = OpenBrack + PLurl + center4326.lon + "&lat=" + center4326.lat + "&zoom=6" + ClosedBrack;
         }
         copyToClipboard();
     }
@@ -226,7 +236,14 @@
             if (inputSegs != null) (inputSegsVen = "&segments=" + inputSegs[1]);
             if (inputVenue != null) (inputSegsVen = "&venues=" + inputVenue[1]);
             if (inputRRC != null) (inputSegsVen = "&railroadCrossings=" + inputRRC[1]);
-            newCleanPL = PLurl + inputLon + "&lat=" + inputLat + "&zoom=6" + inputSegsVen;
+            if (RRCAutoLockSettings.DiscordPermalink == true){
+                OpenBrack = "<";
+                ClosedBrack = ">";
+            }else{
+                OpenBrack = "";
+                ClosedBrack = "";
+            }
+            newCleanPL = OpenBrack +PLurl + inputLon + "&lat=" + inputLat + "&zoom=6" + inputSegsVen + ClosedBrack;
             copyToClipboard();
             console.log (SCRIPT_NAME, 'Inputed PL now clean ' + newCleanPL);
         }else{
@@ -238,7 +255,7 @@
         console.log (SCRIPT_NAME, "cancel button");
     }
 
-        function copyToClipboard(){
+    function copyToClipboard(){
         // NEXT 4 LINES COPIES CLEAN PL TO CLIPBOARD
         var copied = $('<textarea id="PLcopy" rows="1" cols="1">').val(newCleanPL/*.replace(/\_*\n/g, '\n')*/).appendTo('body').select(); // Creates temp text box with the PL
         document.execCommand('copy'); // Copies the PL to clipboard
@@ -266,6 +283,7 @@
             RRCAutoLockWazeWrapInfoEnabled: true,
             RRCAutoLockEnabled: true,
             ECAutoLockEnabled: true,
+            DiscordPermalink: true,
             lastSaved: "1592493428377"
         };
         RRCAutoLockSettings = loadedSettings ? loadedSettings : defaultSettings;
@@ -295,6 +313,7 @@
             RRCAutoLockSettings.RRCAutoLockLevelOption = $('#RRCAutoLockLevelOption')[0].value;
             RRCAutoLockSettings.ECAutoLockLevelOption = $('#ECAutoLockLevelOption')[0].value;
             RRCAutoLockSettings.lastSaved = Date.now();
+            RRCAutoLockSettings.DiscordPermalink = $('#DiscordPermalinkCheckbox')[0].checked;
             disabledOptions();
             localStorage.setItem(STORE_NAME, JSON.stringify(RRCAutoLockSettings)); // saves settings to local storage for persisting when refreshed
             WazeWrap.Remote.SaveSettings(STORE_NAME, JSON.stringify(RRCAutoLockSettings)); // saves settings to WazeWrap
@@ -316,6 +335,7 @@
         $('#RRCAutoLockWazeWrapInfoCheckbox')[0].checked = RRCAutoLockSettings.RRCAutoLockWazeWrapInfoEnabled;
         $('#RRCAutoLockLevelOption')[0].value = RRCAutoLockSettings.RRCAutoLockLevelOption;
         $('#ECAutoLockLevelOption')[0].value = RRCAutoLockSettings.ECAutoLockLevelOption;
+        $('#DiscordPermalinkCheckbox')[0].value = RRCAutoLockSettings.DiscordPermalink;
         disabledOptions()
         setBetaFeatures(USER.name);
         console.log(SCRIPT_NAME, "- Tab Created");
@@ -345,6 +365,10 @@
             console.log(SCRIPT_NAME, "ECAutoLockLevelValue Settings changed");
             saveSettings();
         };
+        $('#DiscordPermalinkCheckbox')[0].onchange = function() {
+            console.log(SCRIPT_NAME, "Discord PL option changed");
+            saveSettings();
+        };        
         if ($('#Info_server')[0]) { $('#WMETUWarning')[0].innerHTML = 'WME Tile Update Script Detected;<br>WMETU is known to cause problems with this script.<br>Disable WMETU if you experience any issues.';
                                    wazedevtoastr.options.timeOut = '8000';
                                    WazeWrap.Alerts.warning(SCRIPT_NAME, ["WME Tile Update Script Detected;","WMETU is known to cause problems with this script.","Disable WMETU if you experience any issues."].join('\n'));
