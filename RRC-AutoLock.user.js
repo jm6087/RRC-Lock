@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2020.06.20.05
+// @version      2020.06.20.06
 // @description  Locks RRCs and Cameras to set level instead of autolock to rank of editor
 // @author       jm6087 (with assistance from Dude495, TheCre8r, and SkiDooGuy)
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -193,12 +193,11 @@
         let PLselFeat = W.selectionManager.getSelectedFeatures();
         let LatLonCenter = W.map.getCenter();
         let center4326 = WazeWrap.Geometry.ConvertTo4326(LatLonCenter.lon, LatLonCenter.lat);
-        let PLurl = "https://www.waze.com/" + Lang + "/editor/?evn=usa$usa&lon=";
+        let PLurl = 'https://www.waze.com/' + I18n.currentLocale() + '/editor?env=' + W.app.getAppRegionCode() + "&lon=";
         if (PLselFeat.length > 0){
-            let selectedType = PLselFeat[0].model.type + "s";
-            let selectedID = $('#segment-edit-general > ul > li:contains("ID:")')[0].textContent.match(/\d.*/)[0];
-            console.log(SCRIPT_NAME, selectedID)
-            newCleanPL = PLurl + center4326.lon + "&lat=" + center4326.lat + "&zoom=6&"+ selectedType + "=" + selectedID;
+            let selectedType = PLselFeat[0].model.type;
+            let selectedID = $('#'+selectedType+'-edit-general > ul > li:contains("ID:")')[0].textContent.match(/\d.*/)[0];
+            newCleanPL = PLurl + center4326.lon + "&lat=" + center4326.lat + "&zoom=6&" + selectedType + "s=" + selectedID;
         }else{
             newCleanPL = PLurl + center4326.lon + "&lat=" + center4326.lat + "&zoom=6";
         }
@@ -215,7 +214,7 @@
             'wazeurl': new RegExp('(?:http(?:s):\/\/)?(?:www\.|beta\.)?waze\.com\/(?:.*?\/)?(editor|livemap)[-a-zA-Z0-9@:%_\+,.~#?&\/\/=]*', "ig")
         };
         if (inputData.match(regexs.wazeurl)){
-            let PLurl = "https://www.waze.com/" + Lang + "/editor/?evn=usa$usa&lon=";
+            let PLurl = 'https://www.waze.com/' + I18n.currentLocale() + '/editor?env=' + W.app.getAppRegionCode() + "&lon=";
             var inputSegsVen;
             let params = inputData.match(/lon=(-?\d*.\d*)&lat=(-?\d*.\d*)/);
             let inputLon = params[1];
