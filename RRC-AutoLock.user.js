@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2020.06.21.05
+// @version      2020.06.21.06
 // @description  Locks RRCs and Cameras to set level instead of autolock to rank of editor
 // @author       jm6087
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -59,6 +59,7 @@
     var OpenBrack;
     var ClosedBrack;
     var RRCAutoLock;
+    var newLockLevel;
 
     function setRRCAutoLock() {
         let RRCAutolockRankplusOne;
@@ -100,8 +101,10 @@
                     RRCAutolockRankplusOne = SelModel.attributes.lockRank + 1; // If already verified, sets text for WW to lock number only
                 };
                 if (USER.rank < modelRank + 1){
+                    newLockLevel = USER.rank;
                     RRCAutoLock = $(`input[id^="lockRank-${USER.rank - 1}"]`); // Sets variable for which lockrank to click if the user rank is less than the settings
                 }else{
+                    newLockLevel = modelRank + 1
                     RRCAutoLock = $(`input[id^="lockRank-${modelRank}"]`); // Sets variable for which lockrank to click
                 }
                 if (SelMan.hasSelectedFeatures() && SelModel.type === CameraType){
@@ -122,8 +125,8 @@
                         // Checks to see if WazeWrap banner Enabled is checked
                         if (RRCAutoLockSettings.RRCAutoLockWazeWrapSuccessEnabled == true){
                             console.log(SCRIPT_NAME, "WazeWrap  is enabled");
-                            WazeWrap.Alerts.success(SCRIPT_NAME, [CameraTypeWW + ' lock level changed from lock level ' + RRCAutolockRankplusOne, 'Last edited by ' + LastEditorUserName].join('\n'));
-                        }
+                            WazeWrap.Alerts.success(SCRIPT_NAME, [CameraTypeWW + ' changed from lock level ' + RRCAutolockRankplusOne + ' to ' + newLockLevel, 'Last edited by ' + LastEditorUserName].join('\n'));
+                       }
                         console.log(SCRIPT_NAME, "Version #", VERSION, " - ", CameraTypeWW ," Lock level changed from", RRCAutolockRankplusOne);
                     }else{
                         // Checks to see if User rank is greater or equal to object lock level AND if object is already equal to dropdown lock level in panel
