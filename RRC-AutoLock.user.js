@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2020.06.21.01
+// @version      2020.06.21.02
 // @description  Locks RRCs and Cameras to set level instead of autolock to rank of editor
-// @author       jm6087 (with assistance from Dude495, TheCre8r, and SkiDooGuy)
+// @author       jm6087
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
 // @require      https://greasyfork.org/scripts/24851-wazewrap/code/WazeWrap.js
 // @require      https://greasyfork.org/scripts/27254-clipboard-js/code/clipboardjs.js
@@ -18,14 +18,16 @@
 (function() {
     'use strict';
     var UPDATE_NOTES = `Locks (adjustable) RRCs to L4 and Cameras to L5 upon selection.<br><br>
-    Just about ready for release I think<br><br>
+    2020.06.21.01 Released to editors<br><br>
     <br>
     This is my first script, hope it works and currently is very basic due to limited knoweledge.<br>
     Thanks for Dude495, TheCre8r, and SkiDooGuy for their assistance and encouragement`
 
 
     // PREVIOUS NOTES
-    // 2020.06     Ready for release
+    // with assistance and encouragment from Dude495, TheCre8r, and SkiDooGuy
+    
+    // 2020.06.21.01 - Released to editors
     // 2020.06.18.02 - Added check to see if RRC/camera are within editable areas
     // 2020.06.18.00 - More code clean up
     // 2020.06.17.00 - Code clean up
@@ -178,8 +180,8 @@
             '<div class="form-group">', // BETA USERS FEATURE
             '<b><h5><div id="BETAonly"><div></h5></b></br>', // BETA USERS FEATURE
             '<b><h5><div id="USERedits"><div></h5></b></br>', // BETA USERS FEATURE
-            '<div>', // BETA USERS FEATURE
-            '<b><input type="checkbox" id="DiscordPermalinkCheckbox"> Discord </b></br>',
+            '<div id="discord"></div>', // BETA USER FEATURE
+            '<b><input style="visibility:hidden" type="checkbox" id="DiscordPermalinkCheckbox">.</b></br>',
             '<input style="visibility:hidden" type="button" id="Permalink-Button-Name" title="PL" value="Copy Clean PL to your clipboard" class="btn btn-danger RRC-Button">', // BETA USER FEATURE
             '<input style="visibility:hidden" type="button" id="Permalink-Button-Input" title="PL" value="Clean PL from another editor" class="btn btn-danger RRC-Button">', // BETA USER FEATURE
             '</div>', // BETA USERS FEATURE
@@ -399,6 +401,8 @@
         if (entry != null) {
             $('#USERedits')[0].textContent = 'Current Edit Count for '+ USER.name + ' - ' + W.loginManager.user.totalEdits;
             $('#BETAonly')[0].textContent = 'The features below only show for editors listed as Beta testers';
+            $("#DiscordPermalinkCheckbox")[0].style.visibility = "visible";
+            $('#discord')[0].textContent = 'Create PL with < > for Discord';
             document.getElementById('Permalink-Button-Name').style.visibility = "visible";
             document.getElementById('Permalink-Button-Input').style.visibility = "visible";
             console.log(SCRIPT_NAME, "Beta user features added");
