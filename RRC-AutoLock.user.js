@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2020.06.22.00
+// @version      2020.06.22.01
 // @description  Locks RRCs and Cameras to set level instead of autolock to rank of editor
 // @author       jm6087
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -337,9 +337,12 @@
             console.log(SCRIPT_NAME, 'Settings Saved '+ JSON.stringify(RRCAutoLockSettings));
         }
     }
-
+    function RRCcreateShortcuts() {
+        new WazeWrap.Interface.Shortcut('CleanPermaLinkShortcut', 'Creates clean PL for selected objects', 'wmeRRCAL', 'RRC-AL', RRCAutoLockSettings.CleanPermalinkShortcut, CleanPermaLink, null).add();
+    }
     async function RRCAutoLockInitializeSettings(){
         await loadSettings();
+        RRCcreateShortcuts();
         USER.rank = W.loginManager.user.rank + 1;
         USER.name = W.loginManager.user.userName;
         $('#RRCAutoLockUsername').text(USER.name);
