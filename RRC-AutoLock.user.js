@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2020.06.22.03
+// @version      2020.06.22.04
 // @description  Locks RRCs and Cameras to set level instead of autolock to rank of editor
 // @author       jm6087
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -264,7 +264,7 @@
             copyToClipboard();
             console.log (SCRIPT_NAME, 'Inputed PL now clean ' + newCleanPL);
         }else{
-            wazedevtoastr.options.timeout = '2000';
+            wazedevtoastr.options.timeout = '100';
             WazeWrap.Alerts.info(SCRIPT_NAME, "That did not appear to be a valid permalink");
         }
     }
@@ -301,7 +301,7 @@
             RRCAutoLockEnabled: true,
             ECAutoLockEnabled: true,
             DiscordPermalink: true,
-            lastSaved: "1592829758410"
+            lastSaved: "1592493428377"
         };
         RRCAutoLockSettings = loadedSettings ? loadedSettings : defaultSettings;
         for (let prop in defaultSettings) {
@@ -314,7 +314,7 @@
             $.extend(true, RRCAutoLockSettings, serverSettings);
             localStorage.setItem(STORE_NAME, JSON.stringify(RRCAutoLockSettings)); // saves settings to local storage for persisting when refreshed
         }
-        if (RRCAutoLockSettings.lastSaved <= "1592829758410") { // Clears local storage and resets to defaults if older version is found
+        if (RRCAutoLockSettings.lastSaved <= "1592493428377") { // Clears local storage and resets to defaults if older version is found
             localStorage.removeItem("RRCAutoLockSettings"); // Clears local storage and resets to defaults if older version is found
             localStorage.setItem(STORE_NAME, JSON.stringify(RRCAutoLockSettings)); // saves settings to local storage for persisting when refreshed
         }
@@ -337,12 +337,9 @@
             console.log(SCRIPT_NAME, 'Settings Saved '+ JSON.stringify(RRCAutoLockSettings));
         }
     }
-    function RRCcreateShortcuts() {
-        new WazeWrap.Interface.Shortcut('CleanPermaLinkShortcut', 'Creates clean PL for selected objects', 'wmeRRCAL', 'RRC-AL', RRCAutoLockSettings.CleanPermalinkShortcut, CleanPermaLink, null).add();
-    }
+
     async function RRCAutoLockInitializeSettings(){
         await loadSettings();
-//        RRCcreateShortcuts();
         USER.rank = W.loginManager.user.rank + 1;
         USER.name = W.loginManager.user.userName;
         $('#RRCAutoLockUsername').text(USER.name);
