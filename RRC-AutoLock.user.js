@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2020.06.22.04
+// @version      2020.06.22.05
 // @description  Locks RRCs and Cameras to set level instead of autolock to rank of editor
 // @author       jm6087
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -14,7 +14,6 @@
 /* global W */
 /* global WazeWrap */
 /* global $ */
-/* global wazedevtoastr */
 /* global I18n */
 
 (function() {
@@ -67,7 +66,6 @@
         let SelMan = W.selectionManager;
         let RRCAutoLockRankOverLock;
         let modelRank; // -- DBSOONER
-        wazedevtoastr.options.timeOut = '2500'; // Used to adjust the timing of the WW banner messages
         if (SelMan.getSelectedFeatures().length > 0){ // Determines if there is an item selected
             let SelModel = SelMan.getSelectedFeatures()[0].model;
 
@@ -85,7 +83,6 @@
                 }
             }
             if (USER.rank >= SelModel.attributes.rank + 1 && SelModel.arePropertiesEditable() == false){ // Checking to see if the the editor is high enough rank and if the so, then checking to see if the camera is editable.  If not, then must not be in EA.
-                wazedevtoastr.options.timeOut = '6000'
                 WazeWrap.Alerts.error(SCRIPT_NAME, [CameraTypeWW + ' does not appear to be in your edit area.', 'Please check your Editable Areas layer to ensure you have edit rights'].join('\n'));
             }else{
                 //checks to see if Enabled is checked
@@ -140,7 +137,6 @@
                         }else{
                             // Checks to see if object is locked above User rank
                             if (USER.rank < (SelModel.attributes.rank + 1)){
-                                wazedevtoastr.options.timeOut = '5000';
                                 if (RRCAutoLockRankOverLock > 5){
                                     WazeWrap.Alerts.error(SCRIPT_NAME, [CameraTypeWW + ' is locked above your rank', 'You will need assistance from an Rank ' + RRCAutoLockRankOverLock + ' editor', 'Last edited by ' + LastEditorUserName].join('\n'));
                                 }else{
@@ -264,7 +260,6 @@
             copyToClipboard();
             console.log (SCRIPT_NAME, 'Inputed PL now clean ' + newCleanPL);
         }else{
-            wazedevtoastr.options.timeout = '100';
             WazeWrap.Alerts.info(SCRIPT_NAME, "That did not appear to be a valid permalink");
         }
     }
@@ -278,7 +273,6 @@
         document.execCommand('copy'); // Copies the PL to clipboard
         var rembox = document.getElementById('PLcopy');
         document.body.removeChild(rembox); // Deletes temp text box
-        wazedevtoastr.options.timeOut = '1500';
         WazeWrap.Alerts.info(SCRIPT_NAME, 'PL saved to your clipboard');
         console.log(SCRIPT_NAME, newCleanPL + ' copied to your clipboard');
     }
@@ -387,7 +381,6 @@
             saveSettings();
         };
         if ($('#Info_server')[0]) { $('#WMETUWarning')[0].innerHTML = 'WME Tile Update Script Detected;<br>WMETU is known to cause problems with this script.<br>Disable WMETU if you experience any issues.';
-                                   wazedevtoastr.options.timeOut = '8000';
                                    WazeWrap.Alerts.warning(SCRIPT_NAME, ["WME Tile Update Script Detected;","WMETU is known to cause problems with this script.","Disable WMETU if you experience any issues."].join('\n'));
                                   } else {
                                       $('#WMETUWarning')[0].textContent = ''};
