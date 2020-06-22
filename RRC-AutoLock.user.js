@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2020.06.21.06
+// @version      2020.06.22.00
 // @description  Locks RRCs and Cameras to set level instead of autolock to rank of editor
 // @author       jm6087
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -205,6 +205,7 @@
     }
 
     function CleanPermaLink(){
+        let selectedID;
         let PLselFeat = W.selectionManager.getSelectedFeatures();
         let LatLonCenter = W.map.getCenter();
         let center4326 = WazeWrap.Geometry.ConvertTo4326(LatLonCenter.lon, LatLonCenter.lat);
@@ -218,10 +219,14 @@
         }
         if (PLselFeat.length > 0){
             let selectedType = PLselFeat[0].model.type;
-            let selectedID = $('#'+selectedType+'-edit-general > ul > li:contains("ID:")')[0].textContent.match(/\d.*/)[0];
-            newCleanPL = OpenBrack + PLurl + center4326.lon + "&lat=" + center4326.lat + "&zoom=6&" + selectedType + "s=" + selectedID + ClosedBrack;
+            if (selectedType == 'segment') {
+                selectedID = $('#'+selectedType+'-edit-general > ul > li:contains("ID:")')[0].textContent.match(/\d.*/)[0];
+            }else{
+                selectedID = PLselFeat[0].model.attributes.id;
+            }
+            newCleanPL = OpenBrack + PLurl + center4326.lon + "&lat=" + center4326.lat + "&zoom=5&" + selectedType + "s=" + selectedID + ClosedBrack;
         }else{
-            newCleanPL = OpenBrack + PLurl + center4326.lon + "&lat=" + center4326.lat + "&zoom=6" + ClosedBrack;
+            newCleanPL = OpenBrack + PLurl + center4326.lon + "&lat=" + center4326.lat + "&zoom=5" + ClosedBrack;
         }
         copyToClipboard();
     }
