@@ -15,7 +15,7 @@
 /* global WazeWrap */
 /* global $ */
 /* global I18n */
-/* wazedevtoastr */
+/* global wazedevtoastr */
 
 (function() {
     'use strict';
