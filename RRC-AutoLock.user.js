@@ -355,7 +355,7 @@
         $('#DiscordPermalinkCheckbox')[0].check = RRCAutoLockSettings.DiscordPermalink;
         disabledOptions()
         setBetaFeatures(USER.name);
-        console.log(SCRIPT_NAME, "- Tab Created");
+        console.log(SCRIPT_NAME, "- Tab Created - User Rank ", USER.rank);
         $('#RRCAutoLockCheckbox')[0].onchange = function() {
             console.log(SCRIPT_NAME, "RRCAutoLockCheckbox Settings changed");
             saveSettings();
