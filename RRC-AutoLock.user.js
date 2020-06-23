@@ -339,9 +339,9 @@
     }
 
     async function RRCAutoLockInitializeSettings(){
-        await loadSettings();
         USER.rank = W.loginManager.user.rank + 1;
         USER.name = W.loginManager.user.userName;
+        await loadSettings();
         $('#RRCAutoLockUsername').text(USER.name);
         $('#RRCAutoLockRank').text(USER.rank);
         $('#RRCAutoLockTotalEdits').text(W.loginManager.user.totalEdits);
