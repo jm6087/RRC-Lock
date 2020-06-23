@@ -188,12 +188,12 @@
             // BETA USER FEATURE BELOW
             ////////////////////////////////////////////////////////////////////////////////////////////////
             '<div class="form-group">', // BETA USER FEATURE
-            '<b><h5><div id="BETAonly"><div></h5></b></br>', // BETA USER FEATURE
+            '<b><h5><div id="BETAonly">The features below only show for editors listed as Beta testers<div></h5></b></br>', // BETA USER FEATURE
             '<b><h5><div id="USERedits"><div></h5></b></br>', // BETA USER FEATURE
-            '<div id="discord"></div>', // BETA USER FEATURE
-            '<b><input style="visibility:hidden" type="checkbox" id="DiscordPermalinkCheckbox">.</b></br>',
-            '<input style="visibility:hidden" type="button" id="Permalink-Button-Name" title="PL" value="Copy Clean PL to your clipboard" class="btn btn-danger RRC-Button"></br></br>', // BETA USER FEATURE
-            '<input style="visibility:hidden" type="button" id="Permalink-Button-Input" title="PL" value="Clean PL from another editor" class="btn btn-danger RRC-Button">', // BETA USER FEATURE
+            '<div id="discord">', // BETA USER FEATURE
+            '<b><input type="checkbox" id="DiscordPermalinkCheckbox">  Create PL with < > for Discord.</div></b></br>',
+            '<input type="button" id="Permalink-Button-Name" title="PL" value="Copy Clean PL to your clipboard" class="btn btn-danger RRC-Button"></br></br>', // BETA USER FEATURE
+            '<input type="button" id="Permalink-Button-Input" title="PL" value="Clean PL from another editor" class="btn btn-danger RRC-Button">', // BETA USER FEATURE
             '</div>', // BETA USER FEATURE
             '</div>', // BETA USER FEATURE
             '<div>',
@@ -413,16 +413,18 @@
     }
     function setBetaFeatures(user) {
         let entry = getFromSheetList(user);
-        if (entry != null) {
-            $('#USERedits')[0].textContent = 'Current Edit Count for '+ USER.name + ' - ' + W.loginManager.user.totalEdits;
-            $('#BETAonly')[0].textContent = 'The features below only show for editors listed as Beta testers';
-            $("#DiscordPermalinkCheckbox")[0].style.visibility = "visible";
-            $('#discord')[0].textContent = 'Create PL with < > for Discord';
-            document.getElementById('Permalink-Button-Name').style.visibility = "visible";
-            document.getElementById('Permalink-Button-Input').style.visibility = "visible";
-            console.log(SCRIPT_NAME, "Beta user features added");
+        if (entry == null) {
+            $("#DiscordPermalinkCheckbox").hide();
+            $('#Permalink-Button-Name').hide();
+            $('#Permalink-Button-Input').hide();
+            $('#discord').hide();
+            $('#BETAonly').hide();
+            $('#USERedits').hide();
+            console.log(SCRIPT_NAME, "Not a beta user");
         }else{
-            console.log(SCRIPT_NAME, "You are not a Beta user");
+           $('#USERedits')[0].textContent = 'Current Edit Count for '+ USER.name + ' - ' + W.loginManager.user.totalEdits;
+//            $('#BETAonly')[0].textContent = 'The features below only show for editors listed as Beta testers';
+            console.log(SCRIPT_NAME, "Beta features loaded");
         }
     }
     async function bootstrap(tries = 1) {
