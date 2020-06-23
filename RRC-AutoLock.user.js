@@ -86,7 +86,7 @@
                 }
             }
             if (USER.rank >= SelModel.attributes.rank + 1 && SelModel.arePropertiesEditable() == false){ // Checking to see if the the editor is high enough rank and if the so, then checking to see if the camera is editable.  If not, then must not be in EA.
-                wazedevtoastr.options.timeOut = 6000
+                wazedevtoastr.options.timeOut = 6000;
                 WazeWrap.Alerts.error(SCRIPT_NAME, [CameraTypeWW + ' does not appear to be in your edit area.', 'Please check your Editable Areas layer to ensure you have edit rights'].join('\n'));
             }else{
                 //checks to see if Enabled is checked
