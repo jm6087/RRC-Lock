@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2020.06.22.05
+// @version      2020.06.23.00
 // @description  Locks RRCs and Cameras to set level instead of autolock to rank of editor
 // @author       jm6087
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -67,7 +67,7 @@
         let SelMan = W.selectionManager;
         let RRCAutoLockRankOverLock;
         let modelRank; // -- DBSOONER
-////////        wazedevtoastr.options.timeOut = '2500'; // Used to adjust the timing of the WW banner messages
+        wazedevtoastr.options.timeOut = 2500; // Used to adjust the timing of the WW banner messages
         if (SelMan.getSelectedFeatures().length > 0){ // Determines if there is an item selected
             let SelModel = SelMan.getSelectedFeatures()[0].model;
 
@@ -85,7 +85,7 @@
                 }
             }
             if (USER.rank >= SelModel.attributes.rank + 1 && SelModel.arePropertiesEditable() == false){ // Checking to see if the the editor is high enough rank and if the so, then checking to see if the camera is editable.  If not, then must not be in EA.
-////////////                wazedevtoastr.options.timeOut = '6000'
+                wazedevtoastr.options.timeOut = 6000;
                 WazeWrap.Alerts.error(SCRIPT_NAME, [CameraTypeWW + ' does not appear to be in your edit area.', 'Please check your Editable Areas layer to ensure you have edit rights'].join('\n'));
             }else{
                 //checks to see if Enabled is checked
