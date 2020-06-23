@@ -20,7 +20,7 @@
 (function() {
     'use strict';
     var UPDATE_NOTES = `Locks (adjustable) RRCs to L4 and Cameras to L5 upon selection.<br><br>
-    2020.06.21.01 Released to editors<br><br>
+    2020.06.23.00 Fixed banner issue<br><br>
     <br>
     This is my first script, hope it works and currently is very basic due to limited knoweledge.<br>
     Thanks for Dude495, TheCre8r, and SkiDooGuy for their assistance and encouragement`
@@ -29,6 +29,7 @@
     // PREVIOUS NOTES
     // with assistance and encouragment from Dude495, TheCre8r, and SkiDooGuy
 
+    // 2020.06.23.00 Fixed banner issue
     // 2020.06.21.01 - Released to editors
     // 2020.06.18.02 - Added check to see if RRC/camera are within editable areas
     // 2020.06.18.00 - More code clean up
