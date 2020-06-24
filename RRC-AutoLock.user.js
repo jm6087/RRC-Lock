@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2020.06.24.00
+// @version      2020.06.24.01
 // @description  Locks RRCs and Cameras to set level instead of autolock to rank of editor
 // @author       jm6087
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -19,15 +19,15 @@
 (function() {
     'use strict';
     var UPDATE_NOTES = `Locks (adjustable) RRCs to L4 and Cameras to L5 upon selection.<br><br>
-    2020.06.23.00 Fixed banner issue<br><br>
-    <br>
-    This is my first script, hope it works and currently is very basic due to limited knoweledge.<br>
+    2020.06.24.01 Dropped camera min to 3<br><br>
+    <br><br>
     Thanks for Dude495, TheCre8r, and SkiDooGuy for their assistance and encouragement`
 
 
     // PREVIOUS NOTES
     // with assistance and encouragment from Dude495, TheCre8r, and SkiDooGuy
 
+    // 2020.06.24.01 Dropped camera min to 3
     // 2020.06.23.00 Fixed banner issue
     // 2020.06.21.01 - Released to editors
     // 2020.06.18.02 - Added check to see if RRC/camera are within editable areas
@@ -175,7 +175,7 @@
             '<b><id="ECAutoLockLevelValue">Enforcement camera lock level: <select id="ECAutoLockLevelOption"></b></br>',
             //          '<option value="1">1</option>',
             //          '<option value="2">2</option>',
-            //          '<option value="3">3</option>',
+            '<option value="3">3</option>',
             '<option value="4">4</option>',
             '<option value="5">5</option>',
             '<option value="6">6</option>',
