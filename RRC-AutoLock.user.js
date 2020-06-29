@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2020.06.24.01
+// @version      2020.06.29.00
 // @description  Locks RRCs and Cameras to set level instead of autolock to rank of editor
 // @author       jm6087
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -15,11 +15,12 @@
 /* global $ */
 /* global I18n */
 /* global wazedevtoastr */
+/* global _ */
 
 (function() {
     'use strict';
     var UPDATE_NOTES = `Locks (adjustable) RRCs to L4 and Cameras to L5 upon selection.<br><br>
-    2020.06.24.01 Dropped camera min to 3<br><br>
+    2020.06.29.00 - Tab color change when there are RRCs or ECs on screen that are not set to lock level<br><br>
     <br><br>
     Thanks for Dude495, TheCre8r, and SkiDooGuy for their assistance and encouragement`
 
@@ -27,6 +28,7 @@
     // PREVIOUS NOTES
     // with assistance and encouragment from Dude495, TheCre8r, and SkiDooGuy
 
+    // 2020.06.29.00 - Tab color change when there are RRCs or ECs on screen that are not set to lock level
     // 2020.06.24.01 Dropped camera min to 3
     // 2020.06.23.00 Fixed banner issue
     // 2020.06.21.01 - Released to editors
@@ -61,6 +63,13 @@
     var ClosedBrack;
     var RRCAutoLock;
     var newLockLevel;
+
+    var modelRank;
+    var tabColor;
+    var originalLon;
+    var movedLon;
+    var originalZoom;
+    var movedZoom;
 
     function setRRCAutoLock() {
         let RRCAutolockRankplusOne;
@@ -127,7 +136,7 @@
                         if (RRCAutoLockSettings.RRCAutoLockWazeWrapSuccessEnabled == true){
                             console.log(SCRIPT_NAME, "WazeWrap  is enabled");
                             WazeWrap.Alerts.success(SCRIPT_NAME, [CameraTypeWW + ' changed from lock level ' + RRCAutolockRankplusOne + ' to ' + newLockLevel, 'Last edited by ' + LastEditorUserName].join('\n'));
-                       }
+                        }
                         console.log(SCRIPT_NAME, "Version #", VERSION, " - ", CameraTypeWW ," Lock level changed from", RRCAutolockRankplusOne);
                     }else{
                         // Checks to see if User rank is greater or equal to object lock level AND if object is already equal to dropdown lock level in panel
@@ -203,7 +212,7 @@
         $("#Permalink-Button-Name").click(CleanPermaLink); // BETA USER FEATURE
         $("#Permalink-Button-Input").click(inputPermaLink); // BETA USER FEATURE
     }
-    
+
     function CleanPermaLink(){
         let selectedID;
         let PLselFeat = W.selectionManager.getSelectedFeatures();
@@ -422,15 +431,41 @@
             $('#USERedits').hide();
             console.log(SCRIPT_NAME, "Not a beta user");
         }else{
-           $('#USERedits')[0].textContent = 'Current Edit Count for '+ USER.name + ' - ' + W.loginManager.user.totalEdits;
+            $('#USERedits')[0].textContent = 'Current Edit Count for '+ USER.name + ' - ' + W.loginManager.user.totalEdits;
             console.log(SCRIPT_NAME, "Beta features loaded");
         }
     }
+    function RRCscreenMove(tries = 1) {
+        movedLon = W.map.getCenter().lon;
+        movedZoom = W.map.getZoom();
+        if ((originalLon != movedLon) || (originalZoom != movedZoom)) {
+            originalLon = movedLon;
+            originalZoom = movedZoom;
+
+            //Changes the background color of the tab.
+            modelRank = ($('#RRCAutoLockLevelOption')[0].value);
+            _.each(W.model.railroadCrossings.getObjectArray(), v => {
+                var lockrank = v.attributes.lockRank + 1;
+                var unapproved = v.attributes.unapproved;
+                if ((lockrank != modelRank) || (unapproved == true)) {
+                    $("a[href$='#sidepanel-rrc-al']").css('background-color', '#ffa07a');
+                    tabColor = 1
+                }else{
+                    if (tabColor != 1) {
+                        $("a[href$='#sidepanel-rrc-al']").css('background-color', '#e9e9e9');
+                    }
+                }
+            })
+            tabColor = 0
+        }
+    }
+    
     async function bootstrap(tries = 1) {
         if (W && W.map && W.model && W.loginManager.user && $ && WazeWrap.Ready ) {
             await loadBetaUsers();
             RRCAutoLockTab();
             WazeWrap.Events.register("selectionchanged", null, setRRCAutoLock);
+            WazeWrap.Events.register("moveend", null, RRCscreenMove); // BETA FEATURE
             WazeWrap.Interface.ShowScriptUpdate(SCRIPT_NAME, VERSION, UPDATE_NOTES);
             console.log(SCRIPT_NAME, "loaded");
         } else if (tries < 1000)
