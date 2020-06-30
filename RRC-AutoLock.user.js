@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2020.06.29.00
+// @version      2020.06.29.01
 // @description  Locks RRCs and Cameras to set level instead of autolock to rank of editor
 // @author       jm6087
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -441,18 +441,21 @@
         if ((originalLon != movedLon) || (originalZoom != movedZoom)) {
             originalLon = movedLon;
             originalZoom = movedZoom;
+            const extentGeometry = W.map.getOLMap().getExtent().toGeometry();
 
             //Changes the background color of the tab.
             modelRank = ($('#RRCAutoLockLevelOption')[0].value);
             _.each(W.model.railroadCrossings.getObjectArray(), v => {
-                var lockrank = v.attributes.lockRank + 1;
-                var unapproved = v.attributes.unapproved;
-                if ((lockrank != modelRank) || (unapproved == true)) {
-                    $("a[href$='#sidepanel-rrc-al']").css('background-color', '#ffa07a');
-                    tabColor = 1
-                }else{
-                    if (tabColor != 1) {
-                        $("a[href$='#sidepanel-rrc-al']").css('background-color', '#e9e9e9');
+                if (extentGeometry.intersects(v.geometry)) {
+                    var lockrank = v.attributes.lockRank + 1;
+                    var unapproved = v.attributes.unapproved;
+                    if ((lockrank != modelRank) || (unapproved == true)) {
+                        $("a[href$='#sidepanel-rrc-al-']").css('background-color', '#ffa07a');
+                        tabColor = 1
+                    }else{
+                        if (tabColor != 1) {
+                            $("a[href$='#sidepanel-rrc-al-']").css('background-color', '#e9e9e9');
+                        }
                     }
                 }
             })
