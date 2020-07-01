@@ -490,7 +490,7 @@
 
         var RRCmin = 4;
         var ECmin = 4;
-        var max = USER.rank;
+        var max = W.loginManager.user.rank + 1;
 
         $("#RRCAutoLockLevelOption option[value='0']").show();
         $("#RRCAutoLockLevelOption option[value='1']").show();
