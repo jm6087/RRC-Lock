@@ -622,14 +622,33 @@
             modelRank = ($('#RRCAutoLockLevelOption')[0].value);
             _.each(W.model.railroadCrossings.getObjectArray(), v => {
                 if (extentGeometry.intersects(v.geometry)) {
-                    var lockrank = v.attributes.lockRank + 1;
-                    var unapproved = v.attributes.unapproved;
-                    if ((lockrank != modelRank) || (unapproved == true)) {
-                        $("a[href$='#sidepanel-rrc-al']").css('background-color', '#ffa07a');
+                    var RRClockrank = v.attributes.lockRank + 1;
+                    var RRCunapproved = v.attributes.unapproved;
+                    if ((RRClockrank != modelRank) || (RRCunapproved == true)) {
+                        RRClockCount++
+                        $("a[href$='#sidepanel-rrc-al-']").css('background-color', '#ffa07a');
                         tabColor = 1
                     }else{
                         if (tabColor != 1) {
-                            $("a[href$='#sidepanel-rrc-al']").css('background-color', '#e9e9e9');
+                            $("a[href$='#sidepanel-rrc-al-']").css('background-color', '#e9e9e9');
+                        }
+                    }
+                }
+            })
+
+            //Changes the background color of the tab.
+            modelRank = ($('#ECAutoLockLevelOption')[0].value);
+            _.each(W.model.cameras.getObjectArray(), v => {
+                if (extentGeometry.intersects(v.geometry)) {
+                    var EClockrank = v.attributes.lockRank + 1;
+                    var ECunapproved = v.attributes.unapproved;
+                    if ((EClockrank != modelRank) || (ECunapproved == true)) {
+                        EClockCount++
+                        $("a[href$='#sidepanel-rrc-al-']").css('background-color', '#ffa07a');
+                        tabColor = 1
+                    }else{
+                        if (tabColor != 1) {
+                            $("a[href$='#sidepanel-rrc-al-']").css('background-color', '#e9e9e9');
                         }
                     }
                 }
