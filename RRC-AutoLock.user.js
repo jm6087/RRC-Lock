@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2020.07.01.00
+// @version      2020.07.01.01
 // @description  Locks RRCs and Cameras to set level instead of autolock to rank of editor
 // @author       jm6087
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -79,6 +79,8 @@
     var evalCount;
     let updateObj;
     var CountryID;
+    var RRCscreenCount;
+    var ECscreenCount;
 
     function setRRCAutoLock() {
         SelMan = W.selectionManager;
@@ -229,7 +231,8 @@
             '<option value="4">4</option>',
             '<option value="5">5</option>',
             '<option value="6">6</option>',
-            '</select></br></br>',
+            '</select></br>',
+            '<b><div id="RRCscreenCount"></div></b></br>',
             '<b><input type="checkbox" id="ECAutoLockCheckbox"> Enforcement camera lock enabled</b></br>',
             '<b><id="ECAutoLockLevelValue">Enforcement camera lock level: <select id="ECAutoLockLevelOption"></b></br>',
             '<option value="0">N/A</option>',
@@ -239,7 +242,8 @@
             '<option value="4">4</option>',
             '<option value="5">5</option>',
             '<option value="6">6</option>',
-            '</select></br></br>',
+            '</select></br>',
+            '<b><div id="ECCscreenCount"></div></b></br>',
             '<b><input type="checkbox" id="RRCAutoLockWazeWrapSuccessCheckbox"> Alerts: Success</b></br>',
             '<b><input type="checkbox" id="RRCAutoLockWazeWrapInfoCheckbox"> Alerts: Info</b></br>',
             '<b><div id="WMETUWarning"></div></b></br>',
@@ -635,6 +639,11 @@
                     }
                 }
             })
+            if (RRClockCount > 0) {
+                $('#RRCscreenCount')[0].innerHTML = 'There are ' + RRClockCount + ' RRCs needing locked';
+            }else{
+                $('#RRCscreenCount')[0].innerHTML = '';
+            }
 
             //Changes the background color of the tab.
             modelRank = ($('#ECAutoLockLevelOption')[0].value);
@@ -653,6 +662,11 @@
                     }
                 }
             })
+            if (EClockCount > 0) {
+                $('#ECscreenCount')[0].innerHTML = 'There are ' + EClockCount + ' RRCs needing locked';
+            }else{
+                $('#ECscreenCount')[0].innerHTML = '';
+            }
             tabColor = 0
 
             setTimeout (RRCscreenMove, 3000);
