@@ -663,7 +663,7 @@
                 }
             })
             if (EClockCount > 0) {
-                $('#ECscreenCount')[0].innerHTML = 'There are ' + EClockCount + ' RRCs needing locked';
+                $('#ECscreenCount')[0].innerHTML = 'There are ' + EClockCount + ' ECs needing locked';
             }else{
                 $('#ECscreenCount')[0].innerHTML = '';
             }
