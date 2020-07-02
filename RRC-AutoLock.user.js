@@ -243,7 +243,7 @@
             '<option value="5">5</option>',
             '<option value="6">6</option>',
             '</select></br>',
-            '<b><div id="ECCscreenCount"></div></b></br>',
+            '<b><div id="ECscreenCount"></div></b></br>',
             '<b><input type="checkbox" id="RRCAutoLockWazeWrapSuccessCheckbox"> Alerts: Success</b></br>',
             '<b><input type="checkbox" id="RRCAutoLockWazeWrapInfoCheckbox"> Alerts: Info</b></br>',
             '<b><div id="WMETUWarning"></div></b></br>',
