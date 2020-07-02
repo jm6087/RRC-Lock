@@ -630,11 +630,11 @@
                     var RRCunapproved = v.attributes.unapproved;
                     if ((RRClockrank != modelRank) || (RRCunapproved == true)) {
                         RRClockCount++
-                        $("a[href$='#sidepanel-rrc-al-']").css('background-color', '#ffa07a');
+                        $("a[href$='#sidepanel-rrc-al']").css('background-color', '#ffa07a');
                         tabColor = 1
                     }else{
                         if (tabColor != 1) {
-                            $("a[href$='#sidepanel-rrc-al-']").css('background-color', '#e9e9e9');
+                            $("a[href$='#sidepanel-rrc-al']").css('background-color', '#e9e9e9');
                         }
                     }
                 }
@@ -653,11 +653,11 @@
                     var ECunapproved = v.attributes.unapproved;
                     if ((EClockrank != modelRank) || (ECunapproved == true)) {
                         EClockCount++
-                        $("a[href$='#sidepanel-rrc-al-']").css('background-color', '#ffa07a');
+                        $("a[href$='#sidepanel-rrc-al']").css('background-color', '#ffa07a');
                         tabColor = 1
                     }else{
                         if (tabColor != 1) {
-                            $("a[href$='#sidepanel-rrc-al-']").css('background-color', '#e9e9e9');
+                            $("a[href$='#sidepanel-rrc-al']").css('background-color', '#e9e9e9');
                         }
                     }
                 }
