@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2020.07.01.01
+// @version      2020.07.02.00
 // @description  Locks RRCs and Cameras to set level instead of autolock to rank of editor
 // @author       jm6087
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -20,7 +20,7 @@
 (function() {
     'use strict';
     var UPDATE_NOTES = `Locks (adjustable) RRCs to L4 and Cameras to L5 upon selection.<br><br>
-    2020.06.29.00 - Tab color change when there are RRCs or ECs on screen that are not set to lock level<br><br>
+    2020.07.02.00 - Tab color change when there are RRCs or ECs on screen that are not set to lock level<br><br>
     <br><br>
     Thanks for Dude495, TheCre8r, and SkiDooGuy for their assistance and encouragement`
 
@@ -28,7 +28,7 @@
     // PREVIOUS NOTES
     // with assistance and encouragment from Dude495, TheCre8r, and SkiDooGuy
 
-    // 2020.06.29.00 - Tab color change when there are RRCs or ECs on screen that are not set to lock level
+    // 2020.07.02.00 - Tab color change when there are RRCs or ECs on screen that are not set to lock level
     // 2020.06.24.01 Dropped camera min to 3
     // 2020.06.23.00 Fixed banner issue
     // 2020.06.21.01 - Released to editors
