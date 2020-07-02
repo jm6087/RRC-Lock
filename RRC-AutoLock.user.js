@@ -615,6 +615,8 @@
     }
 
     function RRCscreenMove(tries = 1) {
+        let RRClockCount = 0;
+        let EClockCount = 0;
         movedLon = W.map.getCenter().lon;
         movedZoom = W.map.getZoom();
         if ((originalLon != movedLon) || (originalZoom != movedZoom)) {
@@ -640,7 +642,7 @@
                 }
             })
             if (RRClockCount > 0) {
-                $('#RRCscreenCount')[0].innerHTML = 'There are ' + RRClockCount + ' RRCs needing locked';
+                $('#RRCscreenCount')[0].innerHTML = RRClockCount + ' RRCs are over/under locked';
             }else{
                 $('#RRCscreenCount')[0].innerHTML = '';
             }
@@ -663,7 +665,7 @@
                 }
             })
             if (EClockCount > 0) {
-                $('#ECscreenCount')[0].innerHTML = 'There are ' + EClockCount + ' ECs needing locked';
+                $('#ECscreenCount')[0].innerHTML = EClockCount + ' ECs are over/under locked';
             }else{
                 $('#ECscreenCount')[0].innerHTML = '';
             }
