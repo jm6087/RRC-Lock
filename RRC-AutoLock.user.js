@@ -48,6 +48,8 @@
     // Fixed items that juliansean pointed out
 
     var TAB_NAME = 'RRC-AL'
+    let sPanel = `#sidepanel-rrc-al-`;
+    
     const CountrySS = 'https://sheets.googleapis.com/v4/spreadsheets/1wPb4tqTsES7EgAyxVqRRsRiWBDurld5NzN7IdC4pnSo/values/CountryMinimumLocks/?key='+atob('QUl6YVN5QXUxcl84ZDBNdkJUdEFwQ2VZdndDUXR6M2I0cmhWZFNn');
     var COUNTRYID = [];
     const BetaSS = 'https://sheets.googleapis.com/v4/spreadsheets/1wPb4tqTsES7EgAyxVqRRsRiWBDurld5NzN7IdC4pnSo/values/Beta/?key='+atob('QUl6YVN5QXUxcl84ZDBNdkJUdEFwQ2VZdndDUXR6M2I0cmhWZFNn');
@@ -733,13 +735,13 @@
                     var RRCunapproved = v.attributes.unapproved;
                     if ((RRClockrank != modelRank) || (RRCunapproved == true)) {
                         RRClockCount++
-                        $("a[href$='#sidepanel-rrc-al']").css('background-color', '#ffa07a');
-                        $("a[href$='#sidepanel-rrc-al']").text('RRC-' + RRClockCount + '/EC-' + EClockCount);
+                        $(`a[href$='${sPanel}']`).css('background-color', '#ffa07a');
+                        $(`a[href$='${sPanel}']`).text('RRC-' + RRClockCount + '/EC-' + EClockCount);
                         tabColor = 1
                     }else{
                         if (tabColor != 1) {
-                            $("a[href$='#sidepanel-rrc-al']").css('background-color', '#e9e9e9');
-                            $("a[href$='#sidepanel-rrc-al']").text(TAB_NAME);
+                            $(`a[href$='${sPanel}']`).css('background-color', '#e9e9e9');
+                            $(`a[href$='${sPanel}']`).text(TAB_NAME);
                         }
                     }
                 }
@@ -758,13 +760,13 @@
                     var ECunapproved = v.attributes.unapproved;
                     if ((EClockrank != modelRank) || (ECunapproved == true)) {
                         EClockCount++
-                        $("a[href$='#sidepanel-rrc-al']").css('background-color', '#ffa07a');
-                        $("a[href$='#sidepanel-rrc-al']").text('RRC-' + RRClockCount + '/EC-' + EClockCount);
+                        $(`a[href$='${sPanel}']`).css('background-color', '#ffa07a');
+                        $(`a[href$='${sPanel}']`).text('RRC-' + RRClockCount + '/EC-' + EClockCount);
                         tabColor = 1
                     }else{
                         if (tabColor != 1) {
-                            $("a[href$='#sidepanel-rrc-al']").css('background-color', '#e9e9e9');
-                            $("a[href$='#sidepanel-rrc-al']").text(TAB_NAME);
+                            $(`a[href$='${sPanel}']`).css('background-color', '#e9e9e9');
+                            $(`a[href$='${sPanel}']`).text(TAB_NAME);
                         }
                     }
                 }
