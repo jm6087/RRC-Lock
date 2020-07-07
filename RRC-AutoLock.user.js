@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2020.07.07.02
+// @version      2020.07.07.03
 // @description  Locks RRCs and Cameras to set level instead of autolock to rank of editor
 // @author       jm6087
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -733,13 +733,13 @@
                     var RRCunapproved = v.attributes.unapproved;
                     if ((RRClockrank != modelRank) || (RRCunapproved == true)) {
                         RRClockCount++
-                        $("a[href$='#sidepanel-rrc-al-alpha']").css('background-color', '#ffa07a');
-                        $("a[href$='#sidepanel-rrc-al-alpha']").text('RRC-' + RRClockCount + '/EC-' + EClockCount);
+                        $("a[href$='#sidepanel-rrc-al']").css('background-color', '#ffa07a');
+                        $("a[href$='#sidepanel-rrc-al']").text('RRC-' + RRClockCount + '/EC-' + EClockCount);
                         tabColor = 1
                     }else{
                         if (tabColor != 1) {
-                            $("a[href$='#sidepanel-rrc-al-alpha']").css('background-color', '#e9e9e9');
-                            $("a[href$='#sidepanel-rrc-al-alpha']").text(TAB_NAME);
+                            $("a[href$='#sidepanel-rrc-al']").css('background-color', '#e9e9e9');
+                            $("a[href$='#sidepanel-rrc-al']").text(TAB_NAME);
                         }
                     }
                 }
