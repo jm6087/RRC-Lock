@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2020.07.07.00
+// @version      2020.07.07.01
 // @description  Locks RRCs and Cameras to set level instead of autolock to rank of editor
 // @author       jm6087
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -89,6 +89,7 @@
 
     var RRCmin;
     var ECmin;
+    var CountryName;
 
     function RRCscreenLock(){
         const extentGeometry = W.map.getOLMap().getExtent().toGeometry();
@@ -307,8 +308,9 @@
             '<div class="form-group"></br>',
             '<div id="panelCountQty"></div></br>',
             '<div><input type="button" id="RRC-Screen-Lock" title="RRC Screen Lock" value="Lock all RRCs" class="btn btn-danger btn-xs RRC-Button"></div></br>',
-            '<div><input type="button" id="EC-Screen-Lock" title="EC Screen Lock" value="Lock all Enforcement Cameras" class="btn btn-danger btn-xs RRC-Button"></div></div>',
+            '<div><input type="button" id="EC-Screen-Lock" title="EC Screen Lock" value="Lock all Enforcement Cameras" class="btn btn-danger btn-xs RRC-Button"></div></div></br>',
             '<span class="fa fa-refresh" id="force-country-settings" title="Force Country Settings"> Refresh country settings</span></br>',
+            '<div id="countryName"></div>',
             // BETA USER FEATURE BELOW
             ////////////////////////////////////////////////////////////////////////////////////////////////
             '<div class="form-group">', // BETA USER FEATURE
@@ -588,6 +590,7 @@
     function loadCountryID() { // comment out the hide for each lock to show
 
         var max = W.loginManager.user.rank + 1;
+        CountryName = W.model.topCountry.name;
         let cEntry = getCountryFromSheet(CountryID);
         if (RRCmin == null) {
 
@@ -695,6 +698,7 @@
                 }
             }
         }
+        $('#countryName')[0].textContent = 'Country setting is for ' + CountryName;
     }
 
     function forceCountrySetting(){
@@ -786,6 +790,7 @@
     function initialCountrySetup(tries = 1) {
         if (W.model.topCountry) {
             CountryID = W.model.topCountry.id;
+            CountryName = W.model.topCountry.name;
             loadCountry();
             console.log(SCRIPT_NAME, 'function: initialCountrySetup - Country ID is', CountryID);
         }else{
