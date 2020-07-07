@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2020.07.04.00
+// @version      2020.07.07.00
 // @description  Locks RRCs and Cameras to set level instead of autolock to rank of editor
 // @author       jm6087
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -20,7 +20,7 @@
 (function() {
     'use strict';
     var UPDATE_NOTES = `Locks (adjustable) RRCs to L4 and Cameras to L5 upon selection.<br><br>
-    2020.07.04.00 - Added Pakistan lock rank
+    2020.07.07.00 - Can now add countries without version update.  Added lock all on screen button.
     <br><br>
     Thanks for Dude495, TheCre8r, and SkiDooGuy for their assistance and encouragement`
 
@@ -28,6 +28,7 @@
     // PREVIOUS NOTES
     // with assistance and encouragment from Dude495, TheCre8r, and SkiDooGuy
 
+    // 2020.07.07.00 - Can now add countries without version update.  Added lock all on screen button.
     // 2020.07.04.00 - Added Pakistan lock rank
     // 2020.07.02.00 - Tab color change when there are RRCs or ECs on screen that are not set to lock level
     // 2020.06.24.01 Dropped camera min to 3
@@ -47,6 +48,8 @@
     // Fixed items that juliansean pointed out
 
     var TAB_NAME = 'RRC-AL'
+    const CountrySS = 'https://sheets.googleapis.com/v4/spreadsheets/1wPb4tqTsES7EgAyxVqRRsRiWBDurld5NzN7IdC4pnSo/values/CountryMinimumLocks/?key='+atob('QUl6YVN5QXUxcl84ZDBNdkJUdEFwQ2VZdndDUXR6M2I0cmhWZFNn');
+    var COUNTRYID = [];
     const BetaSS = 'https://sheets.googleapis.com/v4/spreadsheets/1wPb4tqTsES7EgAyxVqRRsRiWBDurld5NzN7IdC4pnSo/values/Beta/?key='+atob('QUl6YVN5QXUxcl84ZDBNdkJUdEFwQ2VZdndDUXR6M2I0cmhWZFNn');
     var BETA_TESTERS = [];
     var VERSION = GM_info.script.version;
@@ -64,24 +67,76 @@
     var ClosedBrack;
     var RRCAutoLock;
     var newLockLevel;
-    var SelMan;
-    var manAuto;
-    var SelModel;
-    var RRCAutoLockRankOverLock;
-    var RRCAutolockRankplusOne;
 
-    var modelRank;
+    let UpdateObj;
+    var SelModel;
+    var RRCAutolockRankplusOne;
+    var RRCAutoLockRankOverLock;
+    var modelRank; // -- DBSOONER
+    var manAuto;
+    var SelMan;
+    var count;
+    let countQty;
+    var evalCount;
+    var CountryID;
     var tabColor;
     var originalLon;
     var movedLon;
     var originalZoom;
     var movedZoom;
-    var count;
-    var evalCount;
-    let updateObj;
-    var CountryID;
     var RRCscreenCount;
     var ECscreenCount;
+
+    var RRCmin;
+    var ECmin;
+
+    function RRCscreenLock(){
+        const extentGeometry = W.map.getOLMap().getExtent().toGeometry();
+        count = 0;
+        evalCount = 0;
+        CameraTypeWW = "Railroad Crossing";
+        _.each(W.model.railroadCrossings.getObjectArray(), v => {
+            if (extentGeometry.intersects(v.geometry)) {
+                evalCount++;
+                if (count < countQty) {
+                    SelModel = v;
+                    manAuto = "Auto";
+                    RRCsharedLock();
+                }
+            }
+        })
+        ScreenlockCompleted();
+    }
+
+    function ECscreenLock(){
+        const extentGeometry = W.map.getOLMap().getExtent().toGeometry();
+        count = 0;
+        evalCount = 0;
+        CameraTypeWW = "Enforcement Camera";
+        _.each(W.model.cameras.getObjectArray(), v => {
+            if (extentGeometry.intersects(v.geometry)) {
+                evalCount++;
+                if (count < countQty) {
+                    SelModel = v;
+                    manAuto = "Auto";
+                    RRCsharedLock();
+                }
+            }
+        })
+        ScreenlockCompleted();
+    }
+
+    function ScreenlockCompleted() {
+        wazedevtoastr.options.timeOut = 5000;
+        if (count == 0) {
+            WazeWrap.Alerts.info(SCRIPT_NAME, ['All ' + CameraTypeWW + ' are already at assigned lock level, above', 'your edit rank, or the ' + CameraTypeWW + ' are not in your editable area', 'No changes were made'].join('\n'));
+        }else{
+            originalLon = "";
+            RRCscreenMove()
+            WazeWrap.Alerts.success(SCRIPT_NAME, ['RRC-AL locked ' + count + " (of " + evalCount + ") " + CameraTypeWW, ' that were equal to or below ' + USER.rank, 'They are now locked at lock level ' + newLockLevel].join('\n'));
+            console.log (SCRIPT_NAME, "RCC Screenlock completed");
+        }
+    }
 
     function setRRCAutoLock() {
         SelMan = W.selectionManager;
@@ -170,9 +225,9 @@
                     RRCAutoLock[0].click();
                 }else{
                     if (manAuto == "Auto") {
-                        if (SelModel.attributes.unapproved == false) {
+                        if (SelModel.attributes.unapproved == false || SelModel.type == "camera") {
                             count++;
-                            //                            W.model.actionManager.add(new UpdateObj(SelModel, { lockRank: RRCAutoLock }));
+                            W.model.actionManager.add(new UpdateObj(SelModel, { lockRank: RRCAutoLock }));
                         }else{
                             console.log (SCRIPT_NAME, CameraTypeWW, " ID ", SelModel.attributes.id, " skipped since it is unapproved");
                         }
@@ -215,7 +270,6 @@
         manAuto = null;
     }
 
-
     function RRCAutoLockTab()
     {
         var $RRCsection = $("<div>");
@@ -249,26 +303,38 @@
             '<b><input type="checkbox" id="RRCAutoLockWazeWrapInfoCheckbox"> Alerts: Info</b></br>',
             '<b><div id="WMETUWarning"></div></b></br>',
             '<b><h4>Your WME window was last refreshed at:</h4></b>',
-            '<b><h4><div id="CurrentDate"></div></h4></b></br></br>',
+            '<b><h4><div id="CurrentDate"></div></h4></b></br>',
+            '<div class="form-group"></br>',
+            '<div id="panelCountQty"></div></br>',
+            '<div><input type="button" id="RRC-Screen-Lock" title="RRC Screen Lock" value="Lock all RRCs" class="btn btn-danger btn-xs RRC-Button"></div></br>',
+            '<div><input type="button" id="EC-Screen-Lock" title="EC Screen Lock" value="Lock all Enforcement Cameras" class="btn btn-danger btn-xs RRC-Button"></div></div>',
+            '<span class="fa fa-refresh" id="force-country-settings" title="Force Country Settings"></span></br>',
             // BETA USER FEATURE BELOW
             ////////////////////////////////////////////////////////////////////////////////////////////////
             '<div class="form-group">', // BETA USER FEATURE
-            '<b><h5><div id="BETAonly">The features below only show for editors listed as Beta testers<div></h5></b></br>', // BETA USER FEATURE
-            '<b><h5><div id="USERedits"><div></h5></b></br>', // BETA USER FEATURE
+            '<b><div id="BETAonly">The features below only show for editors listed as Beta testers<div></b></br>', // BETA USER FEATURE
             '<div id="discord">', // BETA USER FEATURE
-            '<b><input type="checkbox" id="DiscordPermalinkCheckbox">  Create PL with < > for Discord.</div></b></br>',
-            '<input type="button" id="Permalink-Button-Name" title="PL" value="Copy Clean PL to your clipboard" class="btn btn-danger RRC-Button"></br></br>', // BETA USER FEATURE
-            '<input type="button" id="Permalink-Button-Input" title="PL" value="Clean PL from another editor" class="btn btn-danger RRC-Button">', // BETA USER FEATURE
+            '<b><input type="checkbox" id="DiscordPermalinkCheckbox">  Create PL with < > for Discord.</div></b></br>', // https://www.w3schools.com/bootstrap/bootstrap_buttons.asp
+            '<input type="button" id="Permalink-Button-Name" title="PL" value="Copy Clean PL to your clipboard" class="btn btn-info btn-xs RRC-Button"></br></br>', // BETA USER FEATURE
+            '<input type="button" id="Permalink-Button-Input" title="PL" value="Clean PL from another editor" class="btn btn-info btn-xs RRC-Button"></br></br>', // BETA USER FEATURE
+
+            '<div class="form-group">',
+            '<b><h5><div id="USERedits"><div></h5></b></br></div></div>', // BETA USER FEATURE
             '</div>', // BETA USER FEATURE
-            '</div>', // BETA USER FEATURE
+            '<p><div id="sheet"><a href="https://docs.google.com/spreadsheets/d/1wPb4tqTsES7EgAyxVqRRsRiWBDurld5NzN7IdC4pnSo/edit#gid=0" target="_blank">Sheet</a></div></p>',
             '<div>',
         ].join(' '));
 
         new WazeWrap.Interface.Tab(TAB_NAME, $RRCsection.html(), RRCAutoLockInitializeSettings);
         $("#Permalink-Button-Name").click(CleanPermaLink); // BETA USER FEATURE
         $("#Permalink-Button-Input").click(inputPermaLink); // BETA USER FEATURE
+        $("#RRC-Screen-Lock").click(RRCscreenLock); //
+        $("#EC-Screen-Lock").click(ECscreenLock); //
+        $("#force-country-settings").click(forceCountrySetting); //
     }
 
+    // BETA USER FEATURE BELOW
+    /////////////////////////////////////////////////////////////////////////////////////////
     function CleanPermaLink(){
         let selectedID;
         let PLselFeat = W.selectionManager.getSelectedFeatures();
@@ -348,9 +414,9 @@
         console.log(SCRIPT_NAME, newCleanPL + ' copied to your clipboard');
     }
     ////////////////////////////////////
-    // BETA USERS FEATURE ABOVE
+    // BETA USER FEATURE ABOVE
 
-    function disabledOptions() {
+    function disabledOptions() { // Disables the drop down if the enabled option is off.
         $('#RRCAutoLockLevelOption')[0].disabled = !RRCAutoLockSettings.RRCAutoLockEnabled;
         $('#ECAutoLockLevelOption')[0].disabled = !RRCAutoLockSettings.ECAutoLockEnabled;
     }
@@ -402,10 +468,10 @@
             console.log(SCRIPT_NAME, 'Settings Saved '+ JSON.stringify(RRCAutoLockSettings));
         }
     }
-
     async function RRCAutoLockInitializeSettings(){
         USER.rank = W.loginManager.user.rank + 1;
         USER.name = W.loginManager.user.userName;
+        UpdateObj = require('Waze/Action/UpdateObject');
         await loadSettings();
         $('#RRCAutoLockUsername').text(USER.name);
         $('#RRCAutoLockRank').text(USER.rank);
@@ -417,10 +483,12 @@
         $('#RRCAutoLockWazeWrapInfoCheckbox')[0].checked = RRCAutoLockSettings.RRCAutoLockWazeWrapInfoEnabled;
         $('#RRCAutoLockLevelOption')[0].value = RRCAutoLockSettings.RRCAutoLockLevelOption;
         $('#ECAutoLockLevelOption')[0].value = RRCAutoLockSettings.ECAutoLockLevelOption;
-        $('#DiscordPermalinkCheckbox')[0].check = RRCAutoLockSettings.DiscordPermalink;
+        $('#DiscordPermalinkCheckbox')[0].checked = RRCAutoLockSettings.DiscordPermalink;
         disabledOptions()
         setBetaFeatures(USER.name);
-        console.log(SCRIPT_NAME, "- Tab Created - User Rank ", USER.rank);
+        setTimeout (loadCountryID, 2000);
+        loadCountryID(CountryID);
+        console.log(SCRIPT_NAME, "- Tab Created & User Rank is ",USER.rank);
         $('#RRCAutoLockCheckbox')[0].onchange = function() {
             console.log(SCRIPT_NAME, "RRCAutoLockCheckbox Settings changed");
             saveSettings();
@@ -458,17 +526,37 @@
                                                                     $('#WMETUWarning')[0].textContent = ''};
         $('#CurrentDate')[0].textContent = Date();
     }
+    async function loadCountry() {
+        await $.getJSON(CountrySS, function(cdata){
+            COUNTRYID = cdata;
+            console.log(SCRIPT_NAME, 'Country loaded....');
+        });
+    }
     async function loadBetaUsers() {
         await $.getJSON(BetaSS, function(ldata){
             BETA_TESTERS = ldata;
             console.log('RRC-AL Beta Users Loaded....');
         });
     }
+    function getCountryFromSheet(CountryID){
+        let mapped = COUNTRYID.values.slice(0).reverse().map(obj =>{
+            return {ctry: obj[0].trim(), ctryID: obj[1].trim(), ctryRRC: obj[2].trim(), ctryEC: obj[3].trim()
+                   }
+        });
+        for(let i=0; i<mapped.length; i++){
+            if(mapped[i].ctryID == CountryID) {
+                return mapped[i];
+            }
+        }
+        return null;
+    }
+
     function getFromSheetList(editorName){
         let mapped = BETA_TESTERS.values.slice(0).reverse().map(obj =>{
             return {username: obj[0].trim()
                    }
         });
+        countQty = [mapped[mapped.length-3], mapped[mapped.length-2]];
         for(let i=0; i<mapped.length; i++){
             if(mapped[i].username.toLowerCase() === editorName.toLowerCase()) {
                 return mapped[i];
@@ -476,148 +564,149 @@
         }
         return null;
     }
+
     function setBetaFeatures(user) {
         let entry = getFromSheetList(user);
         if (entry == null) {
+            countQty = countQty[1].username;
             $("#DiscordPermalinkCheckbox").hide();
             $('#Permalink-Button-Name').hide();
             $('#Permalink-Button-Input').hide();
             $('#discord').hide();
             $('#BETAonly').hide();
             $('#USERedits').hide();
+            $('#sheet').hide();
             console.log(SCRIPT_NAME, "Not a beta user");
         }else{
+            countQty = countQty[0].username;
             $('#USERedits')[0].textContent = 'Current Edit Count for '+ USER.name + ' - ' + W.loginManager.user.totalEdits;
             console.log(SCRIPT_NAME, "Beta features loaded");
         }
+        $('#panelCountQty')[0].textContent = 'Lock up to ' + countQty + ' RRCs or ECs on screen';
     }
+
     function loadCountryID() { // comment out the hide for each lock to show
 
-        var RRCmin = 4;
-        var ECmin = 4;
         var max = W.loginManager.user.rank + 1;
+        let cEntry = getCountryFromSheet(CountryID);
+        if (RRCmin == null) {
 
-        $("#RRCAutoLockLevelOption option[value='0']").show();
-        $("#RRCAutoLockLevelOption option[value='1']").show();
-        $("#RRCAutoLockLevelOption option[value='2']").show();
-        $("#RRCAutoLockLevelOption option[value='3']").show();
-        $("#RRCAutoLockLevelOption option[value='4']").show();
-        $("#RRCAutoLockLevelOption option[value='5']").show();
-        $("#RRCAutoLockLevelOption option[value='6']").show();
-        $("#ECAutoLockLevelOption option[value='0']").show();
-        $("#ECAutoLockLevelOption option[value='1']").show();
-        $("#ECAutoLockLevelOption option[value='2']").show();
-        $("#ECAutoLockLevelOption option[value='3']").show();
-        $("#ECAutoLockLevelOption option[value='4']").show();
-        $("#ECAutoLockLevelOption option[value='5']").show();
-        $("#ECAutoLockLevelOption option[value='6']").show();
+            $("#RRCAutoLockLevelOption option[value='0']").show();
+            $("#RRCAutoLockLevelOption option[value='1']").show();
+            $("#RRCAutoLockLevelOption option[value='2']").show();
+            $("#RRCAutoLockLevelOption option[value='3']").show();
+            $("#RRCAutoLockLevelOption option[value='4']").show();
+            $("#RRCAutoLockLevelOption option[value='5']").show();
+            $("#RRCAutoLockLevelOption option[value='6']").show();
+            $("#ECAutoLockLevelOption option[value='0']").show();
+            $("#ECAutoLockLevelOption option[value='1']").show();
+            $("#ECAutoLockLevelOption option[value='2']").show();
+            $("#ECAutoLockLevelOption option[value='3']").show();
+            $("#ECAutoLockLevelOption option[value='4']").show();
+            $("#ECAutoLockLevelOption option[value='5']").show();
+            $("#ECAutoLockLevelOption option[value='6']").show();
 
-        // Add County ID number for the RRC minimum level to show in the drop down box. format = ##, ###, #, ##
-        const CountyListRRCmin2 = [172];
-        const CountyListRRCmin3 = [13, 40]; //40 = Canada and set at 3 for testing
-        const CountyListRRCmin4 = [235];
-        const CountyListRRCmin5 = [];
-        const CountyListRRCmin6 = [];
+            // Sets country ID for RRC and EC minimum
 
-        if (CountyListRRCmin2.includes(CountryID)) RRCmin = 2;
-        if (CountyListRRCmin3.includes(CountryID)) RRCmin = 3;
-        if (CountyListRRCmin4.includes(CountryID)) RRCmin = 4;
-        if (CountyListRRCmin5.includes(CountryID)) RRCmin = 5;
-        if (CountyListRRCmin6.includes(CountryID)) RRCmin = 6;
-
-        // Add County ID number for the EC minimum level to show in the drop down box. format = ##, ###, #, ##
-        const CountyListECmin2 = [172];
-        const CountyListECmin3 = [13, 81];
-        const CountyListECmin4 = [235];
-        const CountyListECmin5 = [40]; //40 = Canada and set at 5 for testing
-        const CountyListECmin6 = [];
-
-        if (CountyListECmin2.includes(CountryID)) ECmin = 2;
-        if (CountyListECmin3.includes(CountryID)) ECmin = 3;
-        if (CountyListECmin4.includes(CountryID)) ECmin = 4;
-        if (CountyListECmin5.includes(CountryID)) ECmin = 5;
-        if (CountyListECmin6.includes(CountryID)) ECmin = 6;
-
-        console.log(SCRIPT_NAME, 'Country ID is', CountryID, ', the minimum RRC lock level is set to', RRCmin, 'and max rank set at', max);
-        console.log(SCRIPT_NAME, 'Country ID is', CountryID, ', the minimum EC lock level is set to', ECmin, 'and max rank set at', max);
-
-        if (max < RRCmin) {
-            wazedevtoastr.options.timeOut = 5000;
-            WazeWrap.Alerts.warning(SCRIPT_NAME, ["It appears that your user rank of R" + max,"is less than the minimum lock level of " + RRCmin + " for your country for Railroad Crossings"].join('\n'));
-            RRCmin = 10;
-        }
-        if (max < ECmin) {
-            wazedevtoastr.options.timeOut = 5000;
-            WazeWrap.Alerts.warning(SCRIPT_NAME, ["It appears that your user rank of R" + max,"is less than the minimum lock level of " + ECmin + " for your country for Enforcement Cameras"].join('\n'));
-            ECmin = 10;
-        }
-
-        if (RRCmin >= 2) {
-            $("#RRCAutoLockLevelOption option[value='0']").hide();
-            $("#RRCAutoLockLevelOption option[value='1']").hide();
-            if (RRCmin >= 3) {
-                $("#RRCAutoLockLevelOption option[value='2']").hide();
-                if (RRCmin >= 4) {
-                    $("#RRCAutoLockLevelOption option[value='3']").hide();
-                    if (RRCmin >= 5) {
-                        $("#RRCAutoLockLevelOption option[value='4']").hide();
-                        if (RRCmin >= 6) {
-                            $("#RRCAutoLockLevelOption option[value='5']").hide();
-                            if (RRCmin == 10) {
-                                $("#RRCAutoLockLevelOption option[value='6']").hide();
-                                $("#RRCAutoLockLevelOption option[value='0']").show();
-                            }
-                        }
-                    }
-                }
+            if (cEntry.ctryRRC == null) {
+                RRCmin = 4;
+            }else{
+                RRCmin = cEntry.ctryRRC;
             }
-        }
-
-        if (ECmin >= 2) {
-            $("#ECAutoLockLevelOption option[value='0']").hide();
-            $("#ECAutoLockLevelOption option[value='1']").hide();
-            if (ECmin >= 3) {
-                $("#ECAutoLockLevelOption option[value='2']").hide();
-                if (ECmin >= 4) {
-                    $("#ECAutoLockLevelOption option[value='3']").hide();
-                    if (ECmin >= 5) {
-                        $("#ECAutoLockLevelOption option[value='4']").hide();
-                        if (ECmin >= 6) {
-                            $("#ECAutoLockLevelOption option[value='5']").hide();
-                            if (ECmin == 10) {
-                                $("#ECAutoLockLevelOption option[value='6']").hide();
-                                $("#ECAutoLockLevelOption option[value='0']").show();
-                            }
-                        }
-                    }
-                }
+            if (cEntry.ctryEC == null) {
+                ECmin = 4;
+            }else{
+                ECmin = cEntry.ctryEC;
             }
-        }
-        if (max <= 5) {
-            $("#ECAutoLockLevelOption option[value='6']").hide();
-            $("#RRCAutoLockLevelOption option[value='6']").hide();
-            if (max == 4) {
-                $("#ECAutoLockLevelOption option[value='5']").hide();
-                $("#RRCAutoLockLevelOption option[value='5']").hide();
-                if (max == 3) {
-                    $("#ECAutoLockLevelOption option[value='4']").hide();
-                    $("#RRCAutoLockLevelOption option[value='4']").hide();
-                    if (max == 2) {
-                        $("#ECAutoLockLevelOption option[value='3']").hide();
+
+            console.log(SCRIPT_NAME, 'Country ID is', CountryID, '-', cEntry.ctry, ', the minimum RRC lock level is set to', RRCmin, 'and max rank set at', max);
+            console.log(SCRIPT_NAME, 'Country ID is', CountryID, '-', cEntry.ctry, ', the minimum EC lock level is set to', ECmin, 'and max rank set at', max);
+
+            if (max < RRCmin) {
+                wazedevtoastr.options.timeOut = 5000;
+                WazeWrap.Alerts.warning(SCRIPT_NAME, ["It appears that your user rank of R" + max,"is less than the minimum lock level of " + RRCmin + " for your country for Railroad Crossings"].join('\n'));
+                RRCmin = 10;
+            }
+            if (max < ECmin) {
+                wazedevtoastr.options.timeOut = 5000;
+                WazeWrap.Alerts.warning(SCRIPT_NAME, ["It appears that your user rank of R" + max,"is less than the minimum lock level of " + ECmin + " for your country for Enforcement Cameras"].join('\n'));
+                ECmin = 10;
+            }
+
+            if (RRCmin >= 2) {
+                $("#RRCAutoLockLevelOption option[value='0']").hide();
+                $("#RRCAutoLockLevelOption option[value='1']").hide();
+                if (RRCmin >= 3) {
+                    $("#RRCAutoLockLevelOption option[value='2']").hide();
+                    if (RRCmin >= 4) {
                         $("#RRCAutoLockLevelOption option[value='3']").hide();
-                        if (max == 1) {
-                            $("#ECAutoLockLevelOption option[value='2']").hide();
-                            $("#RRCAutoLockLevelOption option[value='2']").hide();
+                        if (RRCmin >= 5) {
+                            $("#RRCAutoLockLevelOption option[value='4']").hide();
+                            if (RRCmin >= 6) {
+                                $("#RRCAutoLockLevelOption option[value='5']").hide();
+                                if (RRCmin == 10) {
+                                    $("#RRCAutoLockLevelOption option[value='6']").hide();
+                                    $("#RRCAutoLockLevelOption option[value='0']").show();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (ECmin >= 2) {
+                $("#ECAutoLockLevelOption option[value='0']").hide();
+                $("#ECAutoLockLevelOption option[value='1']").hide();
+                if (ECmin >= 3) {
+                    $("#ECAutoLockLevelOption option[value='2']").hide();
+                    if (ECmin >= 4) {
+                        $("#ECAutoLockLevelOption option[value='3']").hide();
+                        if (ECmin >= 5) {
+                            $("#ECAutoLockLevelOption option[value='4']").hide();
+                            if (ECmin >= 6) {
+                                $("#ECAutoLockLevelOption option[value='5']").hide();
+                                if (ECmin == 10) {
+                                    $("#ECAutoLockLevelOption option[value='6']").hide();
+                                    $("#ECAutoLockLevelOption option[value='0']").show();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            if (max <= 5) {
+                $("#ECAutoLockLevelOption option[value='6']").hide();
+                $("#RRCAutoLockLevelOption option[value='6']").hide();
+                if (max == 4) {
+                    $("#ECAutoLockLevelOption option[value='5']").hide();
+                    $("#RRCAutoLockLevelOption option[value='5']").hide();
+                    if (max == 3) {
+                        $("#ECAutoLockLevelOption option[value='4']").hide();
+                        $("#RRCAutoLockLevelOption option[value='4']").hide();
+                        if (max == 2) {
+                            $("#ECAutoLockLevelOption option[value='3']").hide();
+                            $("#RRCAutoLockLevelOption option[value='3']").hide();
+                            if (max == 1) {
+                                $("#ECAutoLockLevelOption option[value='2']").hide();
+                                $("#RRCAutoLockLevelOption option[value='2']").hide();
+                            }
                         }
                     }
                 }
             }
         }
+    }
+
+    function forceCountrySetting(){
+        // originalLon = 0;
+        CountryID = 0;
+        checkCountry();
     }
 
     function RRCscreenMove(tries = 1) {
         let RRClockCount = 0;
         let EClockCount = 0;
+
         movedLon = W.map.getCenter().lon;
         movedZoom = W.map.getZoom();
         if ((originalLon != movedLon) || (originalZoom != movedZoom)) {
@@ -633,17 +722,19 @@
                     var RRCunapproved = v.attributes.unapproved;
                     if ((RRClockrank != modelRank) || (RRCunapproved == true)) {
                         RRClockCount++
-                        $("a[href$='#sidepanel-rrc-al']").css('background-color', '#ffa07a');
+                        $("a[href$='#sidepanel-rrc-al-alpha']").css('background-color', '#ffa07a');
+                        $("a[href$='#sidepanel-rrc-al-alpha']").text('RRC-' + RRClockCount + '/EC-' + EClockCount);
                         tabColor = 1
                     }else{
                         if (tabColor != 1) {
-                            $("a[href$='#sidepanel-rrc-al']").css('background-color', '#e9e9e9');
+                            $("a[href$='#sidepanel-rrc-al-alpha']").css('background-color', '#e9e9e9');
+                            $("a[href$='#sidepanel-rrc-al-alpha']").text(TAB_NAME);
                         }
                     }
                 }
             })
             if (RRClockCount > 0) {
-                $('#RRCscreenCount')[0].innerHTML = RRClockCount + ' RRCs are over/under locked';
+                $('#RRCscreenCount')[0].innerHTML = 'There are ' + RRClockCount + ' RRCs needing locked';
             }else{
                 $('#RRCscreenCount')[0].innerHTML = '';
             }
@@ -656,52 +747,59 @@
                     var ECunapproved = v.attributes.unapproved;
                     if ((EClockrank != modelRank) || (ECunapproved == true)) {
                         EClockCount++
-                        $("a[href$='#sidepanel-rrc-al']").css('background-color', '#ffa07a');
+                        $("a[href$='#sidepanel-rrc-al-alpha']").css('background-color', '#ffa07a');
+                        $("a[href$='#sidepanel-rrc-al-alpha']").text('RRC-' + RRClockCount + '/EC-' + EClockCount);
                         tabColor = 1
                     }else{
                         if (tabColor != 1) {
-                            $("a[href$='#sidepanel-rrc-al']").css('background-color', '#e9e9e9');
+                            $("a[href$='#sidepanel-rrc-al-alpha']").css('background-color', '#e9e9e9');
+                            $("a[href$='#sidepanel-rrc-al-alpha']").text(TAB_NAME);
                         }
                     }
                 }
             })
             if (EClockCount > 0) {
-                $('#ECscreenCount')[0].innerHTML = EClockCount + ' ECs are over/under locked';
+                $('#ECscreenCount')[0].innerHTML = 'There are ' + EClockCount + ' ECs needing locked';
             }else{
                 $('#ECscreenCount')[0].innerHTML = '';
             }
             tabColor = 0
-
-            setTimeout (RRCscreenMove, 3000);
-            if (W.model.topCountry) {
-                let newLocationID = W.model.topCountry.id;
-                if (newLocationID != CountryID) {
-                    console.log(SCRIPT_NAME, 'function RRCscreenMove - Country ID is', CountryID, 'newLocationID =',newLocationID);
-                    CountryID = newLocationID;
-                    loadCountryID();
-                }
-            }else if (tries < 2000)
-                setTimeout(function () {RRCscreenMove(++tries);}, 200);
+            checkCountry();
         }
+    }
+    function checkCountry(tries = 1){
+        setTimeout (RRCscreenMove, 3000);
+        if (W.model.topCountry) {
+            let newLocationID = W.model.topCountry.id;
+            if (newLocationID != CountryID) {
+                console.log(SCRIPT_NAME, 'function RRCscreenMove - Country ID is', CountryID, 'newLocationID =',newLocationID);
+                CountryID = newLocationID;
+                loadCountry();
+                RRCmin = null;
+                ECmin = null;
+                loadCountryID();
+            }
+        }else if (tries < 2000)
+            setTimeout(function () {checkCountry(++tries);}, 200);
     }
 
     function initialCountrySetup(tries = 1) {
-//        if (CountryID == null){
         if (W.model.topCountry) {
-//            setTimeout (initialCountrySetup, 2000);
             CountryID = W.model.topCountry.id;
-            loadCountryID();
+            loadCountry();
             console.log(SCRIPT_NAME, 'function: initialCountrySetup - Country ID is', CountryID);
-        }else if (tries < 2000)
-            setTimeout(function () {initialCountrySetup(++tries);}, 200);
+        }else{
+            if (tries < 2000)
+                setTimeout(function () {initialCountrySetup(++tries);}, 1000);
+        }
     }
-//    }
 
     async function bootstrap(tries = 1) {
         if (W && W.map && W.model && W.loginManager.user && $ && WazeWrap.Ready ) {
             await initialCountrySetup();
             await loadBetaUsers();
             await RRCAutoLockTab();
+            await loadCountry();
             originalLon = W.map.getCenter().lon;
             originalZoom = W.map.getZoom();
             WazeWrap.Events.register("selectionchanged", null, setRRCAutoLock);
