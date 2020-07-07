@@ -308,7 +308,7 @@
             '<div id="panelCountQty"></div></br>',
             '<div><input type="button" id="RRC-Screen-Lock" title="RRC Screen Lock" value="Lock all RRCs" class="btn btn-danger btn-xs RRC-Button"></div></br>',
             '<div><input type="button" id="EC-Screen-Lock" title="EC Screen Lock" value="Lock all Enforcement Cameras" class="btn btn-danger btn-xs RRC-Button"></div></div>',
-            '<span class="fa fa-refresh" id="force-country-settings" title="Force Country Settings"></span></br>',
+            '<span class="fa fa-refresh" id="force-country-settings" title="Force Country Settings">Refresh if lock levels are not correct</span></br>',
             // BETA USER FEATURE BELOW
             ////////////////////////////////////////////////////////////////////////////////////////////////
             '<div class="form-group">', // BETA USER FEATURE
