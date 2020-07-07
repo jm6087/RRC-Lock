@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2020.07.07.01
+// @version      2020.07.07.02
 // @description  Locks RRCs and Cameras to set level instead of autolock to rank of editor
 // @author       jm6087
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -591,6 +591,7 @@
 
         var max = W.loginManager.user.rank + 1;
         CountryName = W.model.topCountry.name;
+        if (W.model.topCountry.id == 235) CountryName = W.model.topState.name + ', USA';
         let cEntry = getCountryFromSheet(CountryID);
         if (RRCmin == null) {
 
@@ -611,19 +612,26 @@
 
             // Sets country ID for RRC and EC minimum
 
-            if (cEntry.ctryRRC == null) {
+            if (cEntry == null) {
                 RRCmin = 4;
-            }else{
-                RRCmin = cEntry.ctryRRC;
-            }
-            if (cEntry.ctryEC == null) {
                 ECmin = 4;
+                var ctry = "NOT LISTED ON SHEET";
             }else{
-                ECmin = cEntry.ctryEC;
+                if (cEntry.ctryRRC == null) {
+                    RRCmin = 4;
+                }else{
+                    RRCmin = cEntry.ctryRRC;
+                    ctry = cEntry.ctry;
+                }
+                if (cEntry.ctryEC == null) {
+                    ECmin = 4;
+                }else{
+                    ECmin = cEntry.ctryEC;
+                }
             }
 
-            console.log(SCRIPT_NAME, 'Country ID is', CountryID, '-', cEntry.ctry, ', the minimum RRC lock level is set to', RRCmin, 'and max rank set at', max);
-            console.log(SCRIPT_NAME, 'Country ID is', CountryID, '-', cEntry.ctry, ', the minimum EC lock level is set to', ECmin, 'and max rank set at', max);
+            console.log(SCRIPT_NAME, 'Country ID is', CountryID, '-', ctry, ', the minimum RRC lock level is set to', RRCmin, 'and max rank set at', max);
+            console.log(SCRIPT_NAME, 'Country ID is', CountryID, '-', ctry, ', the minimum EC lock level is set to', ECmin, 'and max rank set at', max);
 
             if (max < RRCmin) {
                 wazedevtoastr.options.timeOut = 5000;
@@ -702,8 +710,7 @@
     }
 
     function forceCountrySetting(){
-        // originalLon = 0;
-        CountryID = 0;
+        CountryID = 'forced refresh';
         checkCountry();
     }
 
@@ -775,6 +782,7 @@
         setTimeout (RRCscreenMove, 3000);
         if (W.model.topCountry) {
             let newLocationID = W.model.topCountry.id;
+            if (newLocationID == 235) newLocationID = W.model.topState.id;
             if (newLocationID != CountryID) {
                 console.log(SCRIPT_NAME, 'function RRCscreenMove - Country ID is', CountryID, 'newLocationID =',newLocationID);
                 CountryID = newLocationID;
@@ -791,6 +799,10 @@
         if (W.model.topCountry) {
             CountryID = W.model.topCountry.id;
             CountryName = W.model.topCountry.name;
+            if (CountryID == 235) {
+                CountryID = W.model.topState.id;
+                CountryName = W.model.topState.name;
+            }
             loadCountry();
             console.log(SCRIPT_NAME, 'function: initialCountrySetup - Country ID is', CountryID);
         }else{
