@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2020.07.08.00
+// @version      2020.07.08.01
 // @description  Locks RRCs and Cameras to set level instead of autolock to rank of editor
 // @author       jm6087
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -475,6 +475,7 @@
     async function RRCAutoLockInitializeSettings(){
         USER.rank = W.loginManager.user.rank + 1;
         USER.name = W.loginManager.user.userName;
+        let dte = Date();
         UpdateObj = require('Waze/Action/UpdateObject');
         await loadSettings();
         $('#RRCAutoLockUsername').text(USER.name);
@@ -528,7 +529,7 @@
                                                                  WazeWrap.Alerts.warning(SCRIPT_NAME, ["WME Tile Update and/or UR-MP Script Detected;","WMETU and UR-MP are known to cause problems with this script.","Disable WMETU and/or UR-MP if you experience any issues."].join('\n'));
                                                                 } else {
                                                                     $('#WMETUWarning')[0].textContent = ''};
-        $('#CurrentDate')[0].textContent = Date();
+        $('#CurrentDate')[0].textContent = dte;
     }
     async function loadCountry() {
         await $.getJSON(CountrySS, function(cdata){
@@ -715,6 +716,10 @@
         CountryID = 'forced refresh';
         checkCountry();
     }
+    function undoAction(){
+        originalLon = 0;
+        RRCscreenMove();
+    }
 
     function RRCscreenMove(tries = 1) {
         let RRClockCount = 0;
@@ -820,7 +825,8 @@
             originalLon = W.map.getCenter().lon;
             originalZoom = W.map.getZoom();
             WazeWrap.Events.register("selectionchanged", null, setRRCAutoLock);
-            WazeWrap.Events.register("moveend", null, RRCscreenMove); // BETA FEATURE
+            WazeWrap.Events.register("moveend", null, RRCscreenMove);
+            WazeWrap.Events.register("afterundoaction", null, undoAction);
             WazeWrap.Interface.ShowScriptUpdate(SCRIPT_NAME, VERSION, UPDATE_NOTES);
             console.log(SCRIPT_NAME, "loaded");
         } else if (tries < 1000)
