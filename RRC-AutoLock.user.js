@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2020.07.07.03
+// @version      2020.07.08.00
 // @description  Locks RRCs and Cameras to set level instead of autolock to rank of editor
 // @author       jm6087
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -738,14 +738,10 @@
                         $(`a[href$='${sPanel}']`).css('background-color', '#ffa07a');
                         $(`a[href$='${sPanel}']`).text('RRC-' + RRClockCount + '/EC-' + EClockCount);
                         tabColor = 1
-                    }else{
-                        if (tabColor != 1) {
-                            $(`a[href$='${sPanel}']`).css('background-color', '#e9e9e9');
-                            $(`a[href$='${sPanel}']`).text(TAB_NAME);
-                        }
                     }
                 }
             })
+
             if (RRClockCount > 0) {
                 $('#RRCscreenCount')[0].innerHTML = 'There are ' + RRClockCount + ' RRCs needing locked';
             }else{
@@ -763,14 +759,15 @@
                         $(`a[href$='${sPanel}']`).css('background-color', '#ffa07a');
                         $(`a[href$='${sPanel}']`).text('RRC-' + RRClockCount + '/EC-' + EClockCount);
                         tabColor = 1
-                    }else{
-                        if (tabColor != 1) {
-                            $(`a[href$='${sPanel}']`).css('background-color', '#e9e9e9');
-                            $(`a[href$='${sPanel}']`).text(TAB_NAME);
-                        }
                     }
                 }
             })
+
+            if (tabColor != 1) {
+                $(`a[href$='${sPanel}']`).css('background-color', '#e9e9e9');
+                $(`a[href$='${sPanel}']`).text(TAB_NAME);
+            }
+
             if (EClockCount > 0) {
                 $('#ECscreenCount')[0].innerHTML = 'There are ' + EClockCount + ' ECs needing locked';
             }else{
@@ -780,6 +777,7 @@
             checkCountry();
         }
     }
+    
     function checkCountry(tries = 1){
         setTimeout (RRCscreenMove, 3000);
         if (W.model.topCountry) {
