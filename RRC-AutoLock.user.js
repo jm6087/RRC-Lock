@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2020.07.08.01
+// @version      2020.07.09.00
 // @description  Locks RRCs and Cameras to set level instead of autolock to rank of editor
 // @author       jm6087
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -48,8 +48,10 @@
     // Fixed items that juliansean pointed out
 
     var TAB_NAME = 'RRC-AL'
-    let sPanel = `#sidepanel-rrc-al-`;
-    
+    let sPanel = `#sidepanel-rrc-al`;
+    const STORE_NAME = "RRCSettings";
+    var LS = 1594295400884
+
     const CountrySS = 'https://sheets.googleapis.com/v4/spreadsheets/1wPb4tqTsES7EgAyxVqRRsRiWBDurld5NzN7IdC4pnSo/values/CountryMinimumLocks/?key='+atob('QUl6YVN5QXUxcl84ZDBNdkJUdEFwQ2VZdndDUXR6M2I0cmhWZFNn');
     var COUNTRYID = [];
     const BetaSS = 'https://sheets.googleapis.com/v4/spreadsheets/1wPb4tqTsES7EgAyxVqRRsRiWBDurld5NzN7IdC4pnSo/values/Beta/?key='+atob('QUl6YVN5QXUxcl84ZDBNdkJUdEFwQ2VZdndDUXR6M2I0cmhWZFNn');
@@ -59,7 +61,6 @@
     const USER = {name: null, rank:null};
     var RRCAutoLockSettings;
     var LastEditorUserName;
-    const STORE_NAME = "RRCAutoLockSettings";
     var CameraType;
     var CameraTypeWW;
     const mapCenter = {lon: null, lat: null};
@@ -436,7 +437,8 @@
             RRCAutoLockEnabled: true,
             ECAutoLockEnabled: true,
             DiscordPermalink: true,
-            lastSaved: ""
+            lastSaved: "",
+            lastVersion: ""
         };
         RRCAutoLockSettings = loadedSettings ? loadedSettings : defaultSettings;
         for (let prop in defaultSettings) {
@@ -444,13 +446,15 @@
                 RRCAutoLockSettings[prop] = defaultSettings[prop];
             }
         }
+        if (RRCAutoLockSettings.lastSaved <= LS) { // Clears local storage and resets to defaults if older version is found
+            RRCAutoLockSettings = defaultSettings;
+            await WazeWrap.Remote.SaveSettings(STORE_NAME, JSON.stringify(defaultSettings));
+            localStorage.removeItem(STORE_NAME); // Clears local storage and resets to defaults if older version is found
+            localStorage.setItem(STORE_NAME, JSON.stringify(RRCAutoLockSettings)); // saves settings to local storage for persisting when refreshed
+        }
         const serverSettings = await WazeWrap.Remote.RetrieveSettings(STORE_NAME); //Settings stored to WazeWrap
         if (serverSettings && (serverSettings.lastSaved > RRCAutoLockSettings.lastSaved)) { // checks to see if WazeWrap stored settings are newer than what is stored in local storage
             $.extend(true, RRCAutoLockSettings, serverSettings);
-            localStorage.setItem(STORE_NAME, JSON.stringify(RRCAutoLockSettings)); // saves settings to local storage for persisting when refreshed
-        }
-        if (RRCAutoLockSettings.lastSaved <= "1593346455246") { // Clears local storage and resets to defaults if older version is found
-            localStorage.removeItem("RRCAutoLockSettings"); // Clears local storage and resets to defaults if older version is found
             localStorage.setItem(STORE_NAME, JSON.stringify(RRCAutoLockSettings)); // saves settings to local storage for persisting when refreshed
         }
         console.log(SCRIPT_NAME, "Settings Loaded");
@@ -782,7 +786,7 @@
             checkCountry();
         }
     }
-    
+
     function checkCountry(tries = 1){
         setTimeout (RRCscreenMove, 3000);
         if (W.model.topCountry) {
