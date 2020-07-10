@@ -722,8 +722,8 @@
 
     function forceCountrySetting(){
         CountryID = 'forced refresh';
-        $('#RRCAutoLockLevelOption')[0].value = RRCmin;
-        $('#ECAutoLockLevelOption')[0].value = ECmin;
+//        $('#RRCAutoLockLevelOption')[0].value = RRCmin;
+//        $('#ECAutoLockLevelOption')[0].value = ECmin;
         checkCountry();
         undoAction();
         console.log(SCRIPT_NAME, "forceCountrySetting activated, reset RRC to L" + RRCmin + " and EC to L" + ECmin)
