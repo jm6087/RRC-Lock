@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2020.07.09.00
+// @version      2020.07.09.01
 // @description  Locks RRCs and Cameras to set level instead of autolock to rank of editor
 // @author       jm6087
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -47,15 +47,20 @@
     // I think I got the enable button to default to checked. Still working on persisting through refresh when disabled
     // Fixed items that juliansean pointed out
 
-    var TAB_NAME = 'RRC-AL'
+// Variables that designate beta version - Do no copy to other versions
+    var TAB_NAME = 'RRC-AL';
     let sPanel = `#sidepanel-rrc-al`;
     const STORE_NAME = "RRCSettings";
-    var LS = 1594295400884
+    let LS = 1594295400884;
 
+// Spreadsheets and variables that pull data from spreadsheet
     const CountrySS = 'https://sheets.googleapis.com/v4/spreadsheets/1wPb4tqTsES7EgAyxVqRRsRiWBDurld5NzN7IdC4pnSo/values/CountryMinimumLocks/?key='+atob('QUl6YVN5QXUxcl84ZDBNdkJUdEFwQ2VZdndDUXR6M2I0cmhWZFNn');
-    var COUNTRYID = [];
     const BetaSS = 'https://sheets.googleapis.com/v4/spreadsheets/1wPb4tqTsES7EgAyxVqRRsRiWBDurld5NzN7IdC4pnSo/values/Beta/?key='+atob('QUl6YVN5QXUxcl84ZDBNdkJUdEFwQ2VZdndDUXR6M2I0cmhWZFNn');
     var BETA_TESTERS = [];
+    var COUNTRYID = [];
+    let countQty;
+
+// Other variables
     var VERSION = GM_info.script.version;
     var SCRIPT_NAME = GM_info.script.name;
     const USER = {name: null, rank:null};
@@ -70,7 +75,6 @@
     var ClosedBrack;
     var RRCAutoLock;
     var newLockLevel;
-
     let UpdateObj;
     var SelModel;
     var RRCAutolockRankplusOne;
@@ -79,7 +83,6 @@
     var manAuto;
     var SelMan;
     var count;
-    let countQty;
     var evalCount;
     var CountryID;
     var tabColor;
@@ -89,7 +92,6 @@
     var movedZoom;
     var RRCscreenCount;
     var ECscreenCount;
-
     var RRCmin;
     var ECmin;
     var CountryName;
