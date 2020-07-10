@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2020.07.09.01
+// @version      2020.07.10.00
 // @description  Locks RRCs and Cameras to set level instead of autolock to rank of editor
 // @author       jm6087
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -518,12 +518,14 @@
         };
         $('#RRCAutoLockLevelOption')[0].onchange = function() {
             let x = $('#RRCAutoLockLevelOption')[0].value;
-            console.log(SCRIPT_NAME, "RRCAutoLockLevelValue Settings changed");
+            undoAction();
+            console.log(SCRIPT_NAME, "RRCAutoLockLevelValue Settings changed to L" + x);
             saveSettings();
         };
         $('#ECAutoLockLevelOption')[0].onchange = function() {
             let x = $('#ECAutoLockLevelOption')[0].value;
-            console.log(SCRIPT_NAME, "ECAutoLockLevelValue Settings changed");
+            undoAction();
+            console.log(SCRIPT_NAME, "ECAutoLockLevelValue Settings changed to L" + x);
             saveSettings();
         };
         $('#DiscordPermalinkCheckbox')[0].onchange = function() {
@@ -720,7 +722,11 @@
 
     function forceCountrySetting(){
         CountryID = 'forced refresh';
+        $('#RRCAutoLockLevelOption')[0].value = RRCmin;
+        $('#ECAutoLockLevelOption')[0].value = ECmin;
         checkCountry();
+        undoAction();
+        console.log(SCRIPT_NAME, "forceCountrySetting activated, reset RRC to L" + RRCmin + " and EC to L" + ECmin)
     }
     function undoAction(){
         originalLon = 0;
