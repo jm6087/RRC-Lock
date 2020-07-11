@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2020.07.10.00
+// @version      2020.07.11.00
 // @description  Locks RRCs and Cameras to set level instead of autolock to rank of editor
 // @author       jm6087
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -20,7 +20,7 @@
 (function() {
     'use strict';
     var UPDATE_NOTES = `Locks (adjustable) RRCs to L4 and Cameras to L5 upon selection.<br><br>
-    2020.07.07.00 - Can now add countries without version update.  Added lock all on screen button.
+    2020.07.11.00 - Refresh country settings/defaults
     <br><br>
     Thanks for Dude495, TheCre8r, and SkiDooGuy for their assistance and encouragement`
 
@@ -314,7 +314,7 @@
             '<div id="panelCountQty"></div></br>',
             '<div><input type="button" id="RRC-Screen-Lock" title="RRC Screen Lock" value="Lock all RRCs" class="btn btn-danger btn-xs RRC-Button"></div></br>',
             '<div><input type="button" id="EC-Screen-Lock" title="EC Screen Lock" value="Lock all Enforcement Cameras" class="btn btn-danger btn-xs RRC-Button"></div></div></br>',
-            '<span class="fa fa-refresh" id="force-country-settings" title="Force Country Settings"> Refresh country settings</span></br>',
+            '<button id="force-country-settings" title="Reset country defaults" class="btn"><i class="fa fa-refresh"></i> Reset country settings/defaults <i class="fa fa-refresh"></i></button>',
             '<div id="countryName"></div>',
             // BETA USER FEATURE BELOW
             ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -538,6 +538,12 @@
                                                                 } else {
                                                                     $('#WMETUWarning')[0].textContent = ''};
         $('#CurrentDate')[0].textContent = dte;
+        document.getElementById("force-country-settings").style.padding = "1px 2px";
+        document.getElementById("RRC-Screen-Lock").style.padding = "1px 2px";
+        document.getElementById("EC-Screen-Lock").style.padding = "1px 2px";
+        document.getElementById("Permalink-Button-Name").style.padding = "1px 2px";
+        document.getElementById("Permalink-Button-Input").style.padding = "1px 2px";
+        
     }
     async function loadCountry() {
         await $.getJSON(CountrySS, function(cdata){
@@ -722,8 +728,8 @@
 
     function forceCountrySetting(){
         CountryID = 'forced refresh';
-//        $('#RRCAutoLockLevelOption')[0].value = RRCmin;
-//        $('#ECAutoLockLevelOption')[0].value = ECmin;
+        $('#RRCAutoLockLevelOption')[0].value = RRCmin;
+        $('#ECAutoLockLevelOption')[0].value = ECmin;
         checkCountry();
         undoAction();
         console.log(SCRIPT_NAME, "forceCountrySetting activated, reset RRC to L" + RRCmin + " and EC to L" + ECmin)
