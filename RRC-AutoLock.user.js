@@ -538,11 +538,11 @@
                                                                 } else {
                                                                     $('#WMETUWarning')[0].textContent = ''};
         $('#CurrentDate')[0].textContent = dte;
-        document.getElementById("force-country-settings").style.padding = "1px 2px";
-        document.getElementById("RRC-Screen-Lock").style.padding = "1px 2px";
-        document.getElementById("EC-Screen-Lock").style.padding = "1px 2px";
-        document.getElementById("Permalink-Button-Name").style.padding = "1px 2px";
-        document.getElementById("Permalink-Button-Input").style.padding = "1px 2px";
+        document.getElementById("force-country-settings").style.padding = "1px";
+        document.getElementById("RRC-Screen-Lock").style.padding = "1px";
+        document.getElementById("EC-Screen-Lock").style.padding = "1px";
+        document.getElementById("Permalink-Button-Name").style.padding = "1px";
+        document.getElementById("Permalink-Button-Input").style.padding = "1px";
         
     }
     async function loadCountry() {
