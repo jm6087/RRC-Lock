@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2020.07.12.00
+// @version      2020.07.12.01
 // @description  Locks RRCs and Cameras to set level instead of autolock to rank of editor
 // @author       jm6087
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -53,7 +53,7 @@
     var TAB_NAME = 'RRC-AL';
     let sPanel = `#sidepanel-rrc-al`;
     const STORE_NAME = "RRCSettings";
-    let LS = 1594295400884;
+    let LS = 1594558757308;
 
     const CountrySS = 'https://sheets.googleapis.com/v4/spreadsheets/1wPb4tqTsES7EgAyxVqRRsRiWBDurld5NzN7IdC4pnSo/values/CountryMinimumLocks/?key='+atob('QUl6YVN5QXUxcl84ZDBNdkJUdEFwQ2VZdndDUXR6M2I0cmhWZFNn');
     const BetaSS = 'https://sheets.googleapis.com/v4/spreadsheets/1wPb4tqTsES7EgAyxVqRRsRiWBDurld5NzN7IdC4pnSo/values/Beta/?key='+atob('QUl6YVN5QXUxcl84ZDBNdkJUdEFwQ2VZdndDUXR6M2I0cmhWZFNn');
@@ -96,6 +96,7 @@
     var RRCmin;
     var ECmin;
     var CountryName;
+    var forceDefault;
 
     function RRCscreenLock(){
         const extentGeometry = W.map.getOLMap().getExtent().toGeometry();
@@ -461,6 +462,7 @@
             localStorage.setItem(STORE_NAME, JSON.stringify(RRCAutoLockSettings)); // saves settings to local storage for persisting when refreshed
         }
         if (RRCAutoLockSettings.ECAutoLockLevelOption == 0 || RRCAutoLockSettings.RRCAutoLockLevelOption == 0) {
+            forceDefault = true;
             forceCountrySetting();
             console.log(SCRIPT_NAME, "Settings set to country minimum by default");
         }
@@ -469,10 +471,17 @@
     function saveSettings() {
         if (localStorage) {
             RRCAutoLockSettings.lastVersion = VERSION;
-            RRCAutoLockSettings.RRCAutoLockEnabled = $('#RRCAutoLockCheckbox')[0].checked;
-            RRCAutoLockSettings.ECAutoLockEnabled = $('#ECAutoLockCheckbox')[0].checked;
-            RRCAutoLockSettings.RRCAutoLockWazeWrapSuccessEnabled = $('#RRCAutoLockWazeWrapSuccessCheckbox')[0].checked;
-            RRCAutoLockSettings.RRCAutoLockWazeWrapInfoEnabled = $('#RRCAutoLockWazeWrapInfoCheckbox')[0].checked;
+            if (forceDefault != true) {
+                RRCAutoLockSettings.RRCAutoLockEnabled = $('#RRCAutoLockCheckbox')[0].checked;
+                RRCAutoLockSettings.ECAutoLockEnabled = $('#ECAutoLockCheckbox')[0].checked;
+                RRCAutoLockSettings.RRCAutoLockWazeWrapSuccessEnabled = $('#RRCAutoLockWazeWrapSuccessCheckbox')[0].checked;
+                RRCAutoLockSettings.RRCAutoLockWazeWrapInfoEnabled = $('#RRCAutoLockWazeWrapInfoCheckbox')[0].checked;
+            }else{
+                RRCAutoLockSettings.RRCAutoLockEnabled = true;
+                RRCAutoLockSettings.ECAutoLockEnabled = true;
+                RRCAutoLockSettings.RRCAutoLockWazeWrapSuccessEnabled = true;
+                RRCAutoLockSettings.RRCAutoLockWazeWrapInfoEnabled = true;
+            }
             RRCAutoLockSettings.RRCAutoLockLevelOption = $('#RRCAutoLockLevelOption')[0].value;
             RRCAutoLockSettings.ECAutoLockLevelOption = $('#ECAutoLockLevelOption')[0].value;
             RRCAutoLockSettings.lastSaved = Date.now();
