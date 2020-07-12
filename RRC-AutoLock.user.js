@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2020.07.12.01
+// @version      2020.07.12.02
 // @description  Locks RRCs and Cameras to set level instead of autolock to rank of editor
 // @author       jm6087
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -428,6 +428,16 @@
     function disabledOptions() { // Disables the drop down if the enabled option is off.
         $('#RRCAutoLockLevelOption')[0].disabled = !RRCAutoLockSettings.RRCAutoLockEnabled;
         $('#ECAutoLockLevelOption')[0].disabled = !RRCAutoLockSettings.ECAutoLockEnabled;
+        if (RRCAutoLockSettings.RRCAutoLockEnabled == false) {
+            document.getElementById("RRC-Screen-Lock").disabled = true;
+        }else{
+            document.getElementById("RRC-Screen-Lock").disabled = false;
+        }
+        if (RRCAutoLockSettings.ECAutoLockEnabled == false) {
+            document.getElementById("EC-Screen-Lock").disabled = true;
+        }else{
+            document.getElementById("EC-Screen-Lock").disabled = false;
+        }
     }
 
     /*-- START SETTINGS --*/
