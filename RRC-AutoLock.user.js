@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2020.07.11.00
+// @version      2020.07.12.00
 // @description  Locks RRCs and Cameras to set level instead of autolock to rank of editor
 // @author       jm6087
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -20,7 +20,7 @@
 (function() {
     'use strict';
     var UPDATE_NOTES = `Locks (adjustable) RRCs to L4 and Cameras to L5 upon selection.<br><br>
-    2020.07.11.00 - Refresh country settings/defaults
+    2020.07.12.00   Sets lock ranks to country minimum instead of N/A
     <br><br>
     Thanks for Dude495, TheCre8r, and SkiDooGuy for their assistance and encouragement`
 
@@ -28,7 +28,9 @@
     // PREVIOUS NOTES
     // with assistance and encouragment from Dude495, TheCre8r, and SkiDooGuy
 
-    // 2020.07.07.00 - Can now add countries without version update.  Added lock all on screen button.
+    // 2020.07.12.00   Sets lock ranks to country minimum instead of N/A
+    // 2020.07.11.00   Refresh country settings/defaults
+    // 2020.07.07.00   Can now add countries without version update.  Added lock all on screen button.
     // 2020.07.04.00 - Added Pakistan lock rank
     // 2020.07.02.00 - Tab color change when there are RRCs or ECs on screen that are not set to lock level
     // 2020.06.24.01 Dropped camera min to 3
@@ -53,14 +55,13 @@
     const STORE_NAME = "RRCSettings";
     let LS = 1594295400884;
 
-// Spreadsheets and variables that pull data from spreadsheet
     const CountrySS = 'https://sheets.googleapis.com/v4/spreadsheets/1wPb4tqTsES7EgAyxVqRRsRiWBDurld5NzN7IdC4pnSo/values/CountryMinimumLocks/?key='+atob('QUl6YVN5QXUxcl84ZDBNdkJUdEFwQ2VZdndDUXR6M2I0cmhWZFNn');
     const BetaSS = 'https://sheets.googleapis.com/v4/spreadsheets/1wPb4tqTsES7EgAyxVqRRsRiWBDurld5NzN7IdC4pnSo/values/Beta/?key='+atob('QUl6YVN5QXUxcl84ZDBNdkJUdEFwQ2VZdndDUXR6M2I0cmhWZFNn');
     var BETA_TESTERS = [];
     var COUNTRYID = [];
     let countQty;
 
-// Other variables
+    // Other variables
     var VERSION = GM_info.script.version;
     var SCRIPT_NAME = GM_info.script.name;
     const USER = {name: null, rank:null};
@@ -235,7 +236,7 @@
                             count++;
                             W.model.actionManager.add(new UpdateObj(SelModel, { lockRank: RRCAutoLock }));
                         }else{
-                            console.log (SCRIPT_NAME, CameraTypeWW, " ID ", SelModel.attributes.id, " skipped since it is unapproved");
+                            console.log (SCRIPT_NAME, CameraTypeWW, "ID", SelModel.attributes.id, "skipped since it is unapproved");
                         }
                     }
                 }
@@ -246,7 +247,7 @@
                         WazeWrap.Alerts.success(SCRIPT_NAME, [CameraTypeWW + ' changed from lock level ' + RRCAutolockRankplusOne + ' to ' + newLockLevel, 'Last edited by ' + LastEditorUserName].join('\n'));
                     }
                 }
-                console.log(SCRIPT_NAME, "Version #", VERSION, " - " + CameraTypeWW + " ID  " + SelModel.attributes.id + " Lock level changed from", RRCAutolockRankplusOne , " to ", newLockLevel);
+                console.log(SCRIPT_NAME, "Version #", VERSION, "-", CameraTypeWW + "ID", SelModel.attributes.id, "Lock level changed from", RRCAutolockRankplusOne , "to", newLockLevel, "Last Edited by", LastEditorUserName);
             }else{
                 // Checks to see if User rank is greater or equal to object lock level AND if object is already equal to dropdown lock level in panel
                 if (USER.rank >= (SelModel.attributes.rank + 1) && SelModel.attributes.lockRank == modelRank){
@@ -256,7 +257,7 @@
                             WazeWrap.Alerts.info(SCRIPT_NAME, [CameraTypeWW + ' lock not changed, already at lock level ' + RRCAutolockRankplusOne, 'Last edited by ' + LastEditorUserName].join('\n'));
                         }
                     }
-                    console.log (SCRIPT_NAME, "Version #", VERSION, " - ", CameraTypeWW, " ID " + SelModel.attributes.id + " lock not changed, already at lock level", RRCAutolockRankplusOne);
+                    console.log (SCRIPT_NAME, "Version #", VERSION, "-", CameraTypeWW, "ID ", SelModel.attributes.id, "lock not changed, already at lock level", RRCAutolockRankplusOne);
                 }else{
                     // Checks to see if object is locked above User rank
                     if (USER.rank < (SelModel.attributes.rank + 1)){
@@ -459,6 +460,10 @@
             $.extend(true, RRCAutoLockSettings, serverSettings);
             localStorage.setItem(STORE_NAME, JSON.stringify(RRCAutoLockSettings)); // saves settings to local storage for persisting when refreshed
         }
+        if (RRCAutoLockSettings.ECAutoLockLevelOption == 0 || RRCAutoLockSettings.RRCAutoLockLevelOption == 0) {
+            forceCountrySetting();
+            console.log(SCRIPT_NAME, "Settings set to country minimum by default");
+        }
         console.log(SCRIPT_NAME, "Settings Loaded");
     }
     function saveSettings() {
@@ -543,7 +548,6 @@
         document.getElementById("EC-Screen-Lock").style.padding = "1px";
         document.getElementById("Permalink-Button-Name").style.padding = "1px";
         document.getElementById("Permalink-Button-Input").style.padding = "1px";
-        
     }
     async function loadCountry() {
         await $.getJSON(CountrySS, function(cdata){
@@ -728,12 +732,14 @@
 
     function forceCountrySetting(){
         CountryID = 'forced refresh';
+        checkCountry();
         $('#RRCAutoLockLevelOption')[0].value = RRCmin;
         $('#ECAutoLockLevelOption')[0].value = ECmin;
-        checkCountry();
+        saveSettings();
         undoAction();
-        console.log(SCRIPT_NAME, "forceCountrySetting activated, reset RRC to L" + RRCmin + " and EC to L" + ECmin)
+        console.log(SCRIPT_NAME, "forceCountrySetting activated, reset RRC to L" + RRCmin + " and EC to L" + ECmin);
     }
+
     function undoAction(){
         originalLon = 0;
         RRCscreenMove();
