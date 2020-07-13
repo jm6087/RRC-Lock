@@ -331,7 +331,7 @@
             '<div class="form-group">',
             '<b><h5><div id="USERedits"><div></h5></b></br></div></div>', // BETA USER FEATURE
             '</div>', // BETA USER FEATURE
-            '<p><div id="sheet"><a href="https://docs.google.com/spreadsheets/d/1wPb4tqTsES7EgAyxVqRRsRiWBDurld5NzN7IdC4pnSo/edit#gid=0" target="_blank">Sheet</a></div></p>',
+            '<p><div id="sheet"><a href="https://docs.google.com/spreadsheets/d/1wPb4tqTsES7EgAyxVqRRsRiWBDurld5NzN7IdC4pnSo/edit#gid=1675959019" target="_blank">Sheet</a></div></p>',
             '<div>',
         ].join(' '));
 
