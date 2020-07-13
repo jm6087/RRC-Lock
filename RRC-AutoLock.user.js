@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2020.07.13.01
+// @version      2020.07.13.02
 // @description  Locks RRCs and Cameras to set level instead of autolock to rank of editor
 // @author       jm6087
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -312,7 +312,8 @@
             '<b><div id="ECscreenCount"></div></b></br>',
             '<b><input type="checkbox" id="RRCAutoLockWazeWrapSuccessCheckbox"> Alerts: Success</b></br>',
             '<b><input type="checkbox" id="RRCAutoLockWazeWrapInfoCheckbox"> Alerts: Info</b></br>',
-            '<b><div id="WMETUWarning"></div></b></br>',
+            '<b><div id="WMETUWarning"></div></b>',
+            '<b><input type="checkbox" id="TUWARNING"> Disable URMP / TU Warning</b></br>',
             '<b><h4>Your WME window was last refreshed at:</h4></b>',
             '<b><h4><div id="CurrentDate"></div></h4></b></br>',
             '<div class="form-group"></br>',
@@ -451,6 +452,7 @@
             RRCAutoLockEnabled: true,
             ECAutoLockEnabled: true,
             DiscordPermalink: true,
+            TUWARNING: false,
             lastSaved: "",
             lastVersion: ""
         };
@@ -496,6 +498,7 @@
             RRCAutoLockSettings.ECAutoLockLevelOption = $('#ECAutoLockLevelOption')[0].value;
             RRCAutoLockSettings.lastSaved = Date.now();
             RRCAutoLockSettings.DiscordPermalink = $('#DiscordPermalinkCheckbox')[0].checked;
+            RRCAutoLockSettings.TUWARNING = $('#TUWARNING')[0].checked;
             disabledOptions();
             localStorage.setItem(STORE_NAME, JSON.stringify(RRCAutoLockSettings)); // saves settings to local storage for persisting when refreshed
             WazeWrap.Remote.SaveSettings(STORE_NAME, JSON.stringify(RRCAutoLockSettings)); // saves settings to WazeWrap
@@ -519,6 +522,7 @@
         $('#RRCAutoLockLevelOption')[0].value = RRCAutoLockSettings.RRCAutoLockLevelOption;
         $('#ECAutoLockLevelOption')[0].value = RRCAutoLockSettings.ECAutoLockLevelOption;
         $('#DiscordPermalinkCheckbox')[0].checked = RRCAutoLockSettings.DiscordPermalink;
+        $('#TUWARNING')[0].checked = RRCAutoLockSettings.TUWARNING;
         disabledOptions()
         setBetaFeatures(USER.name);
         setTimeout (loadCountryID, 2000);
@@ -556,11 +560,17 @@
             console.log(SCRIPT_NAME, "Discord PL option changed");
             saveSettings();
         };
+        $('#TUWARNING')[0].onchange = function() {
+            console.log(SCRIPT_NAME, "TUWARNING");
+            saveSettings();
+        };
+        if (RRCAutoLockSettings.TUWARNING == false) {
         if (($('#Info_server')[0]) || ($('#sidepanel-urt')[0])) { $('#WMETUWarning')[0].innerHTML = 'WME Tile Update and/or UR-MP Script Detected;<br>WMETU and UR-MP are known to cause problems with this script.<br>Disable WMETU and/or UR-MP if you experience any issues.';
                                                                  wazedevtoastr.options.timeOut = 8000;
                                                                  WazeWrap.Alerts.warning(SCRIPT_NAME, ["WME Tile Update and/or UR-MP Script Detected;","WMETU and UR-MP are known to cause problems with this script.","Disable WMETU and/or UR-MP if you experience any issues."].join('\n'));
                                                                 } else {
                                                                     $('#WMETUWarning')[0].textContent = ''};
+        };
         $('#CurrentDate')[0].textContent = dte;
         document.getElementById("force-country-settings").style.padding = "1px";
         document.getElementById("RRC-Screen-Lock").style.padding = "1px";
