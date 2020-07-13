@@ -564,13 +564,13 @@
             console.log(SCRIPT_NAME, "TUWARNING");
             saveSettings();
         };
-        if (RRCAutoLockSettings.TUWARNING == false) {
         if (($('#Info_server')[0]) || ($('#sidepanel-urt')[0])) { $('#WMETUWarning')[0].innerHTML = 'WME Tile Update and/or UR-MP Script Detected;<br>WMETU and UR-MP are known to cause problems with this script.<br>Disable WMETU and/or UR-MP if you experience any issues.';
-                                                                 wazedevtoastr.options.timeOut = 8000;
-                                                                 WazeWrap.Alerts.warning(SCRIPT_NAME, ["WME Tile Update and/or UR-MP Script Detected;","WMETU and UR-MP are known to cause problems with this script.","Disable WMETU and/or UR-MP if you experience any issues."].join('\n'));
-                                                                } else {
+                                                                 if (RRCAutoLockSettings.TUWARNING == false) {
+                                                                     wazedevtoastr.options.timeOut = 8000;
+                                                                     WazeWrap.Alerts.warning(SCRIPT_NAME, ["WME Tile Update and/or UR-MP Script Detected;","WMETU and UR-MP are known to cause problems with this script.","Disable WMETU and/or UR-MP if you experience any issues."].join('\n'));
+                                                                 }
+                                                                }else {
                                                                     $('#WMETUWarning')[0].textContent = ''};
-        };
         $('#CurrentDate')[0].textContent = dte;
         document.getElementById("force-country-settings").style.padding = "1px";
         document.getElementById("RRC-Screen-Lock").style.padding = "1px";
