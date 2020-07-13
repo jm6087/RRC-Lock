@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2020.07.13.00
+// @version      2020.07.13.01
 // @description  Locks RRCs and Cameras to set level instead of autolock to rank of editor
 // @author       jm6087
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -285,6 +285,9 @@
             '<div>',
             '<h4 style="margin-bottom:0px;"><b>'+ SCRIPT_NAME +'</b></h4>',
             VERSION +'</br>',
+            '<div id="countryName"></div>',
+            '<button id="force-country-settings" title="Reset country defaults" class="btn"><i class="fa fa-refresh"></i> Reset country settings/defaults <i class="fa fa-refresh"></i></button>',
+            '<div class="form-group"></div>',
             '<b><input type="checkbox" id="RRCAutoLockCheckbox"> RRC lock enabled</b></br>',
             '<b><id="RRCAutoLockLevelValue">RRC lock level: <select id="RRCAutoLockLevelOption"></b></br>',
             '<option value="0">N/A</option>',
@@ -316,8 +319,6 @@
             '<div id="panelCountQty"></div></br>',
             '<div><input type="button" id="RRC-Screen-Lock" title="RRC Screen Lock" value="Lock all RRCs" class="btn btn-danger btn-xs RRC-Button"></div></br>',
             '<div><input type="button" id="EC-Screen-Lock" title="EC Screen Lock" value="Lock all Enforcement Cameras" class="btn btn-danger btn-xs RRC-Button"></div></div></br>',
-            '<button id="force-country-settings" title="Reset country defaults" class="btn"><i class="fa fa-refresh"></i> Reset country settings/defaults <i class="fa fa-refresh"></i></button>',
-            '<div id="countryName"></div>',
             // BETA USER FEATURE BELOW
             ////////////////////////////////////////////////////////////////////////////////////////////////
             '<div class="form-group">', // BETA USER FEATURE
@@ -326,7 +327,6 @@
             '<b><input type="checkbox" id="DiscordPermalinkCheckbox">  Create PL with < > for Discord.</div></b></br>', // https://www.w3schools.com/bootstrap/bootstrap_buttons.asp
             '<input type="button" id="Permalink-Button-Name" title="PL" value="Copy Clean PL to your clipboard" class="btn btn-info btn-xs RRC-Button"></br></br>', // BETA USER FEATURE
             '<input type="button" id="Permalink-Button-Input" title="PL" value="Clean PL from another editor" class="btn btn-info btn-xs RRC-Button"></br></br>', // BETA USER FEATURE
-
             '<div class="form-group">',
             '<b><h5><div id="USERedits"><div></h5></b></br></div></div>', // BETA USER FEATURE
             '</div>', // BETA USER FEATURE
