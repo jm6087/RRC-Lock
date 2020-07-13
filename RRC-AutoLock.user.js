@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2020.07.12.02
+// @version      2020.07.13.00
 // @description  Locks RRCs and Cameras to set level instead of autolock to rank of editor
 // @author       jm6087
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -674,13 +674,13 @@
             console.log(SCRIPT_NAME, 'Country ID is', CountryID, '-', ctry, ', the minimum EC lock level is set to', ECmin, 'and max rank set at', max);
 
             if (max < RRCmin) {
-                wazedevtoastr.options.timeOut = 5000;
-                WazeWrap.Alerts.warning(SCRIPT_NAME, ["It appears that your user rank of R" + max,"is less than the minimum lock level of " + RRCmin + " for your country for Railroad Crossings"].join('\n'));
+//                wazedevtoastr.options.timeOut = 5000;
+//                WazeWrap.Alerts.warning(SCRIPT_NAME, ["It appears that your user rank of R" + max,"is less than the minimum lock level of " + RRCmin + " for your country for Railroad Crossings"].join('\n'));
                 RRCmin = 10;
             }
             if (max < ECmin) {
-                wazedevtoastr.options.timeOut = 5000;
-                WazeWrap.Alerts.warning(SCRIPT_NAME, ["It appears that your user rank of R" + max,"is less than the minimum lock level of " + ECmin + " for your country for Enforcement Cameras"].join('\n'));
+//                wazedevtoastr.options.timeOut = 5000;
+//                WazeWrap.Alerts.warning(SCRIPT_NAME, ["It appears that your user rank of R" + max,"is less than the minimum lock level of " + ECmin + " for your country for Enforcement Cameras"].join('\n'));
                 ECmin = 10;
             }
 
