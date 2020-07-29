@@ -249,7 +249,7 @@
                         WazeWrap.Alerts.success(SCRIPT_NAME, [CameraTypeWW + ' changed from lock level ' + RRCAutolockRankplusOne + ' to ' + newLockLevel, 'Last edited by ' + LastEditorUserName].join('\n'));
                     }
                 }
-                console.log(SCRIPT_NAME, "Version #", VERSION, "-", CameraTypeWW + "ID", SelModel.attributes.id, "Lock level changed from", RRCAutolockRankplusOne , "to", newLockLevel, "Last Edited by", LastEditorUserName);
+//                console.log(SCRIPT_NAME, "Version #", VERSION, "-", CameraTypeWW + "ID", SelModel.attributes.id, "Lock level changed from", RRCAutolockRankplusOne , "to", newLockLevel, "Last Edited by", LastEditorUserName);
             }else{
                 // Checks to see if User rank is greater or equal to object lock level AND if object is already equal to dropdown lock level in panel
                 if (USER.rank >= (SelModel.attributes.rank + 1) && SelModel.attributes.lockRank == modelRank){
@@ -259,7 +259,7 @@
                             WazeWrap.Alerts.info(SCRIPT_NAME, [CameraTypeWW + ' lock not changed, already at lock level ' + RRCAutolockRankplusOne, 'Last edited by ' + LastEditorUserName].join('\n'));
                         }
                     }
-                    console.log (SCRIPT_NAME, "Version #", VERSION, "-", CameraTypeWW, "ID ", SelModel.attributes.id, "lock not changed, already at lock level", RRCAutolockRankplusOne);
+//                    console.log (SCRIPT_NAME, "Version #", VERSION, "-", CameraTypeWW, "ID ", SelModel.attributes.id, "lock not changed, already at lock level", RRCAutolockRankplusOne);
                 }else{
                     // Checks to see if object is locked above User rank
                     if (USER.rank < (SelModel.attributes.rank + 1)){
