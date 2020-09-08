@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2020.07.28.00
+// @version      2020.09.08.00
 // @description  Locks RRCs and Cameras to set level instead of autolock to rank of editor
 // @author       jm6087
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -19,8 +19,7 @@
 
 (function() {
     'use strict';
-    var UPDATE_NOTES = `Locks (adjustable) RRCs to L4 and Cameras to L5 upon selection.<br><br>
-    2020.07.28.00   Clean up console logs Bruce
+    var UPDATE_NOTES = `2020.09.08.00 - Update text size
     <br><br>
     Thanks for Dude495, TheCre8r, and SkiDooGuy for their assistance and encouragement`
 
@@ -28,6 +27,7 @@
     // PREVIOUS NOTES
     // with assistance and encouragment from Dude495, TheCre8r, and SkiDooGuy
 
+    // 2020.09.08.00   Update text size
     // 2020.07.28.00   Clean up console logs
     // 2020.07.12.00   Sets lock ranks to country minimum instead of N/A
     // 2020.07.11.00   Refresh country settings/defaults
@@ -284,7 +284,7 @@
         var $RRCsection = $("<div>");
         $RRCsection.html([
             '<div>',
-            '<h4 style="margin-bottom:0px;"><b>'+ SCRIPT_NAME +'</b></h4>',
+            '<h6 style="margin-bottom:0px;"><b>'+ SCRIPT_NAME +'</b></h6>',
             VERSION +'</br>',
             '<div id="countryName"></div>',
             '<button id="force-country-settings" title="Reset country defaults" class="btn"><i class="fa fa-refresh"></i> Reset country settings/defaults <i class="fa fa-refresh"></i></button>',
@@ -315,8 +315,8 @@
             '<b><input type="checkbox" id="RRCAutoLockWazeWrapInfoCheckbox"> Alerts: Info</b></br>',
             '<b><div id="WMETUWarning"></div></b>',
             '<b><input type="checkbox" id="TUWARNING"> Disable URMP / TU Warning</b></br>',
-            '<b><h4>Your WME window was last refreshed at:</h4></b>',
-            '<b><h4><div id="CurrentDate"></div></h4></b></br>',
+            '<b>Your WME window was last refreshed at:</b>',
+            '<b><div id="CurrentDate"></div></b></br>',
             '<div class="form-group"></br>',
             '<div id="panelCountQty"></div></br>',
             '<div><input type="button" id="RRC-Screen-Lock" title="RRC Screen Lock" value="Lock all RRCs" class="btn btn-danger btn-xs RRC-Button"></div></br>',
@@ -330,7 +330,7 @@
             '<input type="button" id="Permalink-Button-Name" title="PL" value="Copy Clean PL to your clipboard" class="btn btn-info btn-xs RRC-Button"></br></br>', // BETA USER FEATURE
             '<input type="button" id="Permalink-Button-Input" title="PL" value="Clean PL from another editor" class="btn btn-info btn-xs RRC-Button"></br></br>', // BETA USER FEATURE
             '<div class="form-group">',
-            '<b><h5><div id="USERedits"><div></h5></b></br></div></div>', // BETA USER FEATURE
+            '<b><p><div id="USERedits"><div></b></p></br></div></div>', // BETA USER FEATURE
             '</div>', // BETA USER FEATURE
             '<p><div id="sheet"><a href="https://docs.google.com/spreadsheets/d/1wPb4tqTsES7EgAyxVqRRsRiWBDurld5NzN7IdC4pnSo/edit#gid=1675959019" target="_blank">Sheet</a></div></p>',
             '<div>',
