@@ -51,9 +51,9 @@
     // Fixed items that juliansean pointed out
 
     // Variables that designate beta version - Do no copy to other versions
-    var TAB_NAME = 'RRC-AL-β';
-    let sPanel = `#sidepanel-rrc-al-`;
-    const STORE_NAME = "RRCSettingsBETA";
+    var TAB_NAME = 'RRC-AL';
+    let sPanel = `#sidepanel-rrc-al`;
+    const STORE_NAME = "RRCSettings";
     let LS = 1594558757308;
 
     const CountrySS = 'https://sheets.googleapis.com/v4/spreadsheets/1wPb4tqTsES7EgAyxVqRRsRiWBDurld5NzN7IdC4pnSo/values/CountryMinimumLocks/?key='+atob('QUl6YVN5QXUxcl84ZDBNdkJUdEFwQ2VZdndDUXR6M2I0cmhWZFNn');
