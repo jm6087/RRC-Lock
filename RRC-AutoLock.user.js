@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2020.09.08.00
+// @version      2020.10.11.00
 // @description  Locks RRCs and Cameras to set level instead of autolock to rank of editor
 // @author       jm6087
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -50,10 +50,10 @@
     // I think I got the enable button to default to checked. Still working on persisting through refresh when disabled
     // Fixed items that juliansean pointed out
 
-// Variables that designate beta version - Do no copy to other versions
-    var TAB_NAME = 'RRC-AL';
-    let sPanel = `#sidepanel-rrc-al`;
-    const STORE_NAME = "RRCSettings";
+    // Variables that designate beta version - Do no copy to other versions
+    var TAB_NAME = 'RRC-AL-β';
+    let sPanel = `#sidepanel-rrc-al-`;
+    const STORE_NAME = "RRCSettingsBETA";
     let LS = 1594558757308;
 
     const CountrySS = 'https://sheets.googleapis.com/v4/spreadsheets/1wPb4tqTsES7EgAyxVqRRsRiWBDurld5NzN7IdC4pnSo/values/CountryMinimumLocks/?key='+atob('QUl6YVN5QXUxcl84ZDBNdkJUdEFwQ2VZdndDUXR6M2I0cmhWZFNn');
@@ -98,6 +98,7 @@
     var ECmin;
     var CountryName;
     var forceDefault;
+    var PLzoomLevel;
 
     function RRCscreenLock(){
         const extentGeometry = W.map.getOLMap().getExtent().toGeometry();
@@ -255,7 +256,7 @@
                 if (USER.rank >= (SelModel.attributes.rank + 1) && SelModel.attributes.lockRank == modelRank){
                     if (manAuto == "Manual") {
                         if (RRCAutoLockSettings.RRCAutoLockWazeWrapInfoEnabled == true){ // Check to see if WW banner enabled
-//                            console.log(SCRIPT_NAME, "WazeWrap  is enabled");
+ //                           console.log(SCRIPT_NAME, "WazeWrap  is enabled");
                             WazeWrap.Alerts.info(SCRIPT_NAME, [CameraTypeWW + ' lock not changed, already at lock level ' + RRCAutolockRankplusOne, 'Last edited by ' + LastEditorUserName].join('\n'));
                         }
                     }
@@ -269,7 +270,7 @@
                                 WazeWrap.Alerts.error(SCRIPT_NAME, [CameraTypeWW + ' is locked above your rank', 'You will need assistance from an Rank ' + RRCAutoLockRankOverLock + ' editor', 'Last edited by ' + LastEditorUserName].join('\n'));
                             }else{
                                 WazeWrap.Alerts.error(SCRIPT_NAME, [CameraTypeWW + ' is locked above your rank', 'You will need assistance from at least a Rank ' + RRCAutoLockRankOverLock + ' editor', 'Last edited by ' + LastEditorUserName].join('\n'));
-//                                console.log (SCRIPT_NAME, "Version #", VERSION, " - ", CameraTypeWW, " ID ", SelModel.attributes.id , " is locked above editor rank");
+ //                               console.log (SCRIPT_NAME, "Version #", VERSION, " - ", CameraTypeWW, " ID ", SelModel.attributes.id , " is locked above editor rank");
                             }
                         }
                     }
@@ -325,6 +326,18 @@
             ////////////////////////////////////////////////////////////////////////////////////////////////
             '<div class="form-group">', // BETA USER FEATURE
             '<b><div id="BETAonly">The features below only show for editors listed as Beta testers<div></b></br>', // BETA USER FEATURE
+            '<b><id="PLzoomLevelValue">Zoom level for PLs: <select id="PLzoomLevelOption"></b></br>',
+            '<option value="1">1</option>',
+            '<option value="2">2</option>',
+            '<option value="3">3</option>',
+            '<option value="4">4</option>',
+            '<option value="5">5</option>',
+            '<option value="6">6</option>',
+            '<option value="7">7</option>',
+            '<option value="8">8</option>',
+            '<option value="9">9</option>',
+            '<option value="10">10</option>',
+            '</select></br>',
             '<div id="discord">', // BETA USER FEATURE
             '<b><input type="checkbox" id="DiscordPermalinkCheckbox">  Create PL with < > for Discord.</div></b></br>', // https://www.w3schools.com/bootstrap/bootstrap_buttons.asp
             '<input type="button" id="Permalink-Button-Name" title="PL" value="Copy Clean PL to your clipboard" class="btn btn-info btn-xs RRC-Button"></br></br>', // BETA USER FEATURE
@@ -347,6 +360,7 @@
     // BETA USER FEATURE BELOW
     /////////////////////////////////////////////////////////////////////////////////////////
     function CleanPermaLink(){
+        PLzoomLevel = $('#PLzoomLevelOption')[0].value;
         let selectedID;
         let PLselFeat = W.selectionManager.getSelectedFeatures();
         let LatLonCenter = W.map.getCenter();
@@ -366,9 +380,9 @@
             }else{
                 selectedID = PLselFeat[0].model.attributes.id;
             }
-            newCleanPL = OpenBrack + PLurl + center4326.lon.toFixed(5) + "&lat=" + center4326.lat.toFixed(5) + "&zoom=5&" + selectedType + "s=" + selectedID + ClosedBrack;
+            newCleanPL = OpenBrack + PLurl + center4326.lon.toFixed(5) + "&lat=" + center4326.lat.toFixed(5) + "&zoom=" + PLzoomLevel + "&" + selectedType + "s=" + selectedID + ClosedBrack;
         }else{
-            newCleanPL = OpenBrack + PLurl + center4326.lon.toFixed(5) + "&lat=" + center4326.lat.toFixed(5) + "&zoom=5" + ClosedBrack;
+            newCleanPL = OpenBrack + PLurl + center4326.lon.toFixed(5) + "&lat=" + center4326.lat.toFixed(5) + "&zoom=" + PLzoomLevel + ClosedBrack;
         }
         copyToClipboard();
     }
@@ -383,6 +397,7 @@
             'wazeurl': new RegExp('(?:http(?:s):\/\/)?(?:www\.|beta\.)?waze\.com\/(?:.*?\/)?(editor|livemap)[-a-zA-Z0-9@:%_\+,.~#?&\/\/=]*', "ig")
         };
         if (inputData.match(regexs.wazeurl)){
+            PLzoomLevel = $('#PLzoomLevelOption')[0].value;
             let PLurl = 'https://www.waze.com/' + I18n.currentLocale() + '/editor?env=' + W.app.getAppRegionCode() + "&lon=";
             var inputSegsVen;
             let params = inputData.match(/lon=(-?\d*.\d*)&lat=(-?\d*.\d*)/);
@@ -402,7 +417,7 @@
                 OpenBrack = "";
                 ClosedBrack = "";
             }
-            newCleanPL = OpenBrack +PLurl + inputLon + "&lat=" + inputLat + "&zoom=6" + inputSegsVen + ClosedBrack;
+            newCleanPL = OpenBrack +PLurl + inputLon + "&lat=" + inputLat + "&zoom=" + PLzoomLevel + inputSegsVen + ClosedBrack;
             copyToClipboard();
             console.log (SCRIPT_NAME, 'Inputed PL now clean ' + newCleanPL);
         }else{
@@ -448,6 +463,7 @@
         const defaultSettings = { // sets default values for tab options
             RRCAutoLockLevelOption: "0",
             ECAutoLockLevelOption: "0",
+            PLzoomLevelOption: "7",
             RRCAutoLockWazeWrapSuccessEnabled: true,
             RRCAutoLockWazeWrapInfoEnabled: true,
             RRCAutoLockEnabled: true,
@@ -477,7 +493,7 @@
         if (RRCAutoLockSettings.ECAutoLockLevelOption == 0 || RRCAutoLockSettings.RRCAutoLockLevelOption == 0) {
             forceDefault = true;
             forceCountrySetting();
-//            console.log(SCRIPT_NAME, "Settings set to country minimum by default");
+            console.log(SCRIPT_NAME, "Settings set to country minimum by default");
         }
         console.log(SCRIPT_NAME, "Settings Loaded");
     }
@@ -497,6 +513,7 @@
             }
             RRCAutoLockSettings.RRCAutoLockLevelOption = $('#RRCAutoLockLevelOption')[0].value;
             RRCAutoLockSettings.ECAutoLockLevelOption = $('#ECAutoLockLevelOption')[0].value;
+            RRCAutoLockSettings.PLzoomLevelOption = $('#PLzoomLevelOption')[0].value;
             RRCAutoLockSettings.lastSaved = Date.now();
             RRCAutoLockSettings.DiscordPermalink = $('#DiscordPermalinkCheckbox')[0].checked;
             RRCAutoLockSettings.TUWARNING = $('#TUWARNING')[0].checked;
@@ -522,6 +539,7 @@
         $('#RRCAutoLockWazeWrapInfoCheckbox')[0].checked = RRCAutoLockSettings.RRCAutoLockWazeWrapInfoEnabled;
         $('#RRCAutoLockLevelOption')[0].value = RRCAutoLockSettings.RRCAutoLockLevelOption;
         $('#ECAutoLockLevelOption')[0].value = RRCAutoLockSettings.ECAutoLockLevelOption;
+        $('#PLzoomLevelOption')[0].value = RRCAutoLockSettings.PLzoomLevelOption;
         $('#DiscordPermalinkCheckbox')[0].checked = RRCAutoLockSettings.DiscordPermalink;
         $('#TUWARNING')[0].checked = RRCAutoLockSettings.TUWARNING;
         disabledOptions()
@@ -555,6 +573,12 @@
             let x = $('#ECAutoLockLevelOption')[0].value;
             undoAction();
 //            console.log(SCRIPT_NAME, "ECAutoLockLevelValue Settings changed to L" + x);
+            saveSettings();
+        };
+        $('#PLzoomLevelOption')[0].onchange = function() {
+            let x = $('#PLzoomLevelOption')[0].value;
+            undoAction();
+//            console.log(SCRIPT_NAME, "PLzoomLevelValue Settings changed to L" + x);
             saveSettings();
         };
         $('#DiscordPermalinkCheckbox')[0].onchange = function() {
