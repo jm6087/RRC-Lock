@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2020.10.11.00
+// @version      2021.02.14.00
 // @description  Locks RRCs and Cameras to set level instead of autolock to rank of editor
 // @author       jm6087
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -19,7 +19,7 @@
 
 (function() {
     'use strict';
-    var UPDATE_NOTES = `2020.09.08.00 - Update text size
+    var UPDATE_NOTES = `
     <br><br>
     Thanks for Dude495, TheCre8r, and SkiDooGuy for their assistance and encouragement`
 
@@ -398,11 +398,20 @@
         };
         if (inputData.match(regexs.wazeurl)){
             PLzoomLevel = $('#PLzoomLevelOption')[0].value;
-            let PLurl = 'https://www.waze.com/' + I18n.currentLocale() + '/editor?env=' + W.app.getAppRegionCode() + "&lon=";
+            let PLurl = 'https://www.waze.com/' + I18n.currentLocale() + '/editor?env=' + W.app.getAppRegionCode();
             var inputSegsVen;
-            let params = inputData.match(/lon=(-?\d*.\d*)&lat=(-?\d*.\d*)/);
-            let inputLon = params[1];
-            let inputLat = params[2];
+            var params;
+            var inputLon;
+            var inputLat;
+            params = inputData.match(/lon=(-?\d*.\d*)&lat=(-?\d*.\d*)/);
+                        if (params == null){
+                params = inputData.match(/lat=(-?\d*.\d*)&lon=(-?\d*.\d*)/);
+                inputLat = params[1];
+                inputLon = params[2];
+            }else{
+                inputLon = params[1];
+                inputLat = params[2];
+            }
             let inputSegs = inputData.match(/&segments=(.*)(?:&|$)/);
             let inputVenue = inputData.match(/&venues=(.*)(?:&|$)/);
             let inputRRC = inputData.match(/&railroadCrossings=(.*)(?:&|$)/)
@@ -417,7 +426,7 @@
                 OpenBrack = "";
                 ClosedBrack = "";
             }
-            newCleanPL = OpenBrack +PLurl + inputLon + "&lat=" + inputLat + "&zoom=" + PLzoomLevel + inputSegsVen + ClosedBrack;
+            newCleanPL = OpenBrack +PLurl + "&lon=" + inputLon + "&lat=" + inputLat + "&zoom=" + PLzoomLevel + inputSegsVen + ClosedBrack;
             copyToClipboard();
             console.log (SCRIPT_NAME, 'Inputed PL now clean ' + newCleanPL);
         }else{
