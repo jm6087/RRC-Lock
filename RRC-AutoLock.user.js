@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock - beta
 // @namespace    https://github.com/jm6087
-// @version      2021.04.09.01
+// @version      2021.04.09.02
 // @description  Locks RRCs and Cameras to set level instead of autolock to rank of editor
 // @author       jm6087 (with assistance from Dude495, TheCre8r, and SkiDooGuy)
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
