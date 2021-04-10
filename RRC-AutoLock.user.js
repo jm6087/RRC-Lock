@@ -1,9 +1,9 @@
 // ==UserScript==
-// @name         WME RRC AutoLock
+// @name         WME RRC AutoLock - beta
 // @namespace    https://github.com/jm6087
-// @version      2021.02.14.00
+// @version      β.2021.04.09.01
 // @description  Locks RRCs and Cameras to set level instead of autolock to rank of editor
-// @author       jm6087
+// @author       jm6087 (with assistance from Dude495, TheCre8r, and SkiDooGuy)
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
 // @require      https://greasyfork.org/scripts/24851-wazewrap/code/WazeWrap.js
 // @require      https://greasyfork.org/scripts/27254-clipboard-js/code/clipboardjs.js
@@ -15,33 +15,37 @@
 /* global $ */
 /* global I18n */
 /* global wazedevtoastr */
+/* global CleanPermaLinkShortcut */
+/* global wmeRRCAL */
 /* global _ */
+
+let UpdateObj;
 
 (function() {
     'use strict';
-    var UPDATE_NOTES = `
-    <br><br>
-    Thanks for Dude495, TheCre8r, and SkiDooGuy for their assistance and encouragement`
+    var UPDATE_NOTES = `Background update<br>
+    `
 
 
-    // PREVIOUS NOTES
-    // with assistance and encouragment from Dude495, TheCre8r, and SkiDooGuy
-
+    // PREVIOUS NOTES 
+    
     // 2020.09.08.00   Update text size
     // 2020.07.28.00   Clean up console logs
     // 2020.07.12.00   Sets lock ranks to country minimum instead of N/A
-    // 2020.07.11.00   Refresh country settings/defaults
-    // 2020.07.07.00   Can now add countries without version update.  Added lock all on screen button.
-    // 2020.07.04.00 - Added Pakistan lock rank
-    // 2020.07.02.00 - Tab color change when there are RRCs or ECs on screen that are not set to lock level
-    // 2020.06.24.01 Dropped camera min to 3
-    // 2020.06.23.00 Fixed banner issue
-    // 2020.06.21.01 - Released to editors
-    // 2020.06.18.02 - Added check to see if RRC/camera are within editable areas
-    // 2020.06.18.00 - More code clean up
-    // 2020.06.17.00 - Code clean up
-    // 2020.06.16.01 - Added WazeWrap storage. (Thanks Daniel)
-    // 2020.06.16.00 - Minor changes
+    // 2020.07.11.00   Refresh button is easier to press
+    // 2020.07.10.00   Changes to refreshing country settings/defaults button
+    // 2020.07.05.00    Testing lock all for everyone - currently set at 15 for non-scipt beta and 75 for script beta testers
+    // 2020.07.04.00    Added Pakistan lock rank
+    // 2020.07.01.00    Backend changes
+    // 2020.06.29.01    Tab changes color if there are any RRCs or Cameras on screen that are not locked to settings.
+    // 2020.06.25.01    Add ability to set what the minimum drop down lock level that shows/Also hides all lock levels above your rank
+    // 2020.06.25.00    Lock all RRCs and Cameras on screen/Should not lock unconfirmed RRCs and Cameras when using screen lock
+    //                  Implemented changes suggested by turnertr/Cleaned up code.
+    // 2020.06.23.10    Production released
+    // 2020.06.18.02    Added check to see if RRC/camera are within editable areas
+    // 2020.06.17.00    Code clean up
+    // 2020.06.16.01    Added WazeWrap storage. (Thanks Daniel)
+    // 2020.06.16.00    Minor changes
     // Changed a little text in panel at recomendation of Dude495
     // Added option for changing lock level
     // BUG fix
@@ -51,9 +55,9 @@
     // Fixed items that juliansean pointed out
 
     // Variables that designate beta version - Do no copy to other versions
-    var TAB_NAME = 'RRC-AL';
-    let sPanel = `#sidepanel-rrc-al`;
-    const STORE_NAME = "RRCSettings";
+    var TAB_NAME = 'RRC-AL-β';
+    let sPanel = `#sidepanel-rrc-al-`;
+    const STORE_NAME = "RRCSettingsBETA";
     let LS = 1594558757308;
 
     const CountrySS = 'https://sheets.googleapis.com/v4/spreadsheets/1wPb4tqTsES7EgAyxVqRRsRiWBDurld5NzN7IdC4pnSo/values/CountryMinimumLocks/?key='+atob('QUl6YVN5QXUxcl84ZDBNdkJUdEFwQ2VZdndDUXR6M2I0cmhWZFNn');
@@ -117,7 +121,6 @@
         })
         ScreenlockCompleted();
     }
-
     function ECscreenLock(){
         const extentGeometry = W.map.getOLMap().getExtent().toGeometry();
         count = 0;
@@ -337,6 +340,7 @@
             '<option value="8">8</option>',
             '<option value="9">9</option>',
             '<option value="10">10</option>',
+            '<option value="Current Zoom">Default</option>',
             '</select></br>',
             '<div id="discord">', // BETA USER FEATURE
             '<b><input type="checkbox" id="DiscordPermalinkCheckbox">  Create PL with < > for Discord.</div></b></br>', // https://www.w3schools.com/bootstrap/bootstrap_buttons.asp
@@ -361,6 +365,9 @@
     /////////////////////////////////////////////////////////////////////////////////////////
     function CleanPermaLink(){
         PLzoomLevel = $('#PLzoomLevelOption')[0].value;
+        if (PLzoomLevel == "Default"){
+            PLzoomLevel = W.map.getZoom();
+        }
         let selectedID;
         let PLselFeat = W.selectionManager.getSelectedFeatures();
         let LatLonCenter = W.map.getCenter();
@@ -404,13 +411,19 @@
             var inputLon;
             var inputLat;
             params = inputData.match(/lon=(-?\d*.\d*)&lat=(-?\d*.\d*)/);
-                        if (params == null){
+            if (params == null){
                 params = inputData.match(/lat=(-?\d*.\d*)&lon=(-?\d*.\d*)/);
                 inputLat = params[1];
                 inputLon = params[2];
             }else{
                 inputLon = params[1];
                 inputLat = params[2];
+            }
+            if (PLzoomLevel == "Default"){
+                PLzoomLevel = inputData.match(/&zoom=\d+/);
+                PLzoomLevel = PLzoomLevel[0]
+            }else{
+                PLzoomLevel = "&zoom=" + PLzoomLevel;
             }
             let inputSegs = inputData.match(/&segments=(.*)(?:&|$)/);
             let inputVenue = inputData.match(/&venues=(.*)(?:&|$)/);
@@ -426,7 +439,7 @@
                 OpenBrack = "";
                 ClosedBrack = "";
             }
-            newCleanPL = OpenBrack +PLurl + "&lon=" + inputLon + "&lat=" + inputLat + "&zoom=" + PLzoomLevel + inputSegsVen + ClosedBrack;
+            newCleanPL = OpenBrack +PLurl + "&lon=" + inputLon + "&lat=" + inputLat + PLzoomLevel + inputSegsVen + ClosedBrack;
             copyToClipboard();
             console.log (SCRIPT_NAME, 'Inputed PL now clean ' + newCleanPL);
         }else{
