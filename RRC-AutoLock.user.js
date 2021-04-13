@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2021.04.10.00
+// @version      2021.04.13.00
 // @description  Locks RRCs and Cameras to set level instead of autolock to rank of editor
 // @author       jm6087 (with assistance from Dude495, TheCre8r, and SkiDooGuy)
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -340,7 +340,7 @@ let UpdateObj;
             '<option value="8">8</option>',
             '<option value="9">9</option>',
             '<option value="10">10</option>',
-            '<option value="Current Zoom">Default</option>',
+            '<option value="Default">Current Zoom</option>',
             '</select></br>',
             '<div id="discord">', // BETA USER FEATURE
             '<b><input type="checkbox" id="DiscordPermalinkCheckbox">  Create PL with < > for Discord.</div></b></br>', // https://www.w3schools.com/bootstrap/bootstrap_buttons.asp
