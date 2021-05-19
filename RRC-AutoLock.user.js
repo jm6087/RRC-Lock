@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2021.05.18.00
+// @version      2021.05.19.00
 // @description  Locks RRCs and Cameras to set level instead of autolock to rank of editor
 // @author       jm6087 (with assistance from Dude495, TheCre8r, and SkiDooGuy)
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -24,6 +24,7 @@ let UpdateObj;
 (function() {
     'use strict';
     var UPDATE_NOTES = `Small background update<br>
+    minor bug fix
     `
 
 
@@ -522,16 +523,16 @@ let UpdateObj;
             console.log(SCRIPT_NAME, "Settings set to country minimum by default");
         }
         EDITdifference = currentEdits - RRCAutoLockSettings.prevUSERedits;
-//         if (betaUser == "Yes" && EDITdifference > 0) {
-//             WazeWrap.Alerts.info(SCRIPT_NAME, 'Your edits have increased ' + EDITdifference + ' edits since last refresh');
-//         }
-        saveSettings();
+
+        RRCAutoLockSettings.prevUSERedits = currentEdits;
+        localStorage.setItem(STORE_NAME, JSON.stringify(RRCAutoLockSettings)); // saves settings to local storage for persisting when refreshed
+        WazeWrap.Remote.SaveSettings(STORE_NAME, JSON.stringify(RRCAutoLockSettings)); // saves settings to WazeWrap
         console.log(SCRIPT_NAME, "Settings Loaded");
     }
     function saveSettings() {
         if (localStorage) {
             RRCAutoLockSettings.lastVersion = VERSION;
-            RRCAutoLockSettings.prevUSERedits = currentEdits;
+//            RRCAutoLockSettings.prevUSERedits = currentEdits;
             if (forceDefault != true) {
                 RRCAutoLockSettings.RRCAutoLockEnabled = $('#RRCAutoLockCheckbox')[0].checked;
                 RRCAutoLockSettings.ECAutoLockEnabled = $('#ECAutoLockCheckbox')[0].checked;
