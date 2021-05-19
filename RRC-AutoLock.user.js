@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2021.04.13.00
+// @version      2021.05.18.00
 // @description  Locks RRCs and Cameras to set level instead of autolock to rank of editor
 // @author       jm6087 (with assistance from Dude495, TheCre8r, and SkiDooGuy)
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -23,7 +23,7 @@ let UpdateObj;
 
 (function() {
     'use strict';
-    var UPDATE_NOTES = `Background update<br>
+    var UPDATE_NOTES = `Small background update<br>
     `
 
 
@@ -65,6 +65,8 @@ let UpdateObj;
     var BETA_TESTERS = [];
     var COUNTRYID = [];
     let countQty;
+    var currentEdits;
+    var EDITdifference;
 
     // Other variables
     var VERSION = GM_info.script.version;
@@ -147,7 +149,7 @@ let UpdateObj;
             originalLon = "";
             RRCscreenMove()
             WazeWrap.Alerts.success(SCRIPT_NAME, ['RRC-AL locked ' + count + " (of " + evalCount + ") " + CameraTypeWW, ' that were equal to or below ' + USER.rank, 'They are now locked at lock level ' + newLockLevel].join('\n'));
-//            console.log (SCRIPT_NAME, "RCC Screenlock completed");
+            //            console.log (SCRIPT_NAME, "RCC Screenlock completed");
         }
     }
 
@@ -242,28 +244,28 @@ let UpdateObj;
                             count++;
                             W.model.actionManager.add(new UpdateObj(SelModel, { lockRank: RRCAutoLock }));
                         }else{
-//                            console.log (SCRIPT_NAME, CameraTypeWW, "ID", SelModel.attributes.id, "skipped since it is unapproved");
+                            //                            console.log (SCRIPT_NAME, CameraTypeWW, "ID", SelModel.attributes.id, "skipped since it is unapproved");
                         }
                     }
                 }
                 // Checks to see if WazeWrap banner Enabled is checked
                 if (manAuto == "Manual") {
                     if (RRCAutoLockSettings.RRCAutoLockWazeWrapSuccessEnabled == true){
-//                        console.log(SCRIPT_NAME, "WazeWrap  is enabled");
+                        //                        console.log(SCRIPT_NAME, "WazeWrap  is enabled");
                         WazeWrap.Alerts.success(SCRIPT_NAME, [CameraTypeWW + ' changed from lock level ' + RRCAutolockRankplusOne + ' to ' + newLockLevel, 'Last edited by ' + LastEditorUserName].join('\n'));
                     }
                 }
-//                console.log(SCRIPT_NAME, "Version #", VERSION, "-", CameraTypeWW + "ID", SelModel.attributes.id, "Lock level changed from", RRCAutolockRankplusOne , "to", newLockLevel, "Last Edited by", LastEditorUserName);
+                //                console.log(SCRIPT_NAME, "Version #", VERSION, "-", CameraTypeWW + "ID", SelModel.attributes.id, "Lock level changed from", RRCAutolockRankplusOne , "to", newLockLevel, "Last Edited by", LastEditorUserName);
             }else{
                 // Checks to see if User rank is greater or equal to object lock level AND if object is already equal to dropdown lock level in panel
                 if (USER.rank >= (SelModel.attributes.rank + 1) && SelModel.attributes.lockRank == modelRank){
                     if (manAuto == "Manual") {
                         if (RRCAutoLockSettings.RRCAutoLockWazeWrapInfoEnabled == true){ // Check to see if WW banner enabled
- //                           console.log(SCRIPT_NAME, "WazeWrap  is enabled");
+                            //                           console.log(SCRIPT_NAME, "WazeWrap  is enabled");
                             WazeWrap.Alerts.info(SCRIPT_NAME, [CameraTypeWW + ' lock not changed, already at lock level ' + RRCAutolockRankplusOne, 'Last edited by ' + LastEditorUserName].join('\n'));
                         }
                     }
-//                    console.log (SCRIPT_NAME, "Version #", VERSION, "-", CameraTypeWW, "ID ", SelModel.attributes.id, "lock not changed, already at lock level", RRCAutolockRankplusOne);
+                    //                    console.log (SCRIPT_NAME, "Version #", VERSION, "-", CameraTypeWW, "ID ", SelModel.attributes.id, "lock not changed, already at lock level", RRCAutolockRankplusOne);
                 }else{
                     // Checks to see if object is locked above User rank
                     if (USER.rank < (SelModel.attributes.rank + 1)){
@@ -273,7 +275,7 @@ let UpdateObj;
                                 WazeWrap.Alerts.error(SCRIPT_NAME, [CameraTypeWW + ' is locked above your rank', 'You will need assistance from an Rank ' + RRCAutoLockRankOverLock + ' editor', 'Last edited by ' + LastEditorUserName].join('\n'));
                             }else{
                                 WazeWrap.Alerts.error(SCRIPT_NAME, [CameraTypeWW + ' is locked above your rank', 'You will need assistance from at least a Rank ' + RRCAutoLockRankOverLock + ' editor', 'Last edited by ' + LastEditorUserName].join('\n'));
- //                               console.log (SCRIPT_NAME, "Version #", VERSION, " - ", CameraTypeWW, " ID ", SelModel.attributes.id , " is locked above editor rank");
+                                //                               console.log (SCRIPT_NAME, "Version #", VERSION, " - ", CameraTypeWW, " ID ", SelModel.attributes.id , " is locked above editor rank");
                             }
                         }
                     }
@@ -349,6 +351,7 @@ let UpdateObj;
             '<div class="form-group">',
             '<b><p><div id="USERedits"><div></b></p></br></div></div>', // BETA USER FEATURE
             '</div>', // BETA USER FEATURE
+            '<b><p><div id="prevUSERedits"><div></b></p></div></div>',
             '<p><div id="sheet"><a href="https://docs.google.com/spreadsheets/d/1wPb4tqTsES7EgAyxVqRRsRiWBDurld5NzN7IdC4pnSo/edit#gid=1675959019" target="_blank">Sheet</a></div></p>',
             '<div>',
         ].join(' '));
@@ -493,7 +496,8 @@ let UpdateObj;
             DiscordPermalink: true,
             TUWARNING: false,
             lastSaved: "",
-            lastVersion: ""
+            lastVersion: "",
+            prevUSERedits: ""
         };
         RRCAutoLockSettings = loadedSettings ? loadedSettings : defaultSettings;
         for (let prop in defaultSettings) {
@@ -517,11 +521,17 @@ let UpdateObj;
             forceCountrySetting();
             console.log(SCRIPT_NAME, "Settings set to country minimum by default");
         }
+        EDITdifference = currentEdits - RRCAutoLockSettings.prevUSERedits;
+//         if (betaUser == "Yes" && EDITdifference > 0) {
+//             WazeWrap.Alerts.info(SCRIPT_NAME, 'Your edits have increased ' + EDITdifference + ' edits since last refresh');
+//         }
+        saveSettings();
         console.log(SCRIPT_NAME, "Settings Loaded");
     }
     function saveSettings() {
         if (localStorage) {
             RRCAutoLockSettings.lastVersion = VERSION;
+            RRCAutoLockSettings.prevUSERedits = currentEdits;
             if (forceDefault != true) {
                 RRCAutoLockSettings.RRCAutoLockEnabled = $('#RRCAutoLockCheckbox')[0].checked;
                 RRCAutoLockSettings.ECAutoLockEnabled = $('#ECAutoLockCheckbox')[0].checked;
@@ -542,7 +552,7 @@ let UpdateObj;
             disabledOptions();
             localStorage.setItem(STORE_NAME, JSON.stringify(RRCAutoLockSettings)); // saves settings to local storage for persisting when refreshed
             WazeWrap.Remote.SaveSettings(STORE_NAME, JSON.stringify(RRCAutoLockSettings)); // saves settings to WazeWrap
-//            console.log(SCRIPT_NAME, 'Settings Saved '+ JSON.stringify(RRCAutoLockSettings));
+            //            console.log(SCRIPT_NAME, 'Settings Saved '+ JSON.stringify(RRCAutoLockSettings));
         }
     }
     async function RRCAutoLockInitializeSettings(){
@@ -568,47 +578,47 @@ let UpdateObj;
         setBetaFeatures(USER.name);
         setTimeout (loadCountryID, 2000);
         loadCountryID(CountryID);
-//        console.log(SCRIPT_NAME, "- Tab Created & User Rank is ",USER.rank);
+        //        console.log(SCRIPT_NAME, "- Tab Created & User Rank is ",USER.rank);
         $('#RRCAutoLockCheckbox')[0].onchange = function() {
-//            console.log(SCRIPT_NAME, "RRCAutoLockCheckbox Settings changed");
+            //            console.log(SCRIPT_NAME, "RRCAutoLockCheckbox Settings changed");
             saveSettings();
         };
         $('#ECAutoLockCheckbox')[0].onchange = function() {
-//            console.log(SCRIPT_NAME, "ECAutoLockCheckbox Settings changed");
+            //            console.log(SCRIPT_NAME, "ECAutoLockCheckbox Settings changed");
             saveSettings();
         };
         $('#RRCAutoLockWazeWrapSuccessCheckbox')[0].onchange = function() {
-//            console.log(SCRIPT_NAME, "RRCAutoLockWazeWrapSuccessCheckbox Settings changed");
+            //            console.log(SCRIPT_NAME, "RRCAutoLockWazeWrapSuccessCheckbox Settings changed");
             saveSettings();
         };
         $('#RRCAutoLockWazeWrapInfoCheckbox')[0].onchange = function() {
-//            console.log(SCRIPT_NAME, "RRCAutoLockWazeWrapInfoCheckbox Settings changed");
+            //            console.log(SCRIPT_NAME, "RRCAutoLockWazeWrapInfoCheckbox Settings changed");
             saveSettings();
         };
         $('#RRCAutoLockLevelOption')[0].onchange = function() {
             let x = $('#RRCAutoLockLevelOption')[0].value;
             undoAction();
-//            console.log(SCRIPT_NAME, "RRCAutoLockLevelValue Settings changed to L" + x);
+            //            console.log(SCRIPT_NAME, "RRCAutoLockLevelValue Settings changed to L" + x);
             saveSettings();
         };
         $('#ECAutoLockLevelOption')[0].onchange = function() {
             let x = $('#ECAutoLockLevelOption')[0].value;
             undoAction();
-//            console.log(SCRIPT_NAME, "ECAutoLockLevelValue Settings changed to L" + x);
+            //            console.log(SCRIPT_NAME, "ECAutoLockLevelValue Settings changed to L" + x);
             saveSettings();
         };
         $('#PLzoomLevelOption')[0].onchange = function() {
             let x = $('#PLzoomLevelOption')[0].value;
             undoAction();
-//            console.log(SCRIPT_NAME, "PLzoomLevelValue Settings changed to L" + x);
+            //            console.log(SCRIPT_NAME, "PLzoomLevelValue Settings changed to L" + x);
             saveSettings();
         };
         $('#DiscordPermalinkCheckbox')[0].onchange = function() {
-//            console.log(SCRIPT_NAME, "Discord PL option changed");
+            //            console.log(SCRIPT_NAME, "Discord PL option changed");
             saveSettings();
         };
         $('#TUWARNING')[0].onchange = function() {
-//            console.log(SCRIPT_NAME, "TUWARNING");
+            //            console.log(SCRIPT_NAME, "TUWARNING");
             saveSettings();
         };
         if (($('#Info_server')[0]) || ($('#sidepanel-urt')[0])) { $('#WMETUWarning')[0].innerHTML = 'WME Tile Update and/or UR-MP Script Detected;<br>WMETU and UR-MP are known to cause problems with this script.<br>Disable WMETU and/or UR-MP if you experience any issues.';
@@ -628,13 +638,13 @@ let UpdateObj;
     async function loadCountry() {
         await $.getJSON(CountrySS, function(cdata){
             COUNTRYID = cdata;
-//            console.log(SCRIPT_NAME, 'Country loaded....');
+            //            console.log(SCRIPT_NAME, 'Country loaded....');
         });
     }
     async function loadBetaUsers() {
         await $.getJSON(BetaSS, function(ldata){
             BETA_TESTERS = ldata;
-//            console.log('RRC-AL Beta Users Loaded....');
+            //            console.log('RRC-AL Beta Users Loaded....');
         });
     }
     function getCountryFromSheet(CountryID){
@@ -674,14 +684,20 @@ let UpdateObj;
             $('#discord').hide();
             $('#BETAonly').hide();
             $('#USERedits').hide();
+            $('#prevUSERedits').hide();
             $('#sheet').hide();
             console.log(SCRIPT_NAME, "Not a beta user");
         }else{
             countQty = countQty[0].username;
             $('#USERedits')[0].textContent = 'Current Edit Count for '+ USER.name + ' - ' + W.loginManager.user.totalEdits;
+            $('#prevUSERedits')[0].textContent = 'Edit Count Difference since last load - ' + EDITdifference;
             console.log(SCRIPT_NAME, "Beta features loaded");
+            var betaUser = "Yes";
         }
         $('#panelCountQty')[0].textContent = 'Lock up to ' + countQty + ' RRCs or ECs on screen';
+        if (EDITdifference > 0 && betaUser == "Yes") {
+             WazeWrap.Alerts.info(SCRIPT_NAME, 'Your edits have increased edits ' + EDITdifference + ' since last refresh');
+        }
     }
 
     function loadCountryID() { // comment out the hide for each lock to show
@@ -731,13 +747,13 @@ let UpdateObj;
             console.log(SCRIPT_NAME, 'Country ID is', CountryID, '-', ctry, ', the minimum EC lock level is set to', ECmin, 'and max rank set at', max);
 
             if (max < RRCmin) {
-//                wazedevtoastr.options.timeOut = 5000;
-//                WazeWrap.Alerts.warning(SCRIPT_NAME, ["It appears that your user rank of R" + max,"is less than the minimum lock level of " + RRCmin + " for your country for Railroad Crossings"].join('\n'));
+                //                wazedevtoastr.options.timeOut = 5000;
+                //                WazeWrap.Alerts.warning(SCRIPT_NAME, ["It appears that your user rank of R" + max,"is less than the minimum lock level of " + RRCmin + " for your country for Railroad Crossings"].join('\n'));
                 RRCmin = 10;
             }
             if (max < ECmin) {
-//                wazedevtoastr.options.timeOut = 5000;
-//                WazeWrap.Alerts.warning(SCRIPT_NAME, ["It appears that your user rank of R" + max,"is less than the minimum lock level of " + ECmin + " for your country for Enforcement Cameras"].join('\n'));
+                //                wazedevtoastr.options.timeOut = 5000;
+                //                WazeWrap.Alerts.warning(SCRIPT_NAME, ["It appears that your user rank of R" + max,"is less than the minimum lock level of " + ECmin + " for your country for Enforcement Cameras"].join('\n'));
                 ECmin = 10;
             }
 
@@ -901,6 +917,7 @@ let UpdateObj;
     }
 
     function initialCountrySetup(tries = 1) {
+        currentEdits = W.loginManager.user.totalEdits
         if (W.model.topCountry) {
             CountryID = W.model.topCountry.id;
             CountryName = W.model.topCountry.name;
