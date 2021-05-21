@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2021.05.19.00
+// @version      2021.05.21.00
 // @description  Locks RRCs and Cameras to set level instead of autolock to rank of editor
 // @author       jm6087 (with assistance from Dude495, TheCre8r, and SkiDooGuy)
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -697,7 +697,7 @@ let UpdateObj;
         }
         $('#panelCountQty')[0].textContent = 'Lock up to ' + countQty + ' RRCs or ECs on screen';
         if (EDITdifference > 0 && betaUser == "Yes") {
-             WazeWrap.Alerts.info(SCRIPT_NAME, 'Your edits have increased edits ' + EDITdifference + ' since last refresh');
+             WazeWrap.Alerts.confirm(SCRIPT_NAME, 'Your edits have increased edits ' + EDITdifference + ' since last refresh');
         }
     }
 
