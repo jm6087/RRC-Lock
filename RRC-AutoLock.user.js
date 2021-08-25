@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2021.05.21.00
+// @version      2021.08.25.00
 // @description  Locks RRCs and Cameras to set level instead of autolock to rank of editor
 // @author       jm6087 (with assistance from Dude495, TheCre8r, and SkiDooGuy)
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -23,10 +23,7 @@ let UpdateObj;
 
 (function() {
     'use strict';
-    var UPDATE_NOTES = `Small background update<br>
-    minor bug fix
-    `
-
+    var UPDATE_NOTES = `Fix for new zoom levels<br>`
 
     // PREVIOUS NOTES 
     
@@ -106,6 +103,10 @@ let UpdateObj;
     var CountryName;
     var forceDefault;
     var PLzoomLevel;
+
+    var zm0, zm1, zm2, zm3, zm4, zm5, zm6, zm7, zm8, zm9, zm10;
+
+    [zm0, zm1, zm2, zm3, zm4, zm5, zm6, zm7, zm8, zm9, zm10] = [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22]
 
     function RRCscreenLock(){
         const extentGeometry = W.map.getOLMap().getExtent().toGeometry();
@@ -333,16 +334,16 @@ let UpdateObj;
             '<div class="form-group">', // BETA USER FEATURE
             '<b><div id="BETAonly">The features below only show for editors listed as Beta testers<div></b></br>', // BETA USER FEATURE
             '<b><id="PLzoomLevelValue">Zoom level for PLs: <select id="PLzoomLevelOption"></b></br>',
-            '<option value="1">1</option>',
-            '<option value="2">2</option>',
-            '<option value="3">3</option>',
-            '<option value="4">4</option>',
-            '<option value="5">5</option>',
-            '<option value="6">6</option>',
-            '<option value="7">7</option>',
-            '<option value="8">8</option>',
-            '<option value="9">9</option>',
-            '<option value="10">10</option>',
+            '<option value="13">13 (1)</option>',
+            '<option value="14">14 (2)</option>',
+            '<option value="15">15 (3)</option>',
+            '<option value="16">16 (4)</option>',
+            '<option value="17">17 (5)</option>',
+            '<option value="18">18 (6)</option>',
+            '<option value="19">19 (7)</option>',
+            '<option value="20">20 (8)</option>',
+            '<option value="21">21 (9)</option>',
+            '<option value="22">22 (10)</option>',
             '<option value="Default">Current Zoom</option>',
             '</select></br>',
             '<div id="discord">', // BETA USER FEATURE
@@ -391,9 +392,9 @@ let UpdateObj;
             }else{
                 selectedID = PLselFeat[0].model.attributes.id;
             }
-            newCleanPL = OpenBrack + PLurl + center4326.lon.toFixed(5) + "&lat=" + center4326.lat.toFixed(5) + "&zoom=" + PLzoomLevel + "&" + selectedType + "s=" + selectedID + ClosedBrack;
+             newCleanPL = OpenBrack + PLurl + center4326.lon.toFixed(5) + "&lat=" + center4326.lat.toFixed(5) + "&zoomLevel=" + PLzoomLevel + "&" + selectedType + "s=" + selectedID + ClosedBrack;
         }else{
-            newCleanPL = OpenBrack + PLurl + center4326.lon.toFixed(5) + "&lat=" + center4326.lat.toFixed(5) + "&zoom=" + PLzoomLevel + ClosedBrack;
+             newCleanPL = OpenBrack + PLurl + center4326.lon.toFixed(5) + "&lat=" + center4326.lat.toFixed(5) + "&zoomLevel=" + PLzoomLevel + ClosedBrack;
         }
         copyToClipboard();
     }
@@ -424,10 +425,10 @@ let UpdateObj;
                 inputLat = params[2];
             }
             if (PLzoomLevel == "Default"){
-                PLzoomLevel = inputData.match(/&zoom=\d+/);
+                 PLzoomLevel = inputData.match(/&zoomLevel=\d+/);
                 PLzoomLevel = PLzoomLevel[0]
             }else{
-                PLzoomLevel = "&zoom=" + PLzoomLevel;
+                 PLzoomLevel = "&zoomLevel" + PLzoomLevel;
             }
             let inputSegs = inputData.match(/&segments=(.*)(?:&|$)/);
             let inputVenue = inputData.match(/&venues=(.*)(?:&|$)/);
@@ -489,7 +490,7 @@ let UpdateObj;
         const defaultSettings = { // sets default values for tab options
             RRCAutoLockLevelOption: "0",
             ECAutoLockLevelOption: "0",
-            PLzoomLevelOption: "7",
+            PLzoomLevelOption: "19",
             RRCAutoLockWazeWrapSuccessEnabled: true,
             RRCAutoLockWazeWrapInfoEnabled: true,
             RRCAutoLockEnabled: true,
@@ -532,7 +533,7 @@ let UpdateObj;
     function saveSettings() {
         if (localStorage) {
             RRCAutoLockSettings.lastVersion = VERSION;
-//            RRCAutoLockSettings.prevUSERedits = currentEdits;
+            //            RRCAutoLockSettings.prevUSERedits = currentEdits;
             if (forceDefault != true) {
                 RRCAutoLockSettings.RRCAutoLockEnabled = $('#RRCAutoLockCheckbox')[0].checked;
                 RRCAutoLockSettings.ECAutoLockEnabled = $('#ECAutoLockCheckbox')[0].checked;
@@ -697,7 +698,7 @@ let UpdateObj;
         }
         $('#panelCountQty')[0].textContent = 'Lock up to ' + countQty + ' RRCs or ECs on screen';
         if (EDITdifference > 0 && betaUser == "Yes") {
-             WazeWrap.Alerts.confirm(SCRIPT_NAME, 'Your edits have increased edits ' + EDITdifference + ' since last refresh');
+            WazeWrap.Alerts.confirm(SCRIPT_NAME, 'Your edits have increased edits ' + EDITdifference + ' since last refresh');
         }
     }
 
@@ -933,9 +934,66 @@ let UpdateObj;
                 setTimeout(function () {initialCountrySetup(++tries);}, 1000);
         }
     }
+    //     function ClosedVenue(){
+    //         var closedName;
+    //         var origName = W.selectionManager.getSelectedFeatures()[0].model.attributes.name;
+    //         closedName = origName + ' (Closed)'
+    //         document.querySelector("#venue-edit-general > form > div:nth-child(1) > div:nth-child(1) > div > input").value = closedName;
+    //         }
+
+    function init() {
+        const $RRCbttnDiv = $('<div>');
+        $RRCbttnDiv.html([
+            `<div id='MyRRCContainer' style='position: absolute; display:none; left: 20px; top: 300px; background-color:#35B6EE; width:30px; height:30px; cursor:pointer'>
+        <i class="fas fa-link fa-2x"></i>
+        </div>`
+                ].join(' '));
+        // Attach the button to the map element
+        $('#map').append($RRCbttnDiv.html());
+
+        // Setup listener to run the function when the button is clicked
+        $('#MyRRCContainer').click(function () {
+            CleanPermaLink();
+        });
+
+        //         const $closedVenuebttnDiv = $('<div>');
+        //         $closedVenuebttnDiv.html([
+        //             `<div id='MyclosedVenueContainer' style='position: absolute; display:none; left: 20px; top: 330px; background-color:#35B6EE; width:30px; height:30px; cursor:pointer'>
+        //         <i class="fas fa-times-circle fa-2x"></i>
+        //         </div>`
+        //                 ].join(' '));
+        //         // Attach the button to the map element
+        //         $('#map').append($closedVenuebttnDiv.html());
+
+        //         // Setup listener to run the function when the button is clicked
+        //         $('#MyclosedVenueContainer').click(function () {
+        //             ClosedVenue();
+        //         });
+    }
+
+    // Function the selection listener runs to display the button when an object is selected
+    function displayButton() {
+        const sel = W.selectionManager.getSelectedFeatures();
+
+        if(sel.length > 0) {
+            $('#MyRRCContainer').css('display', 'block');
+        } else {
+            $('#MyRRCContainer').css('display', 'none');
+            //            $('#MyclosedVenueContainer').css('display', 'none');
+        }
+
+        //          const sel1 = W.selectionManager.getSelectedFeatures()[0].model;
+        // var testing = sel1.type
+        //         if(sel1.type == 'venue') {
+        //             $('#MyclosedVenueContainer').css('display', 'block');
+        //         } else {
+        //             $('#MyclosedVenueContainer').css('display', 'none');
+        //         }
+    }
 
     async function bootstrap(tries = 1) {
         if (W && W.map && W.model && W.loginManager.user && $ && WazeWrap.Ready ) {
+            await init();
             await initialCountrySetup();
             await loadBetaUsers();
             await RRCAutoLockTab();
@@ -946,6 +1004,8 @@ let UpdateObj;
             WazeWrap.Events.register("moveend", null, RRCscreenMove);
             WazeWrap.Events.register("afterundoaction", null, undoAction);
             WazeWrap.Interface.ShowScriptUpdate(SCRIPT_NAME, VERSION, UPDATE_NOTES);
+            // Create a listener to check when the selection changes if we should display the toolbar
+            WazeWrap.Events.register('selectionchanged', null, displayButton);
             console.log(SCRIPT_NAME, "loaded");
         } else if (tries < 1000)
             setTimeout(function () {bootstrap(++tries);}, 200);
