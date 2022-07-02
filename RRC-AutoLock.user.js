@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2021.08.25.00
+// @version      2022.07.02.00
 // @description  Locks RRCs and Cameras to set level instead of autolock to rank of editor
 // @author       jm6087 (with assistance from Dude495, TheCre8r, and SkiDooGuy)
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -387,14 +387,10 @@ let UpdateObj;
         }
         if (PLselFeat.length > 0){
             let selectedType = PLselFeat[0].model.type;
-            if (selectedType == 'segment') {
-                selectedID = $('#'+selectedType+'-edit-general > ul > li:contains("ID:")')[0].textContent.match(/\d.*/)[0];
-            }else{
-                selectedID = PLselFeat[0].model.attributes.id;
-            }
-             newCleanPL = OpenBrack + PLurl + center4326.lon.toFixed(5) + "&lat=" + center4326.lat.toFixed(5) + "&zoomLevel=" + PLzoomLevel + "&" + selectedType + "s=" + selectedID + ClosedBrack;
+            selectedID = PLselFeat[0].model.attributes.id;
+            newCleanPL = OpenBrack + PLurl + center4326.lon.toFixed(5) + "&lat=" + center4326.lat.toFixed(5) + "&zoomLevel=" + PLzoomLevel + "&" + selectedType + "s=" + selectedID + ClosedBrack;
         }else{
-             newCleanPL = OpenBrack + PLurl + center4326.lon.toFixed(5) + "&lat=" + center4326.lat.toFixed(5) + "&zoomLevel=" + PLzoomLevel + ClosedBrack;
+            newCleanPL = OpenBrack + PLurl + center4326.lon.toFixed(5) + "&lat=" + center4326.lat.toFixed(5) + "&zoomLevel=" + PLzoomLevel + ClosedBrack;
         }
         copyToClipboard();
     }
