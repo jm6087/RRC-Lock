@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2022.07.02.00
+// @version      2022.07.04.00
 // @description  Locks RRCs and Cameras to set level instead of autolock to rank of editor
 // @author       jm6087 (with assistance from Dude495, TheCre8r, and SkiDooGuy)
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -23,34 +23,10 @@ let UpdateObj;
 
 (function() {
     'use strict';
-    var UPDATE_NOTES = `Fix for new zoom levels<br>`
+    var UPDATE_NOTES = `Fix for new WME<br>`
 
     // PREVIOUS NOTES 
-    
-    // 2020.09.08.00   Update text size
-    // 2020.07.28.00   Clean up console logs
-    // 2020.07.12.00   Sets lock ranks to country minimum instead of N/A
-    // 2020.07.11.00   Refresh button is easier to press
-    // 2020.07.10.00   Changes to refreshing country settings/defaults button
-    // 2020.07.05.00    Testing lock all for everyone - currently set at 15 for non-scipt beta and 75 for script beta testers
-    // 2020.07.04.00    Added Pakistan lock rank
-    // 2020.07.01.00    Backend changes
-    // 2020.06.29.01    Tab changes color if there are any RRCs or Cameras on screen that are not locked to settings.
-    // 2020.06.25.01    Add ability to set what the minimum drop down lock level that shows/Also hides all lock levels above your rank
-    // 2020.06.25.00    Lock all RRCs and Cameras on screen/Should not lock unconfirmed RRCs and Cameras when using screen lock
-    //                  Implemented changes suggested by turnertr/Cleaned up code.
-    // 2020.06.23.10    Production released
-    // 2020.06.18.02    Added check to see if RRC/camera are within editable areas
-    // 2020.06.17.00    Code clean up
-    // 2020.06.16.01    Added WazeWrap storage. (Thanks Daniel)
-    // 2020.06.16.00    Minor changes
-    // Changed a little text in panel at recomendation of Dude495
-    // Added option for changing lock level
-    // BUG fix
-    // Script currently conflicts with WME Tiles Update.  Not allowing unverified RRCs to autolock initially<br><br>
-    // The enable script now works and persists thanks to dude495
-    // I think I got the enable button to default to checked. Still working on persisting through refresh when disabled
-    // Fixed items that juliansean pointed out
+
 
     // Variables that designate beta version - Do no copy to other versions
     var TAB_NAME = 'RRC-AL';
@@ -239,7 +215,7 @@ let UpdateObj;
             // Checks to see if User Rank is higher/equal to object lock AND if object is not equal to dropdown lock level in panel
             if ((USER.rank >= (SelModel.attributes.rank + 1)) && (SelModel.attributes.lockRank != modelRank)){
                 if (manAuto == "Manual") {
-                    RRCAutoLock[0].click();
+                    W.model.actionManager.add(new UpdateObj(SelModel, { lockRank: RRCAutoLock }));
                 }else{
                     if (manAuto == "Auto") {
                         if (SelModel.attributes.unapproved == false || SelModel.type == "camera") {
