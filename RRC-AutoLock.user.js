@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2022.07.04.00
+// @version      2022.07.06.00
 // @description  Locks RRCs and Cameras to set level instead of autolock to rank of editor
 // @author       jm6087 (with assistance from Dude495, TheCre8r, and SkiDooGuy)
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -23,7 +23,7 @@ let UpdateObj;
 
 (function() {
     'use strict';
-    var UPDATE_NOTES = `Fix for new WME<br>`
+    var UPDATE_NOTES = `Fix locking when selecting (fingers crossed)<br>`
 
     // PREVIOUS NOTES 
 
@@ -180,7 +180,7 @@ let UpdateObj;
             if (USER.rank < modelRank + 1){
                 newLockLevel = USER.rank;
                 if (manAuto == "Manual") {
-                    RRCAutoLock = $(`input[id^="lockRank-${USER.rank - 1}"]`); // Sets variable for which lockrank to click if the user rank is less than the settings
+                    RRCAutoLock = document.querySelector("#lockRank-" + USER.rank - 1); // Sets variable for which lockrank to click if the user rank is less than the settings
                 }else{
                     if (manAuto == "Auto") {
                         RRCAutoLock = USER.rank - 1;
@@ -189,7 +189,7 @@ let UpdateObj;
             }else{
                 newLockLevel = modelRank + 1;
                 if (manAuto == "Manual") {
-                    RRCAutoLock = $(`input[id^="lockRank-${modelRank}"]`); // Sets variable for which lockrank to click
+                    RRCAutoLock = document.querySelector("#lockRank-" + modelRank); // Sets variable for which lockrank to click
                 }else{
                     if (manAuto == "Auto") {
                         RRCAutoLock = modelRank;
@@ -215,7 +215,7 @@ let UpdateObj;
             // Checks to see if User Rank is higher/equal to object lock AND if object is not equal to dropdown lock level in panel
             if ((USER.rank >= (SelModel.attributes.rank + 1)) && (SelModel.attributes.lockRank != modelRank)){
                 if (manAuto == "Manual") {
-                    W.model.actionManager.add(new UpdateObj(SelModel, { lockRank: RRCAutoLock }));
+                    RCAutoLock.click();
                 }else{
                     if (manAuto == "Auto") {
                         if (SelModel.attributes.unapproved == false || SelModel.type == "camera") {
