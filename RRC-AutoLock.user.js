@@ -215,7 +215,7 @@ let UpdateObj;
             // Checks to see if User Rank is higher/equal to object lock AND if object is not equal to dropdown lock level in panel
             if ((USER.rank >= (SelModel.attributes.rank + 1)) && (SelModel.attributes.lockRank != modelRank)){
                 if (manAuto == "Manual") {
-                    RCAutoLock.click();
+                    RRCAutoLock.click();
                 }else{
                     if (manAuto == "Auto") {
                         if (SelModel.attributes.unapproved == false || SelModel.type == "camera") {
