@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2022.07.09.00
+// @version      2022.11.07.00
 // @description  Locks RRCs and Cameras to set level instead of autolock to rank of editor
 // @author       jm6087 (with assistance from Dude495, TheCre8r, and SkiDooGuy)
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
@@ -363,7 +363,21 @@ let UpdateObj;
         }
         if (PLselFeat.length > 0){
             let selectedType = PLselFeat[0].model.type;
-            selectedID = PLselFeat[0].model.attributes.id;
+            if (PLselFeat.length > 1){
+                for (let s = 0; s < PLselFeat.length; s++) {
+                    const z = PLselFeat[s].model.attributes.id
+                    if (s == PLselFeat.length - 1){
+                        selectedID = selectedID + z;
+                    }else{
+                        selectedID += z + ",";
+                    }
+                    if (selectedID.includes("undefined") == true){
+                        selectedID = selectedID.substring(9);
+                    }
+                }
+            }else{
+                selectedID = PLselFeat[0].model.attributes.id
+            }
             newCleanPL = OpenBrack + PLurl + center4326.lon.toFixed(5) + "&lat=" + center4326.lat.toFixed(5) + "&zoomLevel=" + PLzoomLevel + "&" + selectedType + "s=" + selectedID + ClosedBrack;
         }else{
             newCleanPL = OpenBrack + PLurl + center4326.lon.toFixed(5) + "&lat=" + center4326.lat.toFixed(5) + "&zoomLevel=" + PLzoomLevel + ClosedBrack;
