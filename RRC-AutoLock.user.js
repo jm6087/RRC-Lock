@@ -1,14 +1,14 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2022.11.07.00
+// @version      2023.03.15.00
 // @description  Locks RRCs and Cameras to set level instead of autolock to rank of editor
 // @author       jm6087 (with assistance from Dude495, TheCre8r, and SkiDooGuy)
 // @include      /^https:\/\/(www|beta)\.waze\.com\/(?!user\/)(.{2,6}\/)?editor\/?.*$/
 // @require      https://greasyfork.org/scripts/24851-wazewrap/code/WazeWrap.js
 // @require      https://greasyfork.org/scripts/27254-clipboard-js/code/clipboardjs.js
 // @grant        none
-// ==/UserScript==
+// ==UserScript==
 
 /* global W */
 /* global WazeWrap */
@@ -19,19 +19,20 @@
 /* global wmeRRCAL */
 /* global _ */
 
+
 let UpdateObj;
 
 (function() {
     'use strict';
-    var UPDATE_NOTES = `Fix locking when selecting (fingers crossed)<br>`
-
+    var UPDATE_NOTES = `Fix for lock on select<br>
+    
+    `
     // PREVIOUS NOTES 
-
-
+   
     // Variables that designate beta version - Do no copy to other versions
-    var TAB_NAME = 'RRC-AL';
-    let sPanel = `#sidepanel-rrc-al`;
-    const STORE_NAME = "RRCSettings";
+    var TAB_NAME = 'RRC-AL-β';
+    let sPanel = `#sidepanel-rrc-al-`;
+    const STORE_NAME = "RRCSettingsBETA";
     let LS = 1594558757308;
 
     const CountrySS = 'https://sheets.googleapis.com/v4/spreadsheets/1wPb4tqTsES7EgAyxVqRRsRiWBDurld5NzN7IdC4pnSo/values/CountryMinimumLocks/?key='+atob('QUl6YVN5QXUxcl84ZDBNdkJUdEFwQ2VZdndDUXR6M2I0cmhWZFNn');
@@ -79,7 +80,6 @@ let UpdateObj;
     var CountryName;
     var forceDefault;
     var PLzoomLevel;
-
     var zm0, zm1, zm2, zm3, zm4, zm5, zm6, zm7, zm8, zm9, zm10;
 
     [zm0, zm1, zm2, zm3, zm4, zm5, zm6, zm7, zm8, zm9, zm10] = [12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22]
@@ -334,7 +334,7 @@ let UpdateObj;
             '<div>',
         ].join(' '));
 
-        new WazeWrap.Interface.Tab(TAB_NAME, $RRCsection.html(), RRCAutoLockInitializeSettings);
+        WazeWrap.Interface.Tab(TAB_NAME, $RRCsection.html(), RRCAutoLockInitializeSettings, TAB_NAME);
         $("#Permalink-Button-Name").click(CleanPermaLink); // BETA USER FEATURE
         $("#Permalink-Button-Input").click(inputPermaLink); // BETA USER FEATURE
         $("#RRC-Screen-Lock").click(RRCscreenLock); //
@@ -384,7 +384,7 @@ let UpdateObj;
         }
         copyToClipboard();
     }
-
+    
     function inputPermaLink(){
         // Add WazeWrap Prompt box to grab PL and then clean it up
         WazeWrap.Alerts.prompt(SCRIPT_NAME, "Paste your PL", "", OKinputPermaLink, cancelInputPermaLink); // Prompts to enter a PL
@@ -683,9 +683,9 @@ let UpdateObj;
             var betaUser = "Yes";
         }
         $('#panelCountQty')[0].textContent = 'Lock up to ' + countQty + ' RRCs or ECs on screen';
-        if (EDITdifference > 0 && betaUser == "Yes") {
-            WazeWrap.Alerts.confirm(SCRIPT_NAME, 'Your edits have increased edits ' + EDITdifference + ' since last refresh');
-        }
+//        if (EDITdifference > 0 && betaUser == "Yes") {
+//            WazeWrap.Alerts.confirm(SCRIPT_NAME, 'Your edits have increased edits ' + EDITdifference + ' since last refresh');
+//        }
     }
 
     function loadCountryID() { // comment out the hide for each lock to show
