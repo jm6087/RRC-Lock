@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2023.03.16.01
+// @version      2023.07.16.00
 // @description  Locks RRCs and Cameras to set level instead of autolock to rank of editor
 // @author       jm6087 (with assistance from Dude495, TheCre8r, and SkiDooGuy)
 // @match        https://www.waze.com/editor*
@@ -28,7 +28,7 @@ let UpdateObj;
 
 (function() {
     'use strict';
-    var UPDATE_NOTES = `Fix for lock on select<br>
+    var UPDATE_NOTES = `Fix for WazeWrap update<br>
     
     `
     // PREVIOUS NOTES 
@@ -354,8 +354,10 @@ let UpdateObj;
             PLzoomLevel = W.map.getZoom();
         }
         let selectedID;
+        let PLselFeat1 = W.selectionManager.getSelectedDataModelObjects();
         let PLselFeat = W.selectionManager.getSelectedFeatures();
-        let LatLonCenter = W.map.getCenter();
+        let LatLonCenter = W.map.getOLMap().getCenter();
+//        let LatLonCenter = W.map.getCenter();
         let center4326 = WazeWrap.Geometry.ConvertTo4326(LatLonCenter.lon, LatLonCenter.lat);
         let PLurl = 'https://www.waze.com/' + I18n.currentLocale() + '/editor?env=' + W.app.getAppRegionCode() + "&lon=";
         if (RRCAutoLockSettings.DiscordPermalink == true){
@@ -366,10 +368,12 @@ let UpdateObj;
             ClosedBrack = "";
         }
         if (PLselFeat.length > 0){
-            let selectedType = PLselFeat[0].model.type;
+            let selectedType = PLselFeat1[0].type;
+//            let selectedType = PLselFeat[0].model.type;
             if (PLselFeat.length > 1){
                 for (let s = 0; s < PLselFeat.length; s++) {
-                    const z = PLselFeat[s].model.attributes.id
+                    const z = PLselFeat1[s].attributes.id;
+//                    const z = PLselFeat[s].model.attributes.id
                     if (s == PLselFeat.length - 1){
                         selectedID = selectedID + z;
                     }else{
@@ -380,7 +384,8 @@ let UpdateObj;
                     }
                 }
             }else{
-                selectedID = PLselFeat[0].model.attributes.id
+                selectedID = PLselFeat1[0].attributes.id;
+//                selectedID = PLselFeat[0].model.attributes.id
             }
             newCleanPL = OpenBrack + PLurl + center4326.lon.toFixed(5) + "&lat=" + center4326.lat.toFixed(5) + "&zoomLevel=" + PLzoomLevel + "&" + selectedType + "s=" + selectedID + ClosedBrack;
         }else{
@@ -833,7 +838,8 @@ let UpdateObj;
         let RRClockCount = 0;
         let EClockCount = 0;
 
-        movedLon = W.map.getCenter().lon;
+        movedLon = W.map.getOLMap().getCenter().lon;
+//        movedLon = W.map.getCenter().lon;
         movedZoom = W.map.getZoom();
         if ((originalLon != movedLon) || (originalZoom != movedZoom)) {
             originalLon = movedLon;
@@ -988,7 +994,8 @@ let UpdateObj;
             await loadBetaUsers();
             await RRCAutoLockTab();
             await loadCountry();
-            originalLon = W.map.getCenter().lon;
+            originalLon = W.map.getOLMap().getCenter().lon;
+//            originalLon = W.map.getCenter().lon;
             originalZoom = W.map.getZoom();
             WazeWrap.Events.register("selectionchanged", null, setRRCAutoLock);
             WazeWrap.Events.register("moveend", null, RRCscreenMove);
