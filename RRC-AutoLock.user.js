@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2023.07.16.00
+// @version      2023.07.21.00
 // @description  Locks RRCs and Cameras to set level instead of autolock to rank of editor
 // @author       jm6087 (with assistance from Dude495, TheCre8r, and SkiDooGuy)
 // @match        https://www.waze.com/editor*
@@ -703,6 +703,10 @@ let UpdateObj;
         CountryName = W.model.topCountry.name;
         if (W.model.topCountry.id == 235) CountryName = W.model.topState.name + ', USA';
         let cEntry = getCountryFromSheet(CountryID);
+        if (cEntry == null) {
+            console.log(SCRIPT_NAME, 'Country not loaded from sheet');
+            loadCountryID()
+        }
         if (RRCmin == null) {
 
             $("#RRCAutoLockLevelOption option[value='0']").show();
