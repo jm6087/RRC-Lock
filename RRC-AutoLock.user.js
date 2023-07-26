@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2023.07.21.00
+// @version      2023.07.26.00
 // @description  Locks RRCs and Cameras to set level instead of autolock to rank of editor
 // @author       jm6087 (with assistance from Dude495, TheCre8r, and SkiDooGuy)
 // @match        https://www.waze.com/editor*
@@ -137,8 +137,9 @@ let UpdateObj;
 
     function setRRCAutoLock() {
         SelMan = W.selectionManager;
-        if (SelMan.getSelectedFeatures().length > 0){ // Determines if there is an item selected
-            SelModel = SelMan.getSelectedFeatures()[0].model;
+        if (SelMan.getSelectedDataModelObjects().length > 0){ // Determines if there is an item selected
+//            SelModel = SelMan.getSelectedFeatures()[0].model;
+            SelModel = SelMan.getSelectedDataModelObjects()[0];
             manAuto = "Manual";
             RRCsharedLock();
             originalLon = "";
@@ -354,8 +355,8 @@ let UpdateObj;
             PLzoomLevel = W.map.getZoom();
         }
         let selectedID;
-        let PLselFeat1 = W.selectionManager.getSelectedDataModelObjects();
-        let PLselFeat = W.selectionManager.getSelectedFeatures();
+        let PLselFeat = W.selectionManager.getSelectedDataModelObjects();
+//        let PLselFeat = W.selectionManager.getSelectedFeatures();
         let LatLonCenter = W.map.getOLMap().getCenter();
 //        let LatLonCenter = W.map.getCenter();
         let center4326 = WazeWrap.Geometry.ConvertTo4326(LatLonCenter.lon, LatLonCenter.lat);
@@ -368,11 +369,11 @@ let UpdateObj;
             ClosedBrack = "";
         }
         if (PLselFeat.length > 0){
-            let selectedType = PLselFeat1[0].type;
+            let selectedType = PLselFeat[0].type;
 //            let selectedType = PLselFeat[0].model.type;
             if (PLselFeat.length > 1){
                 for (let s = 0; s < PLselFeat.length; s++) {
-                    const z = PLselFeat1[s].attributes.id;
+                    const z = PLselFeat[s].attributes.id;
 //                    const z = PLselFeat[s].model.attributes.id
                     if (s == PLselFeat.length - 1){
                         selectedID = selectedID + z;
@@ -384,7 +385,7 @@ let UpdateObj;
                     }
                 }
             }else{
-                selectedID = PLselFeat1[0].attributes.id;
+                selectedID = PLselFeat[0].attributes.id;
 //                selectedID = PLselFeat[0].model.attributes.id
             }
             newCleanPL = OpenBrack + PLurl + center4326.lon.toFixed(5) + "&lat=" + center4326.lat.toFixed(5) + "&zoomLevel=" + PLzoomLevel + "&" + selectedType + "s=" + selectedID + ClosedBrack;
@@ -553,13 +554,15 @@ let UpdateObj;
         }
     }
     async function RRCAutoLockInitializeSettings(){
-        USER.rank = W.loginManager.user.rank + 1;
-        USER.name = W.loginManager.user.userName;
+        USER.rank = W.loginManager.user.getRank() + 1;
+        USER.name = W.loginManager.user.getUsername();
         let dte = Date();
         UpdateObj = require('Waze/Action/UpdateObject');
         await loadSettings();
         $('#RRCAutoLockUsername').text(USER.name);
         $('#RRCAutoLockRank').text(USER.rank);
+// beta       $('#RRCAutoLockTotalEdits').text(W.loginManager.user.getAttributes().totalEdits);
+// beta       $('#RRCAutoLockTotalPoints').text(W.loginManager.user.getAttributes().totalPoints);
         $('#RRCAutoLockTotalEdits').text(W.loginManager.user.totalEdits);
         $('#RRCAutoLockTotalPoints').text(W.loginManager.user.totalPoints);
         $('#RRCAutoLockCheckbox')[0].checked = RRCAutoLockSettings.RRCAutoLockEnabled;
@@ -687,7 +690,8 @@ let UpdateObj;
         }else{
             countQty = countQty[0].username;
             $('#USERedits')[0].textContent = 'Current Edit Count for '+ USER.name + ' - ' + W.loginManager.user.totalEdits;
-            $('#prevUSERedits')[0].textContent = 'Edit Count Difference since last load - ' + EDITdifference;
+// beta            $('#USERedits')[0].textContent = 'Current Edit Count for '+ USER.name + ' - ' + W.loginManager.user.getAttributes().totalEdits;
+//            $('#prevUSERedits')[0].textContent = 'Edit Count Difference since last load - ' + EDITdifference;
             console.log(SCRIPT_NAME, "Beta features loaded");
             var betaUser = "Yes";
         }
@@ -699,7 +703,7 @@ let UpdateObj;
 
     function loadCountryID() { // comment out the hide for each lock to show
 
-        var max = W.loginManager.user.rank + 1;
+        var max = W.loginManager.user.getRank() + 1;
         CountryName = W.model.topCountry.name;
         if (W.model.topCountry.id == 235) CountryName = W.model.topState.name + ', USA';
         let cEntry = getCountryFromSheet(CountryID);
@@ -920,6 +924,7 @@ let UpdateObj;
 
     function initialCountrySetup(tries = 1) {
         currentEdits = W.loginManager.user.totalEdits
+// beta        currentEdits = W.loginManager.user.getAttributes().totalEdits
         if (W.model.topCountry) {
             CountryID = W.model.topCountry.id;
             CountryName = W.model.topCountry.name;
@@ -973,7 +978,7 @@ let UpdateObj;
 
     // Function the selection listener runs to display the button when an object is selected
     function displayButton() {
-        const sel = W.selectionManager.getSelectedFeatures();
+        const sel = W.selectionManager.getSelectedDataModelObjects();
 
         if(sel.length > 0) {
             $('#MyRRCContainer').css('display', 'block');
