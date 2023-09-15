@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2023.07.26.00
+// @version      2023.09.15.00
 // @description  Locks RRCs and Cameras to set level instead of autolock to rank of editor
 // @author       jm6087 (with assistance from Dude495, TheCre8r, and SkiDooGuy)
 // @match        https://www.waze.com/editor*
@@ -705,7 +705,7 @@ let UpdateObj;
 
         var max = W.loginManager.user.getRank() + 1;
         CountryName = W.model.topCountry.name;
-        if (W.model.topCountry.id == 235) CountryName = W.model.topState.name + ', USA';
+        if (W.model.topCountry.id == 235) CountryName = W.model.topState.attributes.name + ', USA';
         let cEntry = getCountryFromSheet(CountryID);
         if (cEntry == null) {
             console.log(SCRIPT_NAME, 'Country not loaded from sheet');
@@ -909,7 +909,7 @@ let UpdateObj;
         setTimeout (RRCscreenMove, 3000);
         if (W.model.topCountry) {
             let newLocationID = W.model.topCountry.id;
-            if (newLocationID == 235) newLocationID = W.model.topState.id;
+            if (newLocationID == 235) newLocationID = W.model.topState.attributes.id;
             if (newLocationID != CountryID) {
                 console.log(SCRIPT_NAME, 'function RRCscreenMove - Country ID is', CountryID, 'newLocationID =',newLocationID);
                 CountryID = newLocationID;
@@ -929,8 +929,8 @@ let UpdateObj;
             CountryID = W.model.topCountry.id;
             CountryName = W.model.topCountry.name;
             if (CountryID == 235) {
-                CountryID = W.model.topState.id;
-                CountryName = W.model.topState.name;
+                CountryID = W.model.topState.attributes.id;
+                CountryName = W.model.topState.attributes.name;
             }
             loadCountry();
             console.log(SCRIPT_NAME, 'function: initialCountrySetup - Country ID is', CountryID);
