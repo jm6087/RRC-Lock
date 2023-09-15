@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2023.09.15.00
+// @version      2023.09.15.01
 // @description  Locks RRCs and Cameras to set level instead of autolock to rank of editor
 // @author       jm6087 (with assistance from Dude495, TheCre8r, and SkiDooGuy)
 // @match        https://www.waze.com/editor*
@@ -704,8 +704,8 @@ let UpdateObj;
     function loadCountryID() { // comment out the hide for each lock to show
 
         var max = W.loginManager.user.getRank() + 1;
-        CountryName = W.model.topCountry.name;
-        if (W.model.topCountry.id == 235) CountryName = W.model.topState.attributes.name + ', USA';
+        CountryName = W.model.topCountry.attributes.name;
+        if (W.model.topCountry.attributes.id == 235) CountryName = W.model.topState.attributes.name + ', USA';
         let cEntry = getCountryFromSheet(CountryID);
         if (cEntry == null) {
             console.log(SCRIPT_NAME, 'Country not loaded from sheet');
@@ -908,7 +908,7 @@ let UpdateObj;
     function checkCountry(tries = 1){
         setTimeout (RRCscreenMove, 3000);
         if (W.model.topCountry) {
-            let newLocationID = W.model.topCountry.id;
+            let newLocationID = W.model.topCountry.attributes.id;
             if (newLocationID == 235) newLocationID = W.model.topState.attributes.id;
             if (newLocationID != CountryID) {
                 console.log(SCRIPT_NAME, 'function RRCscreenMove - Country ID is', CountryID, 'newLocationID =',newLocationID);
@@ -926,8 +926,8 @@ let UpdateObj;
         currentEdits = W.loginManager.user.totalEdits
 // beta        currentEdits = W.loginManager.user.getAttributes().totalEdits
         if (W.model.topCountry) {
-            CountryID = W.model.topCountry.id;
-            CountryName = W.model.topCountry.name;
+            CountryID = W.model.topCountry.attributes.id;
+            CountryName = W.model.topCountry.attributes.name;
             if (CountryID == 235) {
                 CountryID = W.model.topState.attributes.id;
                 CountryName = W.model.topState.attributes.name;
