@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         WME RRC AutoLock
 // @namespace    https://github.com/jm6087
-// @version      2023.09.15.01
+// @version      2023.09.26.01
 // @description  Locks RRCs and Cameras to set level instead of autolock to rank of editor
 // @author       jm6087 (with assistance from Dude495, TheCre8r, and SkiDooGuy)
 // @match        https://www.waze.com/editor*
@@ -997,7 +997,7 @@ let UpdateObj;
     }
 
     async function bootstrap(tries = 1) {
-        if (W && W.map && W.model && W.loginManager.user && $ && WazeWrap.Ready ) {
+        if (typeof W === 'object' && W.userscripts?.state?.isReady && W.map && W.model && W.loginManager.user && $ && WazeWrap.Ready ) {
             await init();
             await initialCountrySetup();
             await loadBetaUsers();
